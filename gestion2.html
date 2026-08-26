@@ -1,0 +1,5983 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Gestión Empresarial | Empresa 360°</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+/* ==========================================================
+   GESTIÓN EMPRESARIAL
+   DISEÑO: TERMINAL EMPRESARIAL
+========================================================== */
+
+:root {
+
+    --paper: #080c13;
+    --paper-alt: #0e141f;
+    --card: rgba(17, 25, 40, .78);
+
+    --ink: #f1f5ff;
+    --muted: #8d9ab0;
+
+    --line: rgba(255,255,255,.10);
+
+    --blue: #4169ff;
+    --blue-glow: rgba(65,105,255,.4);
+
+    --cyan: #00efff;
+    --green: #2ee686;
+    --orange: #ff7b38;
+    --purple: #b389ff;
+    --red: #e63946;
+    --yellow: #ffb703;
+
+    --display: 'Space Grotesk', sans-serif;
+    --body: 'Inter', sans-serif;
+    --mono: 'JetBrains Mono', monospace;
+
+    --radius: 16px;
+    --max: 1160px;
+}
+
+
+* {
+    box-sizing: border-box;
+}
+
+
+html {
+    scroll-behavior: smooth;
+}
+
+
+body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--body);
+    line-height: 1.6;
+    overflow-x: hidden;
+}
+
+
+body.no-scroll {
+    overflow: hidden;
+}
+
+
+a {
+    color: inherit;
+}
+
+
+button,
+input,
+select,
+textarea {
+    font: inherit;
+}
+
+
+button {
+    cursor: pointer;
+}
+
+
+::selection {
+    background: var(--blue);
+    color: white;
+}
+
+
+.hidden {
+    display: none !important;
+}
+
+
+/* ==========================================================
+   FONDO
+========================================================== */
+
+#network-bg {
+    position: fixed;
+    inset: 0;
+
+    width: 100%;
+    height: 100%;
+
+    z-index: -2;
+
+    background:
+        radial-gradient(
+            ellipse 80% 50% at 50% -10%,
+            rgba(65,105,255,.18),
+            transparent 60%
+        ),
+        radial-gradient(
+            ellipse 60% 40% at 90% 110%,
+            rgba(0,239,255,.10),
+            transparent 60%
+        ),
+        var(--paper);
+}
+
+
+.grid-overlay {
+    position: fixed;
+    inset: 0;
+
+    z-index: -1;
+
+    pointer-events: none;
+
+    background-image:
+        linear-gradient(
+            rgba(255,255,255,.028) 1px,
+            transparent 1px
+        ),
+        linear-gradient(
+            90deg,
+            rgba(255,255,255,.028) 1px,
+            transparent 1px
+        );
+
+    background-size: 42px 42px;
+
+    mask-image:
+        radial-gradient(
+            ellipse 90% 70% at 50% 20%,
+            black 40%,
+            transparent 85%
+        );
+}
+
+
+/* ==========================================================
+   TIPOGRAFÍA
+========================================================== */
+
+h1,
+h2,
+h3 {
+    font-family: var(--display);
+    color: white;
+    line-height: 1.15;
+}
+
+
+h1 {
+    margin: 0 0 1rem;
+}
+
+
+h2 {
+    font-size: clamp(1.8rem,4vw,2.7rem);
+    margin: 0 0 1rem;
+}
+
+
+h3 {
+    margin-top: 0;
+}
+
+
+p {
+    color: var(--muted);
+}
+
+
+.gradient-text {
+    background:
+        linear-gradient(
+            135deg,
+            var(--cyan),
+            var(--blue),
+            var(--green)
+        );
+
+    -webkit-background-clip: text;
+    background-clip: text;
+
+    -webkit-text-fill-color: transparent;
+}
+
+
+.eyebrow {
+    display: block;
+
+    font-family: var(--mono);
+    font-size: .78rem;
+
+    color: var(--cyan);
+
+    letter-spacing: 1.5px;
+
+    margin-bottom: .8rem;
+}
+
+
+/* ==========================================================
+   BOTÓN FLOTANTE
+========================================================== */
+
+.floating-business {
+
+    position: fixed;
+
+    left: 25px;
+    bottom: 25px;
+
+    z-index: 3000;
+
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+
+    padding: .75rem 1rem;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(65,105,255,.95),
+            rgba(0,239,255,.7)
+        );
+
+    color: white;
+
+    border-radius: 50px;
+
+    border: 1px solid rgba(255,255,255,.25);
+
+    box-shadow:
+        0 10px 35px rgba(0,0,0,.45),
+        0 0 25px rgba(0,239,255,.25);
+
+    backdrop-filter: blur(15px);
+
+    user-select: none;
+
+    touch-action: none;
+
+    cursor: grab;
+
+    transition:
+        transform .25s,
+        box-shadow .25s;
+}
+
+
+.floating-business:hover {
+    transform: scale(1.05);
+    box-shadow:
+        0 15px 40px rgba(0,0,0,.55),
+        0 0 30px rgba(0,239,255,.4);
+}
+
+
+.floating-business.dragging {
+    cursor: grabbing;
+    transform: scale(1.08);
+}
+
+
+.floating-icon {
+    font-size: 1.4rem;
+}
+
+
+.floating-text {
+    font-family: var(--mono);
+    font-size: .78rem;
+}
+
+
+/* ==========================================================
+   MENÚ
+========================================================== */
+
+.menu-btn {
+
+    position: fixed;
+
+    top: 15px;
+    left: 20px;
+
+    width: 50px;
+    height: 50px;
+
+    border: 0;
+    border-radius: 13px;
+
+    z-index: 3001;
+
+    background: rgba(65,105,255,.25);
+
+    color: white;
+
+    font-size: 1.4rem;
+
+    box-shadow: 0 5px 25px rgba(0,0,0,.35);
+
+    backdrop-filter: blur(15px);
+
+    transition: .3s;
+}
+
+
+.menu-btn:hover {
+    background: var(--yellow);
+    color: black;
+    transform: rotate(5deg) scale(1.08);
+}
+
+
+.menu-lateral {
+
+    position: fixed;
+
+    left: -320px;
+    top: 0;
+
+    width: 285px;
+    height: 100vh;
+
+    z-index: 3000;
+
+    background:
+        rgba(7,11,18,.97);
+
+    backdrop-filter: blur(25px);
+
+    border-right: 1px solid var(--line);
+
+    padding: 80px 25px 30px;
+
+    transition:
+        left .4s cubic-bezier(.16,1,.3,1);
+
+    overflow-y: auto;
+}
+
+
+.menu-lateral.active {
+    left: 0;
+}
+
+
+.menu-logo {
+    text-align: center;
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 25px;
+}
+
+
+.logo-building {
+    font-size: 3rem;
+}
+
+
+.menu-logo h2 {
+    color: var(--cyan);
+    font-size: 1.1rem;
+}
+
+
+.menu-logo span {
+    font-family: var(--mono);
+    color: var(--muted);
+    font-size: .7rem;
+}
+
+
+.menu-lateral ul {
+    list-style: none;
+    padding: 0;
+    margin-top: 25px;
+}
+
+
+.menu-lateral li {
+    margin: 7px 0;
+}
+
+
+.menu-lateral a {
+
+    display: block;
+
+    text-decoration: none;
+
+    padding: .8rem 1rem;
+
+    border-radius: 10px;
+
+    color: var(--ink);
+
+    transition: .25s;
+}
+
+
+.menu-lateral a:hover {
+    background: rgba(0,239,255,.08);
+    color: var(--cyan);
+    padding-left: 1.3rem;
+}
+
+
+.menu-overlay {
+
+    position: fixed;
+    inset: 0;
+
+    z-index: 2999;
+
+    background: rgba(0,0,0,.6);
+
+    opacity: 0;
+
+    pointer-events: none;
+
+    transition: .3s;
+}
+
+
+.menu-overlay.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+
+/* ==========================================================
+   NAV
+========================================================== */
+
+.nav {
+
+    position: sticky;
+
+    top: 0;
+
+    z-index: 100;
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    padding:
+        1rem
+        clamp(1.25rem,4vw,3rem)
+        1rem
+        90px;
+
+    background: rgba(8,12,19,.72);
+
+    backdrop-filter: blur(15px);
+
+    border-bottom: 1px solid var(--line);
+}
+
+
+.nav__brand {
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+
+    font-family: var(--display);
+    font-weight: 700;
+}
+
+
+.nav__dot {
+
+    width: 10px;
+    height: 10px;
+
+    border-radius: 50%;
+
+    background: var(--cyan);
+
+    box-shadow: 0 0 15px var(--cyan);
+
+    animation: blink 1.5s infinite;
+}
+
+
+.nav__cta {
+    text-decoration: none;
+
+    background: var(--blue);
+
+    padding: .6rem 1.1rem;
+
+    border-radius: 10px;
+
+    font-family: var(--mono);
+
+    font-size: .8rem;
+
+    box-shadow: 0 0 20px var(--blue-glow);
+}
+
+
+@keyframes blink {
+    50% {
+        opacity: .35;
+    }
+}
+
+
+/* ==========================================================
+   HERO
+========================================================== */
+
+.hero-section {
+
+    position: relative;
+
+    max-width: var(--max);
+
+    margin: auto;
+
+    padding:
+        clamp(4rem,10vw,7rem)
+        1.3rem
+        5rem;
+}
+
+
+.hero-container {
+    text-align: center;
+}
+
+
+.hero-bg-glow {
+
+    position: absolute;
+
+    top: -100px;
+    left: 50%;
+
+    width: 650px;
+    height: 450px;
+
+    transform: translateX(-50%);
+
+    background:
+        radial-gradient(
+            circle,
+            rgba(65,105,255,.25),
+            rgba(0,239,255,.1),
+            transparent 70%
+        );
+
+    filter: blur(60px);
+
+    z-index: -1;
+}
+
+
+.hero-badge {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: .5rem;
+
+    padding: .45rem 1rem;
+
+    border-radius: 50px;
+
+    border: 1px solid var(--line);
+
+    background: rgba(255,255,255,.04);
+
+    color: var(--cyan);
+
+    font-family: var(--mono);
+
+    font-size: .75rem;
+}
+
+
+.badge-dot {
+    width: 8px;
+    height: 8px;
+
+    border-radius: 50%;
+
+    background: var(--green);
+
+    box-shadow: 0 0 10px var(--green);
+}
+
+
+.hero-title {
+
+    font-size:
+        clamp(
+            2.4rem,
+            6vw,
+            4.5rem
+        );
+
+    margin-top: 1.5rem;
+}
+
+
+.hero-subtitle {
+
+    max-width: 750px;
+
+    margin:
+        0
+        auto
+        2rem;
+
+    font-size: 1.1rem;
+}
+
+
+/* ==========================================================
+   TERMINAL
+========================================================== */
+
+.hero-terminal {
+
+    max-width: 780px;
+
+    margin: 2rem auto;
+
+    overflow: hidden;
+
+    border-radius: var(--radius);
+
+    box-shadow:
+        0 25px 60px rgba(0,0,0,.55),
+        0 0 0 1px var(--line);
+
+    text-align: left;
+}
+
+
+.editor-chrome {
+
+    display: flex;
+    align-items: center;
+
+    gap: .5rem;
+
+    padding: .75rem 1rem;
+
+    background: #171e2b;
+}
+
+
+.editor-chrome__dot {
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+}
+
+
+.editor-chrome__dot--red {
+    background: #ff5f56;
+}
+
+
+.editor-chrome__dot--yellow {
+    background: #ffbd2e;
+}
+
+
+.editor-chrome__dot--green {
+    background: #27c93f;
+}
+
+
+.editor-chrome__filename {
+
+    margin-left: .5rem;
+
+    font-family: var(--mono);
+
+    font-size: .75rem;
+
+    color: var(--muted);
+}
+
+
+.hero__code {
+
+    margin: 0;
+
+    padding: 1.5rem;
+
+    min-height: 180px;
+
+    background: #0d1117;
+
+    font-family: var(--mono);
+
+    font-size: .85rem;
+
+    overflow-x: auto;
+}
+
+
+.tok-comment { color: #8b949e; }
+.tok-key { color: #ff7b72; }
+.tok-string { color: #a5d6ff; }
+.tok-attr { color: #7ee787; }
+.tok-num { color: #79c0ff; }
+
+
+.cursor {
+    background: var(--cyan);
+    animation: blink 1s infinite;
+}
+
+
+/* ==========================================================
+   BOTONES
+========================================================== */
+
+.hero__actions {
+
+    display: flex;
+
+    justify-content: center;
+
+    flex-wrap: wrap;
+
+    gap: 1rem;
+
+    margin: 2rem 0 3rem;
+}
+
+
+.btn {
+
+    border: 0;
+
+    display: inline-flex;
+
+    justify-content: center;
+    align-items: center;
+
+    gap: .5rem;
+
+    padding: .9rem 1.6rem;
+
+    border-radius: 11px;
+
+    color: white;
+
+    font-weight: 700;
+
+    text-decoration: none;
+
+    transition: .3s;
+}
+
+
+.btn--primary {
+    background: var(--blue);
+}
+
+
+.btn--primary:hover {
+
+    transform: translateY(-3px);
+
+    box-shadow:
+        0 12px 30px rgba(65,105,255,.5);
+}
+
+
+.btn--ghost {
+
+    background: rgba(255,255,255,.04);
+
+    border: 1px solid var(--line);
+}
+
+
+.btn--ghost:hover {
+
+    color: var(--cyan);
+
+    border-color: var(--cyan);
+}
+
+
+.btn--block {
+    width: 100%;
+}
+
+
+/* ==========================================================
+   ESTADÍSTICAS
+========================================================== */
+
+.hero-stats {
+
+    max-width: 800px;
+
+    margin: auto;
+
+    padding-top: 2rem;
+
+    border-top: 1px solid var(--line);
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(3,1fr);
+
+    gap: 1rem;
+}
+
+
+.stat-box h3 {
+
+    font-family: var(--mono);
+
+    color: var(--cyan);
+
+    font-size: 1.8rem;
+
+    margin-bottom: .2rem;
+}
+
+
+.stat-box p {
+    margin: 0;
+    font-size: .85rem;
+}
+
+
+/* ==========================================================
+   SECCIONES
+========================================================== */
+
+.section {
+
+    position: relative;
+
+    max-width: var(--max);
+
+    margin: auto;
+
+    padding:
+        5rem
+        1.3rem;
+
+    border-top: 1px solid var(--line);
+
+    opacity: 0;
+
+    transform: translateY(25px);
+
+    transition:
+        opacity .7s,
+        transform .7s;
+}
+
+
+.section.is-visible {
+
+    opacity: 1;
+
+    transform: translateY(0);
+}
+
+
+.section__lead {
+
+    max-width: 700px;
+
+    margin-bottom: 2rem;
+}
+
+
+.line-no {
+
+    position: absolute;
+
+    left: 5px;
+    top: 5rem;
+
+    color: rgba(255,255,255,.13);
+
+    font-family: var(--mono);
+
+    font-size: .7rem;
+}
+
+
+/* ==========================================================
+   INFO CARDS
+========================================================== */
+
+.info-grid {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            auto-fit,
+            minmax(230px,1fr)
+        );
+
+    gap: 1.3rem;
+}
+
+
+.info-card {
+
+    position: relative;
+
+    padding: 1.5rem;
+
+    border-radius: var(--radius);
+
+    border: 1px solid var(--line);
+
+    background: var(--card);
+
+    backdrop-filter: blur(15px);
+
+    overflow: hidden;
+
+    transition: .3s;
+}
+
+
+.info-card:hover {
+
+    transform: translateY(-7px);
+
+    border-color: rgba(0,239,255,.4);
+}
+
+
+.info-icon {
+
+    font-size: 2rem;
+
+    margin-bottom: 1rem;
+}
+
+
+.info-card p {
+    font-size: .9rem;
+}
+
+
+.more-btn {
+
+    background: transparent;
+
+    border: 1px solid var(--line);
+
+    color: var(--cyan);
+
+    padding: .5rem .8rem;
+
+    border-radius: 8px;
+
+    font-size: .75rem;
+}
+
+
+.expand-content {
+
+    max-height: 0;
+
+    overflow: hidden;
+
+    transition: .4s;
+}
+
+
+.info-card.expanded .expand-content {
+
+    max-height: 300px;
+
+    margin-top: 1rem;
+}
+
+
+/* ==========================================================
+   FUNCIONES
+========================================================== */
+
+.functions-grid {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            auto-fit,
+            minmax(230px,1fr)
+        );
+
+    gap: 1.3rem;
+}
+
+
+.function-card {
+
+    position: relative;
+
+    min-height: 260px;
+
+    padding: 1.6rem;
+
+    border: 1px solid var(--line);
+
+    border-radius: var(--radius);
+
+    background: var(--card);
+
+    transition: .35s;
+
+    overflow: hidden;
+}
+
+
+.function-card:hover,
+.function-card.active {
+
+    transform: translateY(-8px);
+
+    border-color: var(--cyan);
+
+    box-shadow:
+        0 15px 35px rgba(0,0,0,.3),
+        0 0 25px rgba(0,239,255,.08);
+}
+
+
+.function-number {
+
+    position: absolute;
+
+    right: 15px;
+    top: 10px;
+
+    font-family: var(--mono);
+
+    font-size: 2.5rem;
+
+    color: rgba(255,255,255,.05);
+}
+
+
+.function-icon {
+
+    font-size: 2.5rem;
+
+    margin: 1rem 0;
+}
+
+
+.function-btn {
+
+    position: absolute;
+
+    bottom: 1.3rem;
+    left: 1.5rem;
+
+    background: transparent;
+
+    border: 0;
+
+    color: var(--cyan);
+
+    font-family: var(--mono);
+}
+
+
+.dynamic-panel,
+.area-detail,
+.position-detail,
+.chart-result {
+
+    display: grid;
+
+    grid-template-columns: 80px 1fr;
+
+    gap: 1.3rem;
+
+    align-items: center;
+
+    margin-top: 2rem;
+
+    padding: 1.7rem;
+
+    background: rgba(0,239,255,.035);
+
+    border: 1px solid rgba(0,239,255,.18);
+
+    border-radius: var(--radius);
+
+    min-height: 130px;
+}
+
+
+.dynamic-panel-icon,
+.area-detail-icon,
+.chart-result-icon {
+
+    font-size: 3rem;
+
+    text-align: center;
+}
+
+
+.detail-tags,
+.area-stats,
+.position-responsibilities,
+.chart-result-numbers {
+
+    display: flex;
+
+    flex-wrap: wrap;
+
+    gap: .5rem;
+}
+
+
+.detail-tags span,
+.area-stats span,
+.position-responsibilities span,
+.chart-result-numbers span {
+
+    padding: .35rem .7rem;
+
+    background: rgba(255,255,255,.05);
+
+    border: 1px solid var(--line);
+
+    border-radius: 20px;
+
+    font-family: var(--mono);
+
+    font-size: .72rem;
+}
+
+
+/* ==========================================================
+   ÁREAS
+========================================================== */
+
+.areas-grid {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            auto-fit,
+            minmax(180px,1fr)
+        );
+
+    gap: 1rem;
+}
+
+
+.area-card {
+
+    padding: 1.5rem;
+
+    text-align: center;
+
+    border-radius: var(--radius);
+
+    border: 1px solid var(--line);
+
+    background: var(--card);
+
+    cursor: pointer;
+
+    transition: .3s;
+}
+
+
+.area-card:hover,
+.area-card.active {
+
+    transform: translateY(-7px) scale(1.02);
+
+    border-color: var(--cyan);
+
+    background: rgba(0,239,255,.06);
+}
+
+
+.area-icon {
+
+    font-size: 2.3rem;
+
+    margin-bottom: .6rem;
+}
+
+
+.area-card h3 {
+
+    font-size: 1rem;
+
+    margin: .3rem 0;
+}
+
+
+.area-card span {
+
+    color: var(--muted);
+
+    font-size: .75rem;
+
+    font-family: var(--mono);
+}
+
+
+/* ==========================================================
+   ORGANIGRAMAS
+========================================================== */
+
+.org-tabs {
+
+    display: flex;
+
+    flex-wrap: wrap;
+
+    gap: .6rem;
+
+    margin: 2rem 0;
+}
+
+
+.org-tab {
+
+    padding: .6rem 1rem;
+
+    border: 1px solid var(--line);
+
+    background: rgba(255,255,255,.04);
+
+    color: var(--muted);
+
+    border-radius: 8px;
+}
+
+
+.org-tab.active {
+
+    background: var(--blue);
+
+    color: white;
+
+    border-color: var(--blue);
+}
+
+
+.org-container {
+
+    display: none;
+
+    min-height: 360px;
+
+    padding: 2rem;
+
+    border-radius: var(--radius);
+
+    border: 1px solid var(--line);
+
+    background: rgba(10,15,25,.7);
+
+    align-items: center;
+
+    justify-content: center;
+}
+
+
+.org-container.active {
+    display: flex;
+}
+
+
+.org-node {
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: .25rem;
+
+    min-width: 130px;
+
+    min-height: 90px;
+
+    padding: 1rem;
+
+    border: 1px solid var(--line);
+
+    border-top: 3px solid var(--cyan);
+
+    background: rgba(20,29,45,.9);
+
+    border-radius: 12px;
+
+    cursor: pointer;
+
+    transition: .3s;
+
+    text-align: center;
+}
+
+
+.org-node:hover,
+.org-node.selected {
+
+    transform: scale(1.08);
+
+    border-color: var(--cyan);
+
+    box-shadow:
+        0 0 25px rgba(0,239,255,.2);
+}
+
+
+.org-node strong {
+    font-size: .8rem;
+}
+
+
+.org-node small {
+    color: var(--muted);
+    font-size: .65rem;
+}
+
+
+.boss {
+    border-top-color: var(--yellow);
+}
+
+
+.org-line {
+
+    height: 45px;
+
+    width: 2px;
+
+    background: var(--cyan);
+
+    margin: auto;
+}
+
+
+.org-row {
+
+    display: flex;
+
+    justify-content: center;
+
+    gap: 1.5rem;
+}
+
+
+.horizontal-org {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 1rem;
+
+    flex-wrap: wrap;
+
+    justify-content: center;
+}
+
+
+.connector {
+
+    color: var(--cyan);
+
+    font-size: 1.5rem;
+}
+
+
+/* CIRCULAR */
+
+.circle-org {
+
+    position: relative;
+
+    width: 400px;
+
+    height: 320px;
+}
+
+
+.circle-center {
+
+    position: absolute;
+
+    left: 50%;
+    top: 50%;
+
+    transform: translate(-50%,-50%);
+}
+
+
+.circle-center:hover {
+    transform: translate(-50%,-50%) scale(1.08);
+}
+
+
+.circle-node {
+
+    position: absolute;
+}
+
+
+.c1 {
+    left: 50%;
+    top: 0;
+    transform: translateX(-50%);
+}
+
+
+.c2 {
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+
+.c3 {
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+
+.c4 {
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+
+/* ==========================================================
+   DECISIONES
+========================================================== */
+
+.decision-card {
+
+    max-width: 760px;
+
+    margin: 2rem auto 0;
+
+    padding: 2rem;
+
+    border: 1px solid var(--line);
+
+    border-radius: var(--radius);
+
+    background: var(--card);
+
+    text-align: center;
+
+    backdrop-filter: blur(15px);
+}
+
+
+.decision-header {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    font-family: var(--mono);
+
+    color: var(--cyan);
+
+    font-size: .75rem;
+}
+
+
+.decision-icon {
+
+    font-size: 4rem;
+
+    margin: 1.5rem 0 .5rem;
+}
+
+
+.decision-options {
+
+    display: grid;
+
+    gap: .8rem;
+
+    margin: 1.5rem 0;
+}
+
+
+.decision-options button {
+
+    text-align: left;
+
+    padding: 1rem;
+
+    border: 1px solid var(--line);
+
+    background: rgba(255,255,255,.035);
+
+    color: white;
+
+    border-radius: 10px;
+
+    transition: .2s;
+}
+
+
+.decision-options button:hover {
+
+    border-color: var(--cyan);
+
+    background: rgba(0,239,255,.06);
+
+    transform: translateX(5px);
+}
+
+
+.decision-options button.correct {
+
+    border-color: var(--green);
+
+    background: rgba(46,230,134,.12);
+}
+
+
+.decision-options button.wrong {
+
+    border-color: var(--red);
+
+    background: rgba(230,57,70,.12);
+}
+
+
+.decision-options button.partial {
+
+    border-color: var(--yellow);
+
+    background: rgba(255,183,3,.1);
+}
+
+
+.decision-result {
+
+    min-height: 40px;
+
+    margin-bottom: 1rem;
+
+    font-family: var(--mono);
+
+    font-size: .85rem;
+}
+
+
+/* ==========================================================
+   GRÁFICAS
+========================================================== */
+
+.charts-grid {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            auto-fit,
+            minmax(250px,1fr)
+        );
+
+    gap: 1rem;
+}
+
+
+.chart-card {
+
+    padding: 1.5rem;
+
+    border: 1px solid var(--line);
+
+    background: var(--card);
+
+    border-radius: var(--radius);
+
+    cursor: pointer;
+
+    transition: .3s;
+}
+
+
+.chart-card:hover,
+.chart-card.active {
+
+    transform: translateY(-6px);
+
+    border-color: var(--cyan);
+
+    box-shadow:
+        0 15px 35px rgba(0,0,0,.3);
+}
+
+
+.chart-top {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    margin-bottom: 1rem;
+}
+
+
+.chart-top div {
+
+    display: flex;
+
+    gap: .6rem;
+
+    align-items: center;
+}
+
+
+.chart-value {
+
+    font-family: var(--mono);
+
+    color: var(--cyan);
+}
+
+
+.bar-track {
+
+    height: 12px;
+
+    border-radius: 20px;
+
+    background: rgba(255,255,255,.07);
+
+    overflow: hidden;
+}
+
+
+.bar-fill {
+
+    height: 100%;
+
+    border-radius: 20px;
+
+    background:
+        linear-gradient(
+            90deg,
+            var(--blue),
+            var(--cyan),
+            var(--green)
+        );
+
+    transition: width 1s ease;
+
+    box-shadow: 0 0 15px rgba(0,239,255,.3);
+}
+
+
+.chart-card small {
+
+    display: block;
+
+    margin-top: .8rem;
+
+    color: var(--muted);
+
+    font-family: var(--mono);
+
+    font-size: .65rem;
+}
+
+
+.chart-result {
+
+    margin-top: 1.5rem;
+}
+
+
+.company-health {
+
+    margin-top: 2rem;
+
+    padding: 2rem;
+
+    border: 1px solid var(--line);
+
+    background: var(--card);
+
+    border-radius: var(--radius);
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 2rem;
+}
+
+
+.health-circle {
+
+    width: 130px;
+    height: 130px;
+
+    flex-shrink: 0;
+
+    border-radius: 50%;
+
+    display: flex;
+
+    flex-direction: column;
+
+    justify-content: center;
+
+    align-items: center;
+
+    border:
+        7px solid
+        var(--green);
+
+    box-shadow:
+        0 0 35px rgba(46,230,134,.15);
+}
+
+
+.health-circle span {
+
+    font-family: var(--mono);
+
+    font-size: 1.8rem;
+
+    color: var(--green);
+
+    font-weight: 700;
+}
+
+
+.health-circle small {
+
+    color: var(--muted);
+
+    font-size: .6rem;
+}
+
+
+/* ==========================================================
+   PRESUPUESTO
+========================================================== */
+
+.budget-card {
+
+    max-width: 760px;
+
+    margin: 2rem auto;
+
+    padding: 2rem;
+
+    background: var(--card);
+
+    border: 1px solid var(--line);
+
+    border-radius: var(--radius);
+}
+
+
+.budget-total {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    padding-bottom: 1rem;
+
+    border-bottom: 1px solid var(--line);
+
+    margin-bottom: 1.5rem;
+}
+
+
+.budget-total strong {
+
+    font-family: var(--mono);
+
+    color: var(--green);
+
+    font-size: 1.4rem;
+}
+
+
+.budget-item {
+
+    margin: 1.2rem 0;
+}
+
+
+.budget-item div {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    margin-bottom: .5rem;
+}
+
+
+.budget-item b {
+
+    color: var(--cyan);
+
+    font-family: var(--mono);
+
+    font-size: .8rem;
+}
+
+
+.budget-item input {
+
+    width: 100%;
+
+    accent-color: var(--cyan);
+}
+
+
+.budget-progress {
+
+    height: 8px;
+
+    background: rgba(255,255,255,.08);
+
+    border-radius: 10px;
+
+    overflow: hidden;
+
+    margin: 1.5rem 0;
+}
+
+
+.budget-progress div {
+
+    width: 0%;
+
+    height: 100%;
+
+    background:
+        linear-gradient(
+            90deg,
+            var(--blue),
+            var(--cyan)
+        );
+
+    transition: .3s;
+}
+
+
+.budget-result {
+
+    margin-top: 1.5rem;
+
+    padding: 1rem;
+
+    border-radius: 10px;
+
+    background: rgba(46,230,134,.08);
+
+    border: 1px solid rgba(46,230,134,.2);
+
+    color: var(--green);
+
+    font-family: var(--mono);
+
+    font-size: .85rem;
+}
+
+
+/* ==========================================================
+   QUIZ
+========================================================== */
+
+.quiz-card {
+
+    max-width: 700px;
+
+    margin: 2rem auto;
+
+    padding: 2rem;
+
+    border: 1px solid var(--line);
+
+    background: var(--card);
+
+    border-radius: var(--radius);
+}
+
+
+.quiz-progress-track {
+
+    width: 100%;
+
+    height: 7px;
+
+    background: rgba(255,255,255,.08);
+
+    border-radius: 10px;
+
+    overflow: hidden;
+
+    margin-bottom: 1.2rem;
+}
+
+
+.quiz-progress-fill {
+
+    width: 0%;
+
+    height: 100%;
+
+    background:
+        linear-gradient(
+            90deg,
+            var(--blue),
+            var(--cyan)
+        );
+
+    transition: .4s;
+}
+
+
+.quiz-step-label {
+
+    font-family: var(--mono);
+
+    color: var(--cyan);
+
+    font-size: .75rem;
+}
+
+
+.quiz-options {
+
+    display: grid;
+
+    gap: .8rem;
+
+    margin-top: 1.5rem;
+}
+
+
+.quiz-option {
+
+    padding: 1rem;
+
+    text-align: left;
+
+    color: white;
+
+    background: rgba(255,255,255,.035);
+
+    border: 1px solid var(--line);
+
+    border-radius: 10px;
+
+    transition: .2s;
+}
+
+
+.quiz-option:hover {
+
+    border-color: var(--cyan);
+
+    transform: translateX(5px);
+}
+
+
+.quiz-option.correct {
+
+    border-color: var(--green);
+
+    background: rgba(46,230,134,.12);
+}
+
+
+.quiz-option.incorrect {
+
+    border-color: var(--red);
+
+    background: rgba(230,57,70,.12);
+}
+
+
+.quiz-result {
+
+    text-align: center;
+
+    padding-top: 1.5rem;
+}
+
+
+.result-icon {
+    font-size: 3rem;
+}
+
+
+.result-tag {
+
+    color: var(--cyan);
+
+    font-family: var(--mono);
+
+    font-size: .75rem;
+}
+
+
+.eval-final-score {
+
+    font-family: var(--mono);
+
+    color: var(--cyan);
+
+    font-size: 3rem;
+
+    font-weight: 700;
+}
+
+
+/* ==========================================================
+   FAQ
+========================================================== */
+
+.faq-list {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: .8rem;
+
+    margin-top: 2rem;
+}
+
+
+.faq-item {
+
+    border: 1px solid var(--line);
+
+    background: var(--card);
+
+    border-radius: 10px;
+
+    overflow: hidden;
+}
+
+
+.faq-q {
+
+    padding: 1.1rem 1.3rem;
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+
+.faq-q span {
+
+    color: var(--cyan);
+
+    font-size: 1.3rem;
+
+    transition: .3s;
+}
+
+
+.faq-item.open .faq-q span {
+
+    transform: rotate(45deg);
+
+    color: var(--red);
+}
+
+
+.faq-a {
+
+    max-height: 0;
+
+    overflow: hidden;
+
+    padding: 0 1.3rem;
+
+    color: var(--muted);
+
+    transition: .35s;
+}
+
+
+.faq-item.open .faq-a {
+
+    max-height: 250px;
+
+    padding-bottom: 1.2rem;
+}
+
+
+/* ==========================================================
+   FORMULARIO
+========================================================== */
+
+.contact-form {
+
+    max-width: 600px;
+
+    padding: 2rem;
+
+    margin-top: 2rem;
+
+    background: var(--card);
+
+    border: 1px solid var(--line);
+
+    border-radius: var(--radius);
+}
+
+
+.form-group {
+
+    margin-bottom: 1.2rem;
+}
+
+
+.form-group label {
+
+    display: block;
+
+    color: var(--cyan);
+
+    font-family: var(--mono);
+
+    font-size: .75rem;
+
+    margin-bottom: .4rem;
+}
+
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+
+    width: 100%;
+
+    padding: .85rem;
+
+    border: 1px solid var(--line);
+
+    border-radius: 8px;
+
+    outline: none;
+
+    color: white;
+
+    background: rgba(0,0,0,.3);
+}
+
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+
+    border-color: var(--cyan);
+
+    box-shadow:
+        0 0 15px rgba(0,239,255,.12);
+}
+
+
+.form-success {
+
+    display: none;
+
+    margin-top: 1rem;
+
+    padding: 1rem;
+
+    border-radius: 8px;
+
+    color: var(--green);
+
+    background: rgba(46,230,134,.08);
+
+    border: 1px solid rgba(46,230,134,.2);
+
+    font-family: var(--mono);
+
+    font-size: .8rem;
+}
+
+
+.form-success.show {
+    display: block;
+}
+
+
+/* ==========================================================
+   FOOTER
+========================================================== */
+
+.footer {
+
+    text-align: center;
+
+    padding: 3rem 1rem;
+
+    border-top: 1px solid var(--line);
+
+    color: var(--muted);
+}
+
+
+.footer strong {
+
+    color: var(--cyan);
+
+    font-family: var(--display);
+}
+
+
+.footer__muted {
+
+    margin-top: .5rem;
+
+    color: var(--cyan);
+
+    font-family: var(--mono);
+
+    font-size: .75rem;
+}
+
+
+/* ==========================================================
+   RESPONSIVE
+========================================================== */
+
+@media(max-width:800px) {
+
+    .line-no {
+        display: none;
+    }
+
+    .hero-stats {
+        grid-template-columns: 1fr;
+    }
+
+    .dynamic-panel,
+    .area-detail,
+    .position-detail,
+    .chart-result {
+
+        grid-template-columns: 1fr;
+
+        text-align: center;
+    }
+
+    .company-health {
+
+        flex-direction: column;
+
+        text-align: center;
+    }
+
+    .circle-org {
+
+        transform: scale(.8);
+
+    }
+
+}
+
+
+@media(max-width:600px) {
+
+    .nav {
+        padding-left: 85px;
+    }
+
+    .floating-business {
+
+        left: 15px;
+
+        bottom: 15px;
+
+        max-width: calc(100vw - 30px);
+    }
+
+    .floating-text {
+        font-size: .68rem;
+    }
+
+    .hero-title {
+        font-size: 2.4rem;
+    }
+
+    .hero__code {
+        font-size: .7rem;
+    }
+
+    .hero__actions {
+
+        flex-direction: column;
+    }
+
+    .hero__actions .btn {
+        width: 100%;
+    }
+
+    .org-container {
+
+        padding: 1rem;
+
+        overflow-x: auto;
+    }
+
+    .org-row {
+        flex-wrap: wrap;
+    }
+
+    .horizontal-org {
+        min-width: 700px;
+    }
+
+    .circle-org {
+        transform: scale(.65);
+        margin-left: -70px;
+    }
+
+} 
+/* ==========================================
+   Botón flotante "regresar" (orilla izquierda)
+   ========================================== */
+.back-tab {
+  position: fixed;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(8, 12, 19, 0.92);
+  border: 1px solid var(--cyan);
+  border-left: none;
+  color: var(--cyan);
+  text-decoration: none;
+  padding: 14px 12px 14px 14px;
+  border-radius: 0 12px 12px 0;
+  backdrop-filter: blur(6px);
+  box-shadow: 0 0 18px rgba(0, 239, 255, 0.25);
+  z-index: 900;
+  transition: padding 0.35s cubic-bezier(.4,.2,.2,1), box-shadow 0.35s ease, background 0.35s ease, color 0.35s ease;
+  max-width: 46px;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.back-tab svg {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+}
+
+.back-tab span {
+  font-size: 0.85rem;
+  font-weight: 600;
+  opacity: 0;
+  transition: opacity 0.25s ease 0.1s;
+}
+
+.back-tab:hover {
+  max-width: 220px;
+  padding-right: 20px;
+  background-color: var(--cyan);
+  color: #080c13;
+  box-shadow: 0 0 22px rgba(0, 239, 255, 0.55);
+}
+
+.back-tab:hover span { opacity: 1; }
+</style>
+</head>
+
+<body>
+
+<a href="index (2).html" class="back-tab" title="Volver">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+    <line x1="19" y1="12" x2="5" y2="12"></line>
+    <polyline points="12 19 5 12 12 5"></polyline>
+  </svg>
+  <span>Volver</span>
+</a>
+
+<!-- =====================================================
+     FONDO ANIMADO
+===================================================== -->
+
+<canvas id="network-bg"></canvas>
+<div class="grid-overlay"></div>
+
+
+<!-- =====================================================
+     BOTÓN DE GESTIÓN EMPRESARIAL DESPLAZABLE
+===================================================== -->
+
+<div id="floatingBusiness" class="floating-business" title="Arrástrame">
+    <span class="floating-icon">🏢</span>
+    <span class="floating-text">Gestión Empresarial</span>
+</div>
+
+
+<!-- =====================================================
+     BOTÓN MENÚ
+===================================================== -->
+
+<button class="menu-btn" id="menuBtn">
+    ☰
+</button>
+
+
+<!-- =====================================================
+     MENÚ LATERAL
+===================================================== -->
+
+<aside class="menu-lateral" id="sideMenu">
+
+    <div class="menu-logo">
+        <div class="logo-building">🏢</div>
+        <h2>GESTIÓN<br>EMPRESARIAL</h2>
+        <span>EMPRESA 360°</span>
+    </div>
+
+    <ul>
+        <li><a href="#inicio"> Inicio</a></li>
+        <li><a href="#gestion"> Gestión empresarial</a></li>
+        <li><a href="#funciones"> 4 funciones</a></li>
+        <li><a href="#areas"> Áreas empresariales</a></li>
+        <li><a href="#organigramas"> Organigramas</a></li>
+        <li><a href="#decisiones">Decisiones</a></li>
+        <li><a href="#graficas">Indicadores</a></li>
+        <li><a href="#simulador"> Simulador</a></li>
+        <li><a href="#quiz"> Evaluación</a></li>
+        <li><a href="#contacto"> Contacto</a></li>
+    </ul>
+
+</aside>
+
+<div class="menu-overlay" id="menuOverlay"></div>
+
+
+<!-- =====================================================
+     NAV
+===================================================== -->
+
+<nav class="nav">
+
+    <div class="nav__brand">
+        <span class="nav__dot"></span>
+        EMPRESA 360°
+    </div>
+
+    <a href="#gestion" class="nav__cta">
+        Explorar
+    </a>
+
+</nav>
+
+
+<!-- =====================================================
+     HERO
+===================================================== -->
+
+<header class="hero-section" id="inicio">
+
+    <div class="hero-bg-glow"></div>
+
+    <div class="hero-container">
+
+        <div class="hero-badge">
+            <span class="badge-dot"></span>
+            SISTEMA DE GESTIÓN EMPRESARIAL
+        </div>
+
+        <h1 class="hero-title">
+            Aprende a dirigir una empresa
+            <span class="gradient-text">desde cero.</span>
+        </h1>
+
+        <p class="hero-subtitle">
+            Explora los fundamentos de la gestión empresarial,
+            toma decisiones, analiza indicadores y descubre
+            cómo funcionan las diferentes áreas de una empresa.
+        </p>
+
+
+        <!-- TERMINAL -->
+
+        <div class="hero-terminal">
+
+            <div class="editor-chrome">
+
+                <span class="editor-chrome__dot editor-chrome__dot--red"></span>
+                <span class="editor-chrome__dot editor-chrome__dot--yellow"></span>
+                <span class="editor-chrome__dot editor-chrome__dot--green"></span>
+
+                <span class="editor-chrome__filename">
+                    empresa.js
+                </span>
+
+            </div>
+
+            <pre class="hero__code"><span class="tok-comment">// Sistema de Gestión Empresarial</span>
+
+<span class="tok-key">const</span> empresa = {
+    <span class="tok-attr">objetivo</span>: <span class="tok-string">"crecer"</span>,
+    <span class="tok-attr">estrategia</span>: <span class="tok-string">"innovar"</span>,
+    <span class="tok-attr">recursos</span>: <span class="tok-num">100</span>,
+    <span class="tok-attr">resultado</span>: <span class="tok-string">"éxito"</span>
+};<span class="cursor">&nbsp;</span></pre>
+
+        </div>
+
+
+        <div class="hero__actions">
+
+            <a href="#gestion" class="btn btn--primary btn--glow">
+                🚀 Comenzar
+            </a>
+
+            <a href="#graficas" class="btn btn--ghost">
+                📊 Ver indicadores
+            </a>
+
+        </div>
+
+
+        <!-- ESTADÍSTICAS -->
+
+        <div class="hero-stats">
+
+            <div class="stat-box">
+                <h3>4</h3>
+                <p>Funciones administrativas</p>
+            </div>
+
+            <div class="stat-box">
+                <h3>7+</h3>
+                <p>Áreas empresariales</p>
+            </div>
+
+            <div class="stat-box">
+                <h3>360°</h3>
+                <p>Visión de la empresa</p>
+            </div>
+
+        </div>
+
+    </div>
+
+</header>
+
+
+<!-- =====================================================
+     QUÉ ES GESTIÓN EMPRESARIAL
+===================================================== -->
+
+<section class="section" id="gestion">
+
+    <span class="line-no">01</span>
+
+    <div class="section-heading">
+
+        <span class="eyebrow">01 // FUNDAMENTOS</span>
+
+        <h2>
+            ¿Qué es la
+            <span class="gradient-text">Gestión Empresarial?</span>
+        </h2>
+
+        <p class="section__lead">
+            La gestión empresarial es el conjunto de procesos,
+            estrategias y acciones que permiten administrar los
+            recursos de una empresa para alcanzar objetivos y
+            obtener mejores resultados.
+        </p>
+
+    </div>
+
+
+    <div class="info-grid">
+
+        <article class="info-card expandable">
+
+            <div class="info-icon">📚</div>
+
+            <h3>Definición</h3>
+
+            <p>
+                Es el proceso mediante el cual se planifican,
+                organizan, dirigen y controlan los recursos
+                de una organización.
+            </p>
+
+            <button class="more-btn">
+                Ver más +
+            </button>
+
+            <div class="expand-content">
+
+                <p>
+                    Una buena gestión permite coordinar personas,
+                    dinero, materiales, tecnología e información
+                    para alcanzar los objetivos establecidos.
+                </p>
+
+            </div>
+
+        </article>
+
+
+        <article class="info-card expandable">
+
+            <div class="info-icon">🎯</div>
+
+            <h3>Objetivo</h3>
+
+            <p>
+                Utilizar los recursos disponibles de forma
+                eficiente para alcanzar las metas empresariales.
+            </p>
+
+            <button class="more-btn">
+                Ver más +
+            </button>
+
+            <div class="expand-content">
+
+                <p>
+                    Entre sus objetivos se encuentran aumentar
+                    la productividad, reducir costos, mejorar
+                    la calidad y satisfacer a los clientes.
+                </p>
+
+            </div>
+
+        </article>
+
+
+        <article class="info-card expandable">
+
+            <div class="info-icon">📈</div>
+
+            <h3>Importancia</h3>
+
+            <p>
+                Permite que una empresa pueda funcionar de
+                manera ordenada y alcanzar mejores resultados.
+            </p>
+
+            <button class="more-btn">
+                Ver más +
+            </button>
+
+            <div class="expand-content">
+
+                <p>
+                    Sin una correcta gestión, los recursos pueden
+                    desperdiciarse y las decisiones pueden
+                    tomarse sin una estrategia clara.
+                </p>
+
+            </div>
+
+        </article>
+
+
+        <article class="info-card expandable">
+
+            <div class="info-icon">💡</div>
+
+            <h3>Características</h3>
+
+            <p>
+                Es estratégica, organizada, dinámica,
+                orientada a resultados y centrada en las personas.
+            </p>
+
+            <button class="more-btn">
+                Ver más +
+            </button>
+
+            <div class="expand-content">
+
+                <p>
+                    También requiere liderazgo, comunicación,
+                    análisis de información y capacidad para
+                    adaptarse a los cambios.
+                </p>
+
+            </div>
+
+        </article>
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     4 FUNCIONES
+===================================================== -->
+
+<section class="section" id="funciones">
+
+    <span class="line-no">02</span>
+
+    <span class="eyebrow">02 // ADMINISTRACIÓN</span>
+
+    <h2>
+        Las 4 funciones de la
+        <span class="gradient-text">gestión</span>
+    </h2>
+
+    <p class="section__lead">
+        Toca cada función para descubrir qué hace dentro de
+        una empresa y cómo ayuda a alcanzar los objetivos.
+    </p>
+
+
+    <div class="functions-grid">
+
+        <article class="function-card" data-function="planificacion">
+
+            <div class="function-number">01</div>
+
+            <div class="function-icon">🗺️</div>
+
+            <h3>Planificación</h3>
+
+            <p>
+                Define qué quiere conseguir la empresa y cómo
+                llegará hasta ese objetivo.
+            </p>
+
+            <button class="function-btn">
+                Explorar →
+            </button>
+
+        </article>
+
+
+        <article class="function-card" data-function="organizacion">
+
+            <div class="function-number">02</div>
+
+            <div class="function-icon">🧩</div>
+
+            <h3>Organización</h3>
+
+            <p>
+                Distribuye responsabilidades, recursos y tareas
+                entre las diferentes áreas.
+            </p>
+
+            <button class="function-btn">
+                Explorar →
+            </button>
+
+        </article>
+
+
+        <article class="function-card" data-function="direccion">
+
+            <div class="function-number">03</div>
+
+            <div class="function-icon">👥</div>
+
+            <h3>Dirección</h3>
+
+            <p>
+                Guía, motiva y coordina a las personas que forman
+                parte de la organización.
+            </p>
+
+            <button class="function-btn">
+                Explorar →
+            </button>
+
+        </article>
+
+
+        <article class="function-card" data-function="control">
+
+            <div class="function-number">04</div>
+
+            <div class="function-icon">📊</div>
+
+            <h3>Control</h3>
+
+            <p>
+                Comprueba si los resultados obtenidos coinciden
+                con los objetivos establecidos.
+            </p>
+
+            <button class="function-btn">
+                Explorar →
+            </button>
+
+        </article>
+
+    </div>
+
+
+    <!-- PANEL DE INFORMACIÓN -->
+
+    <div class="dynamic-panel" id="functionPanel">
+
+        <div class="dynamic-panel-icon" id="functionPanelIcon">
+            🗺️
+        </div>
+
+        <div>
+
+            <span class="eyebrow" id="functionPanelTag">
+                FUNCIÓN
+            </span>
+
+            <h3 id="functionPanelTitle">
+                Selecciona una función
+            </h3>
+
+            <p id="functionPanelText">
+                Toca una de las tarjetas para obtener información
+                detallada.
+            </p>
+
+            <div class="detail-tags" id="functionTags"></div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     ÁREAS EMPRESARIALES
+===================================================== -->
+
+<section class="section" id="areas">
+
+    <span class="line-no">03</span>
+
+    <span class="eyebrow">03 // ESTRUCTURA</span>
+
+    <h2>
+        Áreas principales de la
+        <span class="gradient-text">empresa</span>
+    </h2>
+
+    <p class="section__lead">
+        Cada área cumple una función específica. Selecciona
+        una para conocer sus responsabilidades.
+    </p>
+
+
+    <div class="areas-grid">
+
+        <article class="area-card" data-area="rrhh">
+            <div class="area-icon">👥</div>
+            <h3>Recursos Humanos</h3>
+            <span>Personas</span>
+        </article>
+
+        <article class="area-card" data-area="finanzas">
+            <div class="area-icon">💰</div>
+            <h3>Finanzas</h3>
+            <span>Dinero</span>
+        </article>
+
+        <article class="area-card" data-area="marketing">
+            <div class="area-icon">📢</div>
+            <h3>Marketing</h3>
+            <span>Promoción</span>
+        </article>
+
+        <article class="area-card" data-area="ventas">
+            <div class="area-icon">🛒</div>
+            <h3>Ventas</h3>
+            <span>Clientes</span>
+        </article>
+
+        <article class="area-card" data-area="produccion">
+            <div class="area-icon">⚙️</div>
+            <h3>Producción</h3>
+            <span>Operaciones</span>
+        </article>
+
+        <article class="area-card" data-area="tecnologia">
+            <div class="area-icon">💻</div>
+            <h3>Tecnología</h3>
+            <span>Innovación</span>
+        </article>
+
+        <article class="area-card" data-area="logistica">
+            <div class="area-icon">📦</div>
+            <h3>Logística</h3>
+            <span>Distribución</span>
+        </article>
+
+    </div>
+
+
+    <div class="area-detail" id="areaDetail">
+
+        <div class="area-detail-icon" id="areaIcon">
+            🏢
+        </div>
+
+        <div>
+
+            <span class="eyebrow">
+                ÁREA EMPRESARIAL
+            </span>
+
+            <h3 id="areaTitle">
+                Selecciona un área
+            </h3>
+
+            <p id="areaText">
+                Aquí aparecerá información sobre el área seleccionada.
+            </p>
+
+            <div class="area-stats" id="areaStats"></div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     ORGANIGRAMAS
+===================================================== -->
+
+<section class="section" id="organigramas">
+
+    <span class="line-no">04</span>
+
+    <span class="eyebrow">04 // ORGANIZACIÓN</span>
+
+    <h2>
+        Organigramas
+        <span class="gradient-text">interactivos</span>
+    </h2>
+
+    <p class="section__lead">
+        Un organigrama representa la estructura jerárquica
+        de una organización. Selecciona un puesto para conocer
+        sus responsabilidades.
+    </p>
+
+
+    <div class="org-tabs">
+
+        <button class="org-tab active" data-org="vertical">
+            Vertical
+        </button>
+
+        <button class="org-tab" data-org="horizontal">
+            Horizontal
+        </button>
+
+        <button class="org-tab" data-org="circular">
+            Circular
+        </button>
+
+        <button class="org-tab" data-org="mixto">
+            Mixto
+        </button>
+
+    </div>
+
+
+    <!-- VERTICAL -->
+
+    <div class="org-container active" id="org-vertical">
+
+        <div class="org-node boss" data-position="gerente">
+            👩‍💼
+            <strong>Gerente General</strong>
+            <small>Dirección</small>
+        </div>
+
+        <div class="org-line"></div>
+
+        <div class="org-row">
+
+            <div class="org-node" data-position="finanzas">
+                💰
+                <strong>Finanzas</strong>
+                <small>Recursos económicos</small>
+            </div>
+
+            <div class="org-node" data-position="rrhh">
+                👥
+                <strong>RR.HH.</strong>
+                <small>Personal</small>
+            </div>
+
+            <div class="org-node" data-position="ventas">
+                🛒
+                <strong>Ventas</strong>
+                <small>Clientes</small>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- HORIZONTAL -->
+
+    <div class="org-container" id="org-horizontal">
+
+        <div class="horizontal-org">
+
+            <div class="org-node boss" data-position="gerente">
+                👩‍💼
+                <strong>Gerente</strong>
+                <small>Dirección</small>
+            </div>
+
+            <span class="connector">→</span>
+
+            <div class="org-node" data-position="marketing">
+                📢
+                <strong>Marketing</strong>
+                <small>Promoción</small>
+            </div>
+
+            <span class="connector">→</span>
+
+            <div class="org-node" data-position="ventas">
+                🛒
+                <strong>Ventas</strong>
+                <small>Clientes</small>
+            </div>
+
+            <span class="connector">→</span>
+
+            <div class="org-node" data-position="produccion">
+                ⚙️
+                <strong>Producción</strong>
+                <small>Operaciones</small>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- CIRCULAR -->
+
+    <div class="org-container circular-container" id="org-circular">
+
+        <div class="circle-org">
+
+            <div class="circle-center org-node boss" data-position="gerente">
+                👩‍💼
+                <strong>Gerente</strong>
+            </div>
+
+            <div class="circle-node c1 org-node" data-position="finanzas">
+                💰
+                <strong>Finanzas</strong>
+            </div>
+
+            <div class="circle-node c2 org-node" data-position="rrhh">
+                👥
+                <strong>RR.HH.</strong>
+            </div>
+
+            <div class="circle-node c3 org-node" data-position="marketing">
+                📢
+                <strong>Marketing</strong>
+            </div>
+
+            <div class="circle-node c4 org-node" data-position="ventas">
+                🛒
+                <strong>Ventas</strong>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- MIXTO -->
+
+    <div class="org-container" id="org-mixto">
+
+        <div class="mixed-org">
+
+            <div class="org-node boss" data-position="gerente">
+                👩‍💼
+                <strong>Gerente General</strong>
+            </div>
+
+            <div class="org-line"></div>
+
+            <div class="org-row">
+
+                <div class="org-node" data-position="rrhh">
+                    👥
+                    <strong>RR.HH.</strong>
+                </div>
+
+                <div class="org-node" data-position="finanzas">
+                    💰
+                    <strong>Finanzas</strong>
+                </div>
+
+                <div class="org-node" data-position="marketing">
+                    📢
+                    <strong>Marketing</strong>
+                </div>
+
+            </div>
+
+            <div class="org-row">
+
+                <div class="org-node" data-position="ventas">
+                    🛒
+                    <strong>Ventas</strong>
+                </div>
+
+                <div class="org-node" data-position="produccion">
+                    ⚙️
+                    <strong>Producción</strong>
+                </div>
+
+                <div class="org-node" data-position="logistica">
+                    📦
+                    <strong>Logística</strong>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- INFORMACIÓN DEL PUESTO -->
+
+    <div class="position-detail" id="positionDetail">
+
+        <span class="eyebrow">
+            PUESTO SELECCIONADO
+        </span>
+
+        <h3 id="positionTitle">
+            Selecciona un puesto
+        </h3>
+
+        <p id="positionText">
+            Toca cualquier puesto del organigrama.
+        </p>
+
+        <div class="position-responsibilities" id="positionResponsibilities"></div>
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     TOMA DE DECISIONES
+===================================================== -->
+
+<section class="section" id="decisiones">
+
+    <span class="line-no">05</span>
+
+    <span class="eyebrow">05 // SIMULADOR</span>
+
+    <h2>
+        Laboratorio de
+        <span class="gradient-text">decisiones</span>
+    </h2>
+
+    <p class="section__lead">
+        Una empresa necesita tomar decisiones constantemente.
+        Analiza cada situación y selecciona la estrategia que
+        consideres más conveniente.
+    </p>
+
+
+    <div class="decision-card">
+
+        <div class="decision-header">
+
+            <span id="decisionNumber">
+                ESCENARIO 01
+            </span>
+
+            <span id="decisionScore">
+                Puntos: 0
+            </span>
+
+        </div>
+
+        <div class="decision-icon" id="decisionIcon">
+            📉
+        </div>
+
+        <h3 id="decisionTitle">
+            Las ventas están disminuyendo
+        </h3>
+
+        <p id="decisionDescription">
+            Durante los últimos tres meses las ventas de la empresa
+            han disminuido un 20%. Como gerente debes decidir qué
+            estrategia aplicar.
+        </p>
+
+
+        <div class="decision-options" id="decisionOptions">
+
+            <button data-result="correct">
+                📢 Crear una campaña de marketing
+            </button>
+
+            <button data-result="wrong">
+                ❌ Ignorar el problema
+            </button>
+
+            <button data-result="partial">
+                💰 Aumentar todos los precios
+            </button>
+
+            <button data-result="wrong">
+                🛑 Detener las ventas
+            </button>
+
+        </div>
+
+
+        <div class="decision-result" id="decisionResult"></div>
+
+        <button class="btn btn--primary hidden" id="nextDecision">
+            Siguiente escenario →
+        </button>
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     GRÁFICAS INTERACTIVAS
+===================================================== -->
+
+<section class="section" id="graficas">
+
+    <span class="line-no">06</span>
+
+    <span class="eyebrow">06 // ANALÍTICA</span>
+
+    <h2>
+        Indicadores de
+        <span class="gradient-text">la empresa</span>
+    </h2>
+
+    <p class="section__lead">
+        Toca cada barra para consultar el estado actual de
+        diferentes indicadores empresariales.
+    </p>
+
+
+    <div class="charts-grid">
+
+        <div class="chart-card" data-chart="ventas">
+
+            <div class="chart-top">
+                <div>
+                    <span>🛒</span>
+                    <strong>Ventas</strong>
+                </div>
+
+                <b class="chart-value">90%</b>
+            </div>
+
+            <div class="bar-track">
+                <div class="bar-fill" style="width:90%"></div>
+            </div>
+
+            <small>Tocar para analizar</small>
+
+        </div>
+
+
+        <div class="chart-card" data-chart="productividad">
+
+            <div class="chart-top">
+                <div>
+                    <span>⚙️</span>
+                    <strong>Productividad</strong>
+                </div>
+
+                <b class="chart-value">74%</b>
+            </div>
+
+            <div class="bar-track">
+                <div class="bar-fill" style="width:74%"></div>
+            </div>
+
+            <small>Tocar para analizar</small>
+
+        </div>
+
+
+        <div class="chart-card" data-chart="finanzas">
+
+            <div class="chart-top">
+                <div>
+                    <span>💰</span>
+                    <strong>Finanzas</strong>
+                </div>
+
+                <b class="chart-value">82%</b>
+            </div>
+
+            <div class="bar-track">
+                <div class="bar-fill" style="width:82%"></div>
+            </div>
+
+            <small>Tocar para analizar</small>
+
+        </div>
+
+
+        <div class="chart-card" data-chart="clientes">
+
+            <div class="chart-top">
+                <div>
+                    <span>😊</span>
+                    <strong>Clientes</strong>
+                </div>
+
+                <b class="chart-value">91%</b>
+            </div>
+
+            <div class="bar-track">
+                <div class="bar-fill" style="width:91%"></div>
+            </div>
+
+            <small>Tocar para analizar</small>
+
+        </div>
+
+    </div>
+
+
+    <div class="chart-result" id="chartResult">
+
+        <div class="chart-result-icon">
+            📊
+        </div>
+
+        <div>
+
+            <span class="eyebrow">
+                ANÁLISIS EMPRESARIAL
+            </span>
+
+            <h3 id="chartResultTitle">
+                Selecciona un indicador
+            </h3>
+
+            <p id="chartResultText">
+                Toca una de las barras para obtener información.
+            </p>
+
+            <div class="chart-result-numbers" id="chartNumbers"></div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ESTADO GENERAL -->
+
+    <div class="company-health">
+
+        <div class="health-circle">
+
+            <span id="healthNumber">
+                84%
+            </span>
+
+            <small>
+                GENERAL
+            </small>
+
+        </div>
+
+        <div>
+
+            <span class="eyebrow">
+                ESTADO DE LA EMPRESA
+            </span>
+
+            <h3 id="healthTitle">
+                🟢 Rendimiento favorable
+            </h3>
+
+            <p id="healthText">
+                Los principales indicadores presentan un comportamiento
+                positivo. La empresa tiene oportunidades para continuar
+                mejorando.
+            </p>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     SIMULADOR DE PRESUPUESTO
+===================================================== -->
+
+<section class="section" id="simulador">
+
+    <span class="line-no">07</span>
+
+    <span class="eyebrow">07 // ESTRATEGIA</span>
+
+    <h2>
+        Simulador de
+        <span class="gradient-text">presupuesto</span>
+    </h2>
+
+    <p class="section__lead">
+        Tienes L 100,000. Decide cómo distribuir el dinero
+        para mejorar el rendimiento de la empresa.
+    </p>
+
+
+    <div class="budget-card">
+
+        <div class="budget-total">
+
+            <span>Presupuesto disponible</span>
+
+            <strong id="budgetRemaining">
+                L 100,000
+            </strong>
+
+        </div>
+
+
+        <div class="budget-item">
+
+            <div>
+                <span>📢 Marketing</span>
+                <b id="marketingAmount">L 0</b>
+            </div>
+
+            <input
+                type="range"
+                min="0"
+                max="50000"
+                step="5000"
+                value="0"
+                data-budget="marketing"
+            >
+
+        </div>
+
+
+        <div class="budget-item">
+
+            <div>
+                <span>👥 Personal</span>
+                <b id="personalAmount">L 0</b>
+            </div>
+
+            <input
+                type="range"
+                min="0"
+                max="50000"
+                step="5000"
+                value="0"
+                data-budget="personal"
+            >
+
+        </div>
+
+
+        <div class="budget-item">
+
+            <div>
+                <span>💻 Tecnología</span>
+                <b id="technologyAmount">L 0</b>
+            </div>
+
+            <input
+                type="range"
+                min="0"
+                max="50000"
+                step="5000"
+                value="0"
+                data-budget="technology"
+            >
+
+        </div>
+
+
+        <div class="budget-item">
+
+            <div>
+                <span>⚙️ Producción</span>
+                <b id="productionAmount">L 0</b>
+            </div>
+
+            <input
+                type="range"
+                min="0"
+                max="50000"
+                step="5000"
+                value="0"
+                data-budget="production"
+            >
+
+        </div>
+
+
+        <div class="budget-progress">
+
+            <div id="budgetProgress"></div>
+
+        </div>
+
+
+        <button class="btn btn--primary btn--block" id="calculateBudget">
+            📊 Analizar inversión
+        </button>
+
+
+        <div class="budget-result" id="budgetResult"></div>
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     QUIZ
+===================================================== -->
+
+<section class="section" id="quiz">
+
+    <span class="line-no">08</span>
+
+    <span class="eyebrow">08 // EVALUACIÓN</span>
+
+    <h2>
+        ¿Cuánto sabes de
+        <span class="gradient-text">Gestión Empresarial?</span>
+    </h2>
+
+    <p class="section__lead">
+        Responde las preguntas y descubre tu nivel de conocimiento.
+    </p>
+
+
+    <div class="quiz-card">
+
+        <div class="quiz-progress-track">
+            <div class="quiz-progress-fill" id="quizProgress"></div>
+        </div>
+
+        <span class="quiz-step-label" id="quizStep">
+            PREGUNTA 1 / 5
+        </span>
+
+        <h3 id="quizQuestion">
+            ¿Cuál es una de las funciones principales de la administración?
+        </h3>
+
+        <div class="quiz-options" id="quizOptions"></div>
+
+        <div class="quiz-result hidden" id="quizResult">
+
+            <div class="result-icon">
+                🏆
+            </div>
+
+            <span class="result-tag">
+                RESULTADO FINAL
+            </span>
+
+            <h3 id="finalMessage">
+                Excelente
+            </h3>
+
+            <div class="eval-final-score" id="finalScore">
+                100%
+            </div>
+
+            <p id="finalDescription"></p>
+
+            <button class="btn btn--primary" id="restartQuiz">
+                🔄 Intentar nuevamente
+            </button>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     FAQ
+===================================================== -->
+
+<section class="section" id="faq">
+
+    <span class="line-no">09</span>
+
+    <span class="eyebrow">09 // INFORMACIÓN</span>
+
+    <h2>
+        Preguntas
+        <span class="gradient-text">frecuentes</span>
+    </h2>
+
+
+    <div class="faq-list">
+
+        <div class="faq-item">
+
+            <div class="faq-q">
+                ¿Por qué es importante la gestión empresarial?
+                <span>+</span>
+            </div>
+
+            <div class="faq-a">
+                La gestión empresarial permite organizar los recursos,
+                coordinar las actividades y tomar decisiones para
+                alcanzar los objetivos de la organización.
+            </div>
+
+        </div>
+
+
+        <div class="faq-item">
+
+            <div class="faq-q">
+                ¿Cuáles son las cuatro funciones administrativas?
+                <span>+</span>
+            </div>
+
+            <div class="faq-a">
+                Las cuatro funciones principales son planificación,
+                organización, dirección y control.
+            </div>
+
+        </div>
+
+
+        <div class="faq-item">
+
+            <div class="faq-q">
+                ¿Qué hace un gerente?
+                <span>+</span>
+            </div>
+
+            <div class="faq-a">
+                El gerente coordina recursos, supervisa actividades,
+                dirige equipos y toma decisiones estratégicas.
+            </div>
+
+        </div>
+
+
+        <div class="faq-item">
+
+            <div class="faq-q">
+                ¿Qué necesita una empresa para crecer?
+                <span>+</span>
+            </div>
+
+            <div class="faq-a">
+                Necesita objetivos claros, buena organización,
+                recursos adecuados, innovación, clientes satisfechos
+                y una correcta toma de decisiones.
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     CONTACTO
+===================================================== -->
+
+<section class="section" id="contacto">
+
+    <span class="line-no">10</span>
+
+    <span class="eyebrow">10 // CONTACTO</span>
+
+    <h2>
+        ¿Listo para dirigir
+        <span class="gradient-text">tu empresa?</span>
+    </h2>
+
+    <p class="section__lead">
+        Completa el formulario para registrar tu interés
+        en aprender más sobre gestión empresarial.
+    </p>
+
+
+    <form class="contact-form" id="contactForm">
+
+        <div class="form-group">
+
+            <label>
+                Nombre
+            </label>
+
+            <input
+                type="text"
+                id="name"
+                placeholder="Escribe tu nombre"
+                required
+            >
+
+        </div>
+
+
+        <div class="form-group">
+
+            <label>
+                Correo
+            </label>
+
+            <input
+                type="email"
+                id="email"
+                placeholder="correo@ejemplo.com"
+                required
+            >
+
+        </div>
+
+
+        <div class="form-group">
+
+            <label>
+                Área de interés
+            </label>
+
+            <select id="interest">
+
+                <option value="">
+                    Selecciona una opción
+                </option>
+
+                <option>
+                    Administración
+                </option>
+
+                <option>
+                    Finanzas
+                </option>
+
+                <option>
+                    Marketing
+                </option>
+
+                <option>
+                    Recursos Humanos
+                </option>
+
+                <option>
+                    Emprendimiento
+                </option>
+
+            </select>
+
+        </div>
+
+
+        <div class="form-group">
+
+            <label>
+                Mensaje
+            </label>
+
+            <textarea
+                id="message"
+                rows="4"
+                placeholder="Escribe tu mensaje..."
+            ></textarea>
+
+        </div>
+
+
+        <button class="btn btn--primary btn--block">
+            🚀 Enviar información
+        </button>
+
+
+        <div class="form-success" id="formSuccess">
+            ✔ Información enviada correctamente.
+        </div>
+
+    </form>
+
+</section>
+
+
+<!-- =====================================================
+     FOOTER
+===================================================== -->
+
+<footer class="footer">
+
+    <strong>
+        🏢 GESTIÓN EMPRESARIAL
+    </strong>
+
+    <p>
+        Proyecto educativo interactivo
+    </p>
+
+    <div class="footer__muted">
+        Empresa 360° // Aprender • Analizar • Decidir
+    </div>
+
+</footer>
+
+
+<script>
+/* ==========================================================
+   GESTIÓN EMPRESARIAL
+   JAVASCRIPT INTERACTIVO
+========================================================== */
+
+
+/* ==========================================================
+   FONDO ANIMADO
+========================================================== */
+
+const canvas = document.getElementById("network-bg");
+const ctx = canvas.getContext("2d");
+
+let particles = [];
+
+function resizeCanvas() {
+
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+}
+
+resizeCanvas();
+
+window.addEventListener("resize", resizeCanvas);
+
+
+class Particle {
+
+    constructor() {
+
+        this.x = Math.random() * canvas.width;
+        this.y = Math.random() * canvas.height;
+
+        this.vx = (Math.random() - .5) * .4;
+        this.vy = (Math.random() - .5) * .4;
+
+        this.size = Math.random() * 2 + 1;
+
+    }
+
+
+    update() {
+
+        this.x += this.vx;
+        this.y += this.vy;
+
+
+        if (this.x < 0 || this.x > canvas.width) {
+            this.vx *= -1;
+        }
+
+
+        if (this.y < 0 || this.y > canvas.height) {
+            this.vy *= -1;
+        }
+
+    }
+
+
+    draw() {
+
+        ctx.beginPath();
+
+        ctx.arc(
+            this.x,
+            this.y,
+            this.size,
+            0,
+            Math.PI * 2
+        );
+
+        ctx.fillStyle = "rgba(0,239,255,.7)";
+
+        ctx.fill();
+
+    }
+
+}
+
+
+function createParticles() {
+
+    particles = [];
+
+    const amount =
+        window.innerWidth < 600
+            ? 35
+            : 70;
+
+
+    for (let i = 0; i < amount; i++) {
+
+        particles.push(
+            new Particle()
+        );
+
+    }
+
+}
+
+
+createParticles();
+
+
+function animateNetwork() {
+
+    ctx.clearRect(
+        0,
+        0,
+        canvas.width,
+        canvas.height
+    );
+
+
+    particles.forEach(p => {
+
+        p.update();
+        p.draw();
+
+    });
+
+
+    for (
+        let i = 0;
+        i < particles.length;
+        i++
+    ) {
+
+        for (
+            let j = i + 1;
+            j < particles.length;
+            j++
+        ) {
+
+            const dx =
+                particles[i].x -
+                particles[j].x;
+
+            const dy =
+                particles[i].y -
+                particles[j].y;
+
+            const distance =
+                Math.sqrt(
+                    dx * dx +
+                    dy * dy
+                );
+
+
+            if (distance < 130) {
+
+                ctx.beginPath();
+
+                ctx.moveTo(
+                    particles[i].x,
+                    particles[i].y
+                );
+
+                ctx.lineTo(
+                    particles[j].x,
+                    particles[j].y
+                );
+
+                ctx.strokeStyle =
+                    `rgba(65,105,255,${1 - distance / 130})`;
+
+                ctx.lineWidth = .5;
+
+                ctx.stroke();
+
+            }
+
+        }
+
+    }
+
+
+    requestAnimationFrame(
+        animateNetwork
+    );
+
+}
+
+
+animateNetwork();
+
+
+/* ==========================================================
+   MENÚ LATERAL
+========================================================== */
+
+const menuBtn =
+    document.getElementById("menuBtn");
+
+const sideMenu =
+    document.getElementById("sideMenu");
+
+const menuOverlay =
+    document.getElementById("menuOverlay");
+
+
+function toggleMenu() {
+
+    sideMenu.classList.toggle("active");
+
+    menuOverlay.classList.toggle("active");
+
+}
+
+
+menuBtn.addEventListener(
+    "click",
+    toggleMenu
+);
+
+
+menuOverlay.addEventListener(
+    "click",
+    toggleMenu
+);
+
+
+document
+    .querySelectorAll(".menu-lateral a")
+    .forEach(link => {
+
+        link.addEventListener(
+            "click",
+            () => {
+
+                sideMenu.classList.remove("active");
+
+                menuOverlay.classList.remove("active");
+
+            }
+        );
+
+    });
+
+
+/* ==========================================================
+   BOTÓN GESTIÓN EMPRESARIAL ARRASTRABLE
+========================================================== */
+
+const floating =
+    document.getElementById(
+        "floatingBusiness"
+    );
+
+
+let dragging = false;
+
+let offsetX = 0;
+let offsetY = 0;
+
+
+floating.addEventListener(
+    "pointerdown",
+    e => {
+
+        dragging = true;
+
+        floating.classList.add(
+            "dragging"
+        );
+
+        const rect =
+            floating.getBoundingClientRect();
+
+        offsetX =
+            e.clientX - rect.left;
+
+        offsetY =
+            e.clientY - rect.top;
+
+        floating.setPointerCapture(
+            e.pointerId
+        );
+
+    }
+);
+
+
+floating.addEventListener(
+    "pointermove",
+    e => {
+
+        if (!dragging) return;
+
+
+        let x =
+            e.clientX - offsetX;
+
+        let y =
+            e.clientY - offsetY;
+
+
+        const maxX =
+            window.innerWidth -
+            floating.offsetWidth;
+
+        const maxY =
+            window.innerHeight -
+            floating.offsetHeight;
+
+
+        x =
+            Math.max(
+                5,
+                Math.min(x,maxX - 5)
+            );
+
+        y =
+            Math.max(
+                5,
+                Math.min(y,maxY - 5)
+            );
+
+
+        floating.style.left =
+            `${x}px`;
+
+        floating.style.top =
+            `${y}px`;
+
+        floating.style.bottom =
+            "auto";
+
+    }
+);
+
+
+floating.addEventListener(
+    "pointerup",
+    e => {
+
+        dragging = false;
+
+        floating.classList.remove(
+            "dragging"
+        );
+
+        floating.releasePointerCapture(
+            e.pointerId
+        );
+
+    }
+);
+
+
+/* ==========================================================
+   ANIMACIÓN DE SECCIONES
+========================================================== */
+
+const sections =
+    document.querySelectorAll(
+        ".section"
+    );
+
+
+const sectionObserver =
+    new IntersectionObserver(
+        entries => {
+
+            entries.forEach(entry => {
+
+                if (entry.isIntersecting) {
+
+                    entry.target.classList.add(
+                        "is-visible"
+                    );
+
+                }
+
+            });
+
+        },
+        {
+            threshold: .12
+        }
+    );
+
+
+sections.forEach(section => {
+
+    sectionObserver.observe(
+        section
+    );
+
+});
+
+
+/* ==========================================================
+   TARJETAS EXPANDIBLES
+========================================================== */
+
+document
+    .querySelectorAll(".expandable")
+    .forEach(card => {
+
+        const button =
+            card.querySelector(
+                ".more-btn"
+            );
+
+
+        button.addEventListener(
+            "click",
+            () => {
+
+                card.classList.toggle(
+                    "expanded"
+                );
+
+
+                button.textContent =
+                    card.classList.contains("expanded")
+                        ? "Ver menos −"
+                        : "Ver más +";
+
+            }
+        );
+
+    });
+
+
+/* ==========================================================
+   4 FUNCIONES
+========================================================== */
+
+const functionData = {
+
+    planificacion: {
+
+        icon: "🗺️",
+
+        title: "Planificación",
+
+        text:
+            "La planificación consiste en definir los objetivos de la empresa y establecer las estrategias y acciones necesarias para alcanzarlos. Permite anticiparse a los problemas y utilizar mejor los recursos.",
+
+        tags: [
+            "Objetivos",
+            "Estrategias",
+            "Metas",
+            "Presupuesto"
+        ]
+
+    },
+
+
+    organizacion: {
+
+        icon: "🧩",
+
+        title: "Organización",
+
+        text:
+            "La organización distribuye tareas, responsabilidades y recursos entre las personas y departamentos. Su finalidad es conseguir que cada integrante conozca sus funciones.",
+
+        tags: [
+            "Estructura",
+            "Responsabilidades",
+            "Recursos",
+            "Departamentos"
+        ]
+
+    },
+
+
+    direccion: {
+
+        icon: "👥",
+
+        title: "Dirección",
+
+        text:
+            "La dirección implica liderar, motivar y orientar al personal. Un buen líder comunica los objetivos, resuelve problemas y ayuda al equipo a trabajar hacia una meta común.",
+
+        tags: [
+            "Liderazgo",
+            "Motivación",
+            "Comunicación",
+            "Trabajo en equipo"
+        ]
+
+    },
+
+
+    control: {
+
+        icon: "📊",
+
+        title: "Control",
+
+        text:
+            "El control permite comparar los resultados obtenidos con los objetivos establecidos. Si existe una diferencia, se pueden aplicar acciones correctivas.",
+
+        tags: [
+            "Indicadores",
+            "Evaluación",
+            "Resultados",
+            "Mejora"
+        ]
+
+    }
+
+};
+
+
+const functionCards =
+    document.querySelectorAll(
+        ".function-card"
+    );
+
+
+functionCards.forEach(card => {
+
+    card.addEventListener(
+        "click",
+        () => {
+
+            const key =
+                card.dataset.function;
+
+            const data =
+                functionData[key];
+
+
+            functionCards.forEach(c =>
+                c.classList.remove("active")
+            );
+
+            card.classList.add("active");
+
+
+            document.getElementById(
+                "functionPanelIcon"
+            ).textContent =
+                data.icon;
+
+
+            document.getElementById(
+                "functionPanelTitle"
+            ).textContent =
+                data.title;
+
+
+            document.getElementById(
+                "functionPanelText"
+            ).textContent =
+                data.text;
+
+
+            document.getElementById(
+                "functionTags"
+            ).innerHTML =
+                data.tags
+                    .map(tag =>
+                        `<span>${tag}</span>`
+                    )
+                    .join("");
+
+        }
+    );
+
+});
+
+
+/* ==========================================================
+   ÁREAS EMPRESARIALES
+========================================================== */
+
+const areaData = {
+
+    rrhh: {
+
+        icon: "👥",
+        title: "Recursos Humanos",
+
+        text:
+            "Administra el talento humano de la organización. Se encarga de selección, contratación, capacitación, evaluación y bienestar de los empleados.",
+
+        stats: [
+            "Contratación",
+            "Capacitación",
+            "Motivación"
+        ]
+
+    },
+
+
+    finanzas: {
+
+        icon: "💰",
+        title: "Finanzas",
+
+        text:
+            "Administra el dinero de la empresa. Controla ingresos, gastos, inversiones, presupuestos y rentabilidad.",
+
+        stats: [
+            "Ingresos",
+            "Gastos",
+            "Inversiones"
+        ]
+
+    },
+
+
+    marketing: {
+
+        icon: "📢",
+        title: "Marketing",
+
+        text:
+            "Investiga el mercado, identifica las necesidades de los clientes y desarrolla estrategias para promocionar productos o servicios.",
+
+        stats: [
+            "Publicidad",
+            "Mercado",
+            "Marca"
+        ]
+
+    },
+
+
+    ventas: {
+
+        icon: "🛒",
+        title: "Ventas",
+
+        text:
+            "Tiene como objetivo convertir oportunidades en clientes y generar ingresos para la organización.",
+
+        stats: [
+            "Clientes",
+            "Ingresos",
+            "Negociación"
+        ]
+
+    },
+
+
+    produccion: {
+
+        icon: "⚙️",
+        title: "Producción",
+
+        text:
+            "Transforma materias primas y recursos en productos o servicios. Busca mantener calidad y productividad.",
+
+        stats: [
+            "Calidad",
+            "Producción",
+            "Eficiencia"
+        ]
+
+    },
+
+
+    tecnologia: {
+
+        icon: "💻",
+        title: "Tecnología",
+
+        text:
+            "Utiliza herramientas digitales para automatizar procesos, proteger información y facilitar la innovación.",
+
+        stats: [
+            "Innovación",
+            "Sistemas",
+            "Datos"
+        ]
+
+    },
+
+
+    logistica: {
+
+        icon: "📦",
+        title: "Logística",
+
+        text:
+            "Coordina almacenamiento, transporte y distribución para que los productos lleguen correctamente a los clientes.",
+
+        stats: [
+            "Inventario",
+            "Transporte",
+            "Distribución"
+        ]
+
+    }
+
+};
+
+
+document
+    .querySelectorAll(".area-card")
+    .forEach(card => {
+
+        card.addEventListener(
+            "click",
+            () => {
+
+                const key =
+                    card.dataset.area;
+
+                const data =
+                    areaData[key];
+
+
+                document
+                    .querySelectorAll(".area-card")
+                    .forEach(c =>
+                        c.classList.remove("active")
+                    );
+
+
+                card.classList.add("active");
+
+
+                document.getElementById(
+                    "areaIcon"
+                ).textContent =
+                    data.icon;
+
+
+                document.getElementById(
+                    "areaTitle"
+                ).textContent =
+                    data.title;
+
+
+                document.getElementById(
+                    "areaText"
+                ).textContent =
+                    data.text;
+
+
+                document.getElementById(
+                    "areaStats"
+                ).innerHTML =
+                    data.stats
+                        .map(x =>
+                            `<span>${x}</span>`
+                        )
+                        .join("");
+
+            }
+        );
+
+    });
+
+
+/* ==========================================================
+   ORGANIGRAMAS
+========================================================== */
+
+document
+    .querySelectorAll(".org-tab")
+    .forEach(tab => {
+
+        tab.addEventListener(
+            "click",
+            () => {
+
+                const target =
+                    tab.dataset.org;
+
+
+                document
+                    .querySelectorAll(".org-tab")
+                    .forEach(t =>
+                        t.classList.remove("active")
+                    );
+
+
+                document
+                    .querySelectorAll(".org-container")
+                    .forEach(c =>
+                        c.classList.remove("active")
+                    );
+
+
+                tab.classList.add("active");
+
+
+                document
+                    .getElementById(
+                        `org-${target}`
+                    )
+                    .classList.add("active");
+
+            }
+        );
+
+    });
+
+
+/* Información de puestos */
+
+const positionData = {
+
+    gerente: {
+
+        title: "Gerente General",
+
+        text:
+            "Es responsable de dirigir la organización y tomar decisiones estratégicas para alcanzar los objetivos.",
+
+        responsibilities: [
+            "Liderazgo",
+            "Estrategia",
+            "Decisiones",
+            "Supervisión"
+        ]
+
+    },
+
+
+    finanzas: {
+
+        title: "Área de Finanzas",
+
+        text:
+            "Administra los recursos económicos y analiza la situación financiera de la empresa.",
+
+        responsibilities: [
+            "Presupuesto",
+            "Ingresos",
+            "Gastos",
+            "Rentabilidad"
+        ]
+
+    },
+
+
+    rrhh: {
+
+        title: "Recursos Humanos",
+
+        text:
+            "Gestiona el talento humano y desarrolla estrategias para mejorar el desempeño de los trabajadores.",
+
+        responsibilities: [
+            "Personal",
+            "Capacitación",
+            "Selección",
+            "Motivación"
+        ]
+
+    },
+
+
+    ventas: {
+
+        title: "Área de Ventas",
+
+        text:
+            "Gestiona las relaciones comerciales con los clientes y busca aumentar los ingresos.",
+
+        responsibilities: [
+            "Clientes",
+            "Ventas",
+            "Negociación",
+            "Ingresos"
+        ]
+
+    },
+
+
+    marketing: {
+
+        title: "Marketing",
+
+        text:
+            "Diseña estrategias de comunicación y promoción para posicionar productos y servicios.",
+
+        responsibilities: [
+            "Publicidad",
+            "Marca",
+            "Mercado",
+            "Clientes"
+        ]
+
+    },
+
+
+    produccion: {
+
+        title: "Producción",
+
+        text:
+            "Supervisa los procesos necesarios para fabricar productos o entregar servicios con calidad.",
+
+        responsibilities: [
+            "Calidad",
+            "Producción",
+            "Procesos",
+            "Eficiencia"
+        ]
+
+    },
+
+
+    logistica: {
+
+        title: "Logística",
+
+        text:
+            "Coordina inventarios, almacenamiento y distribución de productos.",
+
+        responsibilities: [
+            "Inventario",
+            "Transporte",
+            "Almacén",
+            "Distribución"
+        ]
+
+    }
+
+};
+
+
+document
+    .querySelectorAll(".org-node")
+    .forEach(node => {
+
+        node.addEventListener(
+            "click",
+            () => {
+
+                const key =
+                    node.dataset.position;
+
+                const data =
+                    positionData[key];
+
+
+                document
+                    .querySelectorAll(".org-node")
+                    .forEach(n =>
+                        n.classList.remove("selected")
+                    );
+
+
+                node.classList.add("selected");
+
+
+                document.getElementById(
+                    "positionTitle"
+                ).textContent =
+                    data.title;
+
+
+                document.getElementById(
+                    "positionText"
+                ).textContent =
+                    data.text;
+
+
+                document.getElementById(
+                    "positionResponsibilities"
+                ).innerHTML =
+                    data.responsibilities
+                        .map(r =>
+                            `<span>${r}</span>`
+                        )
+                        .join("");
+
+            }
+        );
+
+    });
+
+
+/* ==========================================================
+   TOMA DE DECISIONES
+========================================================== */
+
+const decisions = [
+
+    {
+
+        icon: "📉",
+
+        title:
+            "Las ventas están disminuyendo",
+
+        description:
+            "Durante los últimos tres meses las ventas disminuyeron un 20%. Como gerente debes decidir qué estrategia aplicar.",
+
+        options: [
+            {
+                text:
+                    "📢 Crear una campaña de marketing",
+                result:
+                    "correct"
+            },
+            {
+                text:
+                    "❌ Ignorar el problema",
+                result:
+                    "wrong"
+            },
+            {
+                text:
+                    "💰 Aumentar todos los precios",
+                result:
+                    "partial"
+            },
+            {
+                text:
+                    "🛑 Detener las ventas",
+                result:
+                    "wrong"
+            }
+        ]
+
+    },
+
+
+    {
+
+        icon: "👥",
+
+        title:
+            "El equipo está desmotivado",
+
+        description:
+            "La productividad ha disminuido y varios empleados manifiestan falta de motivación. ¿Qué decisión tomarías?",
+
+        options: [
+            {
+                text:
+                    "🏆 Crear un programa de reconocimiento",
+                result:
+                    "correct"
+            },
+            {
+                text:
+                    "❌ Ignorar a los empleados",
+                result:
+                    "wrong"
+            },
+            {
+                text:
+                    "📉 Reducir beneficios",
+                result:
+                    "wrong"
+            },
+            {
+                text:
+                    "💬 Escuchar al equipo y analizar las causas",
+                result:
+                    "correct"
+            }
+        ]
+
+    },
+
+
+    {
+
+        icon: "💰",
+
+        title:
+            "Los gastos están aumentando",
+
+        description:
+            "Los gastos operativos superaron el presupuesto. Necesitas encontrar una solución sin afectar la calidad.",
+
+        options: [
+            {
+                text:
+                    "📊 Analizar gastos y eliminar desperdicios",
+                result:
+                    "correct"
+            },
+            {
+                text:
+                    "💸 Gastar aún más",
+                result:
+                    "wrong"
+            },
+            {
+                text:
+                    "🛑 Cerrar todas las áreas",
+                result:
+                    "wrong"
+            },
+            {
+                text:
+                    "📈 Aumentar precios sin analizar el mercado",
+                result:
+                    "partial"
+            }
+        ]
+
+    }
+
+];
+
+
+let decisionIndex = 0;
+let decisionScore = 0;
+
+
+const decisionIcon =
+    document.getElementById(
+        "decisionIcon"
+    );
+
+const decisionTitle =
+    document.getElementById(
+        "decisionTitle"
+    );
+
+const decisionDescription =
+    document.getElementById(
+        "decisionDescription"
+    );
+
+const decisionOptions =
+    document.getElementById(
+        "decisionOptions"
+    );
+
+const decisionResult =
+    document.getElementById(
+        "decisionResult"
+    );
+
+
+function loadDecision() {
+
+    const decision =
+        decisions[decisionIndex];
+
+
+    document.getElementById(
+        "decisionNumber"
+    ).textContent =
+        `ESCENARIO ${String(decisionIndex + 1).padStart(2,"0")}`;
+
+
+    document.getElementById(
+        "decisionScore"
+    ).textContent =
+        `Puntos: ${decisionScore}`;
+
+
+    decisionIcon.textContent =
+        decision.icon;
+
+
+    decisionTitle.textContent =
+        decision.title;
+
+
+    decisionDescription.textContent =
+        decision.description;
+
+
+    decisionResult.innerHTML = "";
+
+
+    document
+        .getElementById("nextDecision")
+        .classList.add("hidden");
+
+
+    decisionOptions.innerHTML =
+        decision.options
+            .map(
+                option =>
+                    `<button data-result="${option.result}">
+                        ${option.text}
+                    </button>`
+            )
+            .join("");
+
+
+    decisionOptions
+        .querySelectorAll("button")
+        .forEach(button => {
+
+            button.addEventListener(
+                "click",
+                () => {
+
+                    const result =
+                        button.dataset.result;
+
+
+                    decisionOptions
+                        .querySelectorAll("button")
+                        .forEach(b =>
+                            b.disabled = true
+                        );
+
+
+                    button.classList.add(
+                        result
+                    );
+
+
+                    if (result === "correct") {
+
+                        decisionScore += 10;
+
+                        decisionResult.innerHTML =
+                            "🟢 Excelente decisión. Esta estrategia puede ayudar a resolver el problema y mejorar los resultados.";
+
+                    }
+
+                    else if (result === "partial") {
+
+                        decisionScore += 5;
+
+                        decisionResult.innerHTML =
+                            "🟡 Decisión parcialmente adecuada. Antes de aplicarla sería necesario analizar mejor la situación.";
+
+                    }
+
+                    else {
+
+                        decisionResult.innerHTML =
+                            "🔴 Esta decisión podría generar consecuencias negativas para la empresa.";
+
+                    }
+
+
+                    document
+                        .getElementById("nextDecision")
+                        .classList.remove("hidden");
+
+                }
+            );
+
+        });
+
+}
+
+
+document
+    .getElementById("nextDecision")
+    .addEventListener(
+        "click",
+        () => {
+
+            decisionIndex++;
+
+
+            if (
+                decisionIndex >=
+                decisions.length
+            ) {
+
+                decisionIndex = 0;
+
+                decisionResult.innerHTML =
+                    `🏆 Simulador terminado. Tu puntuación fue ${decisionScore} puntos.`;
+
+                document
+                    .getElementById("nextDecision")
+                    .classList.add("hidden");
+
+                return;
+
+            }
+
+
+            loadDecision();
+
+        }
+    );
+
+
+loadDecision();
+
+
+/* ==========================================================
+   GRÁFICAS
+========================================================== */
+
+const chartData = {
+
+    ventas: {
+
+        title: "Ventas",
+
+        value: 90,
+
+        text:
+            "El área de ventas presenta un rendimiento excelente y se encuentra cerca de alcanzar su meta mensual.",
+
+        numbers: [
+            "L 450,000 ingresos",
+            "+12% crecimiento",
+            "90% meta"
+        ]
+
+    },
+
+
+    productividad: {
+
+        title: "Productividad",
+
+        value: 74,
+
+        text:
+            "La productividad es favorable, aunque todavía existe espacio para mejorar los procesos y aprovechar mejor los recursos.",
+
+        numbers: [
+            "1,250 unidades",
+            "45 empleados",
+            "74% eficiencia"
+        ]
+
+    },
+
+
+    finanzas: {
+
+        title: "Finanzas",
+
+        value: 82,
+
+        text:
+            "La situación financiera es estable. Los ingresos permiten cubrir las operaciones y mantener una capacidad de inversión.",
+
+        numbers: [
+            "82% salud",
+            "18% gastos",
+            "24% margen"
+        ]
+
+    },
+
+
+    clientes: {
+
+        title: "Satisfacción del cliente",
+
+        value: 91,
+
+        text:
+            "Los clientes muestran un nivel de satisfacción muy alto. La empresa debe mantener la calidad y atención.",
+
+        numbers: [
+            "91% satisfacción",
+            "4.6/5 valoración",
+            "8% reclamos"
+        ]
+
+    }
+
+};
+
+
+document
+    .querySelectorAll(".chart-card")
+    .forEach(card => {
+
+        card.addEventListener(
+            "click",
+            () => {
+
+                const key =
+                    card.dataset.chart;
+
+                const data =
+                    chartData[key];
+
+
+                document
+                    .querySelectorAll(".chart-card")
+                    .forEach(c =>
+                        c.classList.remove("active")
+                    );
+
+
+                card.classList.add("active");
+
+
+                document.getElementById(
+                    "chartResultTitle"
+                ).textContent =
+                    `${data.title} — ${data.value}%`;
+
+
+                document.getElementById(
+                    "chartResultText"
+                ).textContent =
+                    data.text;
+
+
+                document.getElementById(
+                    "chartNumbers"
+                ).innerHTML =
+                    data.numbers
+                        .map(n =>
+                            `<span>${n}</span>`
+                        )
+                        .join("");
+
+
+                updateHealth();
+
+            }
+        );
+
+    });
+
+
+function updateHealth() {
+
+    const values =
+        Object.values(chartData)
+            .map(x => x.value);
+
+
+    const average =
+        Math.round(
+            values.reduce(
+                (a,b) => a+b,
+                0
+            ) / values.length
+        );
+
+
+    document.getElementById(
+        "healthNumber"
+    ).textContent =
+        `${average}%`;
+
+
+    let title =
+        "🟢 Rendimiento favorable";
+
+
+    if (average < 60) {
+
+        title =
+            "🔴 Necesita atención";
+
+    }
+
+    else if (average < 80) {
+
+        title =
+            "🟡 Rendimiento estable";
+
+    }
+
+
+    document.getElementById(
+        "healthTitle"
+    ).textContent =
+        title;
+
+}
+
+
+updateHealth();
+
+
+/* ==========================================================
+   SIMULADOR DE PRESUPUESTO
+========================================================== */
+
+const budgetInputs =
+    document.querySelectorAll(
+        "[data-budget]"
+    );
+
+
+const budgetTotal =
+    100000;
+
+
+function updateBudget() {
+
+    let total = 0;
+
+
+    budgetInputs.forEach(input => {
+
+        total +=
+            Number(input.value);
+
+
+        const category =
+            input.dataset.budget;
+
+
+        const output =
+            document.getElementById(
+                category === "marketing"
+                    ? "marketingAmount"
+                    : category === "personal"
+                    ? "personalAmount"
+                    : category === "technology"
+                    ? "technologyAmount"
+                    : "productionAmount"
+            );
+
+
+        output.textContent =
+            `L ${Number(input.value).toLocaleString()}`;
+
+    });
+
+
+    const remaining =
+        budgetTotal - total;
+
+
+    document.getElementById(
+        "budgetRemaining"
+    ).textContent =
+        `L ${remaining.toLocaleString()}`;
+
+
+    const percent =
+        Math.min(
+            100,
+            total / budgetTotal * 100
+        );
+
+
+    document.getElementById(
+        "budgetProgress"
+    ).style.width =
+        `${percent}%`;
+
+}
+
+
+budgetInputs.forEach(input => {
+
+    input.addEventListener(
+        "input",
+        updateBudget
+    );
+
+});
+
+
+document
+    .getElementById("calculateBudget")
+    .addEventListener(
+        "click",
+        () => {
+
+            let total = 0;
+
+
+            budgetInputs.forEach(input => {
+
+                total +=
+                    Number(input.value);
+
+            });
+
+
+            const remaining =
+                budgetTotal - total;
+
+
+            const result =
+                document.getElementById(
+                    "budgetResult"
+                );
+
+
+            if (remaining < 0) {
+
+                result.style.color =
+                    "var(--red)";
+
+                result.innerHTML =
+                    "🔴 Has superado el presupuesto. Reduce alguna inversión.";
+
+                return;
+
+            }
+
+
+            if (total === 0) {
+
+                result.innerHTML =
+                    "🟡 Debes distribuir parte del presupuesto para poder analizar la estrategia.";
+
+                return;
+
+            }
+
+
+            const efficiency =
+                Math.min(
+                    100,
+                    Math.round(
+                        60 +
+                        total /
+                        budgetTotal *
+                        40
+                    )
+                );
+
+
+            result.innerHTML =
+                `📊 Resultado de la inversión:<br><br>
+                 💼 Capital utilizado: L ${total.toLocaleString()}<br>
+                 💵 Disponible: L ${remaining.toLocaleString()}<br>
+                 📈 Eficiencia estimada: ${efficiency}%<br><br>
+                 ${
+                    efficiency >= 90
+                    ? "🟢 Excelente distribución de recursos."
+                    : efficiency >= 75
+                    ? "🟡 Buena distribución, pero puede mejorar."
+                    : "🔵 Es una estrategia inicial. Analiza dónde invertir más."
+                 }`;
+
+        }
+    );
+
+
+updateBudget();
+
+
+/* ==========================================================
+   QUIZ
+========================================================== */
+
+const quizData = [
+
+    {
+
+        question:
+            "¿Cuál es una función básica de la administración?",
+
+        options: [
+            "Planificación",
+            "Dormir",
+            "Improvisar",
+            "Evitar objetivos"
+        ],
+
+        answer: 0
+
+    },
+
+
+    {
+
+        question:
+            "¿Qué área administra el talento humano?",
+
+        options: [
+            "Marketing",
+            "Recursos Humanos",
+            "Producción",
+            "Ventas"
+        ],
+
+        answer: 1
+
+    },
+
+
+    {
+
+        question:
+            "¿Qué función verifica los resultados?",
+
+        options: [
+            "Control",
+            "Publicidad",
+            "Producción",
+            "Ventas"
+        ],
+
+        answer: 0
+
+    },
+
+
+    {
+
+        question:
+            "¿Cuál es el objetivo principal de una empresa?",
+
+        options: [
+            "No tener organización",
+            "Evitar clientes",
+            "Alcanzar objetivos utilizando recursos eficientemente",
+            "Gastar todos los recursos"
+        ],
+
+        answer: 2
+
+    },
+
+
+    {
+
+        question:
+            "¿Qué área se relaciona directamente con la promoción?",
+
+        options: [
+            "Finanzas",
+            "Marketing",
+            "Logística",
+            "Recursos Humanos"
+        ],
+
+        answer: 1
+
+    }
+
+];
+
+
+let quizIndex = 0;
+let quizScore = 0;
+
+
+const quizQuestion =
+    document.getElementById(
+        "quizQuestion"
+    );
+
+const quizOptions =
+    document.getElementById(
+        "quizOptions"
+    );
+
+
+function loadQuiz() {
+
+    const question =
+        quizData[quizIndex];
+
+
+    document.getElementById(
+        "quizStep"
+    ).textContent =
+        `PREGUNTA ${quizIndex + 1} / ${quizData.length}`;
+
+
+    document.getElementById(
+        "quizProgress"
+    ).style.width =
+        `${quizIndex / quizData.length * 100}%`;
+
+
+    quizQuestion.textContent =
+        question.question;
+
+
+    quizOptions.innerHTML =
+        question.options
+            .map(
+                (option,index) =>
+                    `<button class="quiz-option" data-index="${index}">
+                        ${option}
+                    </button>`
+            )
+            .join("");
+
+
+    quizOptions
+        .querySelectorAll(".quiz-option")
+        .forEach(button => {
+
+            button.addEventListener(
+                "click",
+                () => {
+
+                    const selected =
+                        Number(
+                            button.dataset.index
+                        );
+
+
+                    quizOptions
+                        .querySelectorAll("button")
+                        .forEach(
+                            b =>
+                                b.disabled = true
+                        );
+
+
+                    if (
+                        selected ===
+                        question.answer
+                    ) {
+
+                        button.classList.add(
+                            "correct"
+                        );
+
+                        quizScore++;
+
+                    }
+
+                    else {
+
+                        button.classList.add(
+                            "incorrect"
+                        );
+
+
+                        quizOptions
+                            .querySelector(
+                                `[data-index="${question.answer}"]`
+                            )
+                            .classList.add(
+                                "correct"
+                            );
+
+                    }
+
+
+                    setTimeout(
+                        () => {
+
+                            quizIndex++;
+
+
+                            if (
+                                quizIndex >=
+                                quizData.length
+                            ) {
+
+                                finishQuiz();
+
+                            }
+
+                            else {
+
+                                loadQuiz();
+
+                            }
+
+                        },
+                        800
+                    );
+
+                }
+            );
+
+        });
+
+}
+
+
+function finishQuiz() {
+
+    quizOptions.innerHTML = "";
+
+    quizQuestion.classList.add(
+        "hidden"
+    );
+
+    document
+        .getElementById("quizStep")
+        .classList.add("hidden");
+
+
+    document
+        .getElementById("quizResult")
+        .classList.remove("hidden");
+
+
+    const percentage =
+        Math.round(
+            quizScore /
+            quizData.length *
+            100
+        );
+
+
+    document.getElementById(
+        "finalScore"
+    ).textContent =
+        `${percentage}%`;
+
+
+    let message;
+
+    let description;
+
+
+    if (percentage >= 90) {
+
+        message =
+            "🏆 ¡Excelente trabajo!";
+
+        description =
+            "Demuestras un excelente dominio de los fundamentos de la gestión empresarial.";
+
+    }
+
+    else if (percentage >= 70) {
+
+        message =
+            "👏 ¡Muy bien!";
+
+        description =
+            "Tienes buenos conocimientos. Continúa estudiando para dominar todos los conceptos.";
+
+    }
+
+    else {
+
+        message =
+            "📚 Puedes mejorar";
+
+        description =
+            "Repasa las funciones administrativas, las áreas empresariales y vuelve a intentarlo.";
+
+    }
+
+
+    document.getElementById(
+        "finalMessage"
+    ).textContent =
+        message;
+
+
+    document.getElementById(
+        "finalDescription"
+    ).textContent =
+        description;
+
+}
+
+
+document
+    .getElementById("restartQuiz")
+    .addEventListener(
+        "click",
+        () => {
+
+            quizIndex = 0;
+
+            quizScore = 0;
+
+
+            document
+                .getElementById("quizResult")
+                .classList.add("hidden");
+
+
+            quizQuestion.classList.remove(
+                "hidden"
+            );
+
+
+            document
+                .getElementById("quizStep")
+                .classList.remove("hidden");
+
+
+            loadQuiz();
+
+        }
+    );
+
+
+loadQuiz();
+
+
+/* ==========================================================
+   FAQ
+========================================================== */
+
+document
+    .querySelectorAll(".faq-item")
+    .forEach(item => {
+
+        item
+            .querySelector(".faq-q")
+            .addEventListener(
+                "click",
+                () => {
+
+                    item.classList.toggle(
+                        "open"
+                    );
+
+                }
+            );
+
+    });
+
+
+/* ==========================================================
+   FORMULARIO
+========================================================== */
+
+document
+    .getElementById("contactForm")
+    .addEventListener(
+        "submit",
+        event => {
+
+            event.preventDefault();
+
+
+            const name =
+                document.getElementById(
+                    "name"
+                ).value.trim();
+
+
+            const success =
+                document.getElementById(
+                    "formSuccess"
+                );
+
+
+            if (!name) return;
+
+
+            success.textContent =
+                `✔ Gracias ${name}. La información fue registrada correctamente.`;
+
+
+            success.classList.add(
+                "show"
+            );
+
+
+            event.target.reset();
+
+        }
+    );
+
+
+/* ==========================================================
+   EFECTO DE ENTRADA
+========================================================== */
+
+window.addEventListener(
+    "load",
+    () => {
+
+        document
+            .querySelector(".hero-section")
+            .style.opacity = "1";
+
+    }
+);
+</script>
+
+</body>
+</html>

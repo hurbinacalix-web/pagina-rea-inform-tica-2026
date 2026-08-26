@@ -1,0 +1,2639 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mantenimiento y Reparación — Instituto Oficial Franklin D. Roosevelt</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <style>
+:root {
+  --paper: #0b0914;
+  --paper-card: rgba(20, 15, 34, 0.72);
+  --paper-alt: #14101f;
+  --ink: #F5F3FF;
+  --muted: #a1a1aa;
+  --line: rgba(255, 255, 255, 0.1);
+
+  --cyan: #00f0ff;
+  --blue: #3A64FF;
+  --blue-glow: rgba(58, 100, 255, 0.4);
+  --purple: #a855f7;
+  --green: #2EE686;
+  --orange: #FF7B38;
+  --rojo: #E63946;
+
+  --display: 'Space Grotesk', sans-serif;
+  --body-font: 'Inter', Arial, sans-serif;
+  --mono: 'JetBrains Mono', monospace;
+
+  --radius: 14px;
+  --max: 1080px;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+.hidden { display: none !important; }
+
+body {
+  background-color: transparent;
+  color: var(--ink);
+  font-family: var(--body-font);
+  line-height: 1.6;
+  margin: 0;
+  min-height: 100vh;
+  position: relative;
+  overflow-x: hidden;
+}
+
+.page-shell {
+  position: relative;
+  z-index: 2;
+  min-height: 100vh;
+}
+
+a { color: inherit; }
+
+h1, h2, h3 {
+  font-family: var(--display);
+  font-weight: 700;
+  line-height: 1.15;
+  margin: 0 0 0.5em;
+  color: #FFF;
+}
+h2 { font-size: clamp(1.7rem, 3.4vw, 2.3rem); }
+h3 { font-size: 1.2rem; }
+p { margin: 0 0 1em; color: var(--muted); }
+
+.eyebrow {
+  font-family: var(--mono);
+  font-size: 0.85rem;
+  color: var(--cyan);
+  margin-bottom: 0.75em;
+  letter-spacing: 1px;
+}
+
+/* ==========================================
+   FONDO ANIMADO — RED DE NODOS / CIRCUITOS
+   ========================================== */
+#network-bg {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  background:
+    radial-gradient(ellipse 70% 65% at 50% 45%, rgba(0, 240, 255, 0.08), transparent 65%),
+    radial-gradient(ellipse 60% 50% at 10% 100%, rgba(168, 85, 247, 0.12), transparent 60%),
+    var(--paper);
+}
+
+.grid-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.028) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.028) 1px, transparent 1px);
+  background-size: 52px 52px;
+  mask-image: radial-gradient(ellipse 90% 70% at 50% 20%, black 40%, transparent 85%);
+  -webkit-mask-image: radial-gradient(ellipse 90% 70% at 50% 20%, black 40%, transparent 85%);
+  opacity: .45;
+}
+
+.topbar__label {
+  margin-right: auto;
+  color: var(--cyan);
+  font-family: var(--mono);
+  font-size: .7rem;
+  letter-spacing: 1.5px;
+  opacity: .75;
+}
+
+/* ==========================================
+   BOTÓN DE MENÚ (☰) — mismo estilo que la página principal
+   ========================================== */
+.menu-btn {
+  position: fixed;
+  top: 16px;
+  left: 20px;
+  width: 50px;
+  height: 50px;
+  background: var(--blue-glow);
+  color: white;
+  font-size: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 12px;
+  cursor: pointer;
+  z-index: 2000;
+  box-shadow: 0 6px 20px rgba(108, 162, 243, 0.48);
+  transition: .3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.menu-btn:hover {
+  background: var(--purple);
+  color: #14101f;
+  transform: scale(1.1) rotate(5deg);
+}
+
+.menu-lateral {
+  position: fixed;
+  top: 0;
+  left: -320px;
+  width: 280px;
+  height: 100vh;
+  background: rgba(11, 9, 20, 0.97);
+  backdrop-filter: blur(20px);
+  padding: 90px 24px 40px;
+  transition: .4s cubic-bezier(0.16, 1, 0.3, 1);
+  z-index: 1500;
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid var(--line);
+}
+
+.menu-lateral.active { left: 0; }
+
+.menu-lateral .logo h2 { color: var(--cyan); font-size: 18px; text-align: center; }
+
+.menu-lateral ul { list-style: none; margin-top: 30px; padding: 0; width: 100%; }
+.menu-lateral li { margin: 16px 0; text-align: center; }
+.menu-lateral a { color: var(--ink); text-decoration: none; font-size: 17px; font-weight: 600; transition: .3s; }
+.menu-lateral a:hover { color: var(--cyan); padding-left: 8px; }
+
+.menu-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 1400;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .35s ease;
+}
+.menu-overlay.active { opacity: 1; pointer-events: auto; }
+
+/* ==========================================
+   BARRA SUPERIOR / BOTÓN DE REGRESO
+   ========================================== */
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  padding: 1rem clamp(1.25rem, 4vw, 3rem) 1rem 90px;
+  background: rgba(11, 9, 20, 0.65);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--line);
+}
+
+/* ==========================================
+   BOTONES
+   ========================================== */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  text-decoration: none;
+  font-family: var(--body-font);
+  font-weight: 600;
+  font-size: 0.95rem;
+  padding: 0.8rem 1.5rem;
+  border-radius: var(--radius);
+  transition: all 0.25s ease;
+  border: none;
+  cursor: pointer;
+}
+
+.btn--primary { background: var(--blue); color: #fff; }
+.btn--glow { box-shadow: 0 0 22px var(--blue-glow); }
+.btn--primary:hover { transform: translateY(-3px); box-shadow: 0 10px 26px rgba(58,100,255,0.55); background: #2B55FF; }
+
+.btn--ghost { background: rgba(255,255,255,0.05); border: 1px solid var(--line); color: #FFF; }
+.btn--ghost:hover { border-color: var(--cyan); color: var(--cyan); background: rgba(0,240,255,0.06); }
+
+.btn--purple { background: var(--purple); color: #fff; box-shadow: 0 0 22px rgba(168,85,247,0.4); }
+.btn--purple:hover { transform: translateY(-3px); background: #9333ea; }
+
+.btn--sm { padding: 0.55rem 1.1rem; font-size: 0.85rem; }
+.btn:disabled { opacity: 0.45; cursor: not-allowed; transform: none !important; }
+
+/* ==========================================
+   HERO
+   ========================================== */
+.hero-section {
+  position: relative;
+  padding: clamp(3rem, 8vw, 5.5rem) clamp(1.25rem, 4vw, 3rem) 3rem;
+  max-width: var(--max);
+  margin: 0 auto;
+  text-align: left;
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(230px, .85fr);
+  align-items: center;
+  gap: 3rem;
+}
+
+.hero-bg-glow {
+  position: absolute;
+  top: -10%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 600px;
+  height: 380px;
+  background: radial-gradient(circle, var(--blue-glow) 0%, rgba(168,85,247,0.18) 50%, transparent 70%);
+  filter: blur(60px);
+  z-index: -1;
+  pointer-events: none;
+}
+
+.hero-title {
+  font-size: clamp(2.2rem, 6vw, 3.6rem);
+  margin-bottom: 0.6rem;
+  letter-spacing: -1px;
+}
+
+.hero-section::after {
+  content: "01 / DIAGNÓSTICO  ·  02 / REPARACIÓN  ·  03 / PREVENCIÓN";
+  grid-column: 1 / -1;
+  color: rgba(0, 240, 255, .6);
+  font: 0.7rem var(--mono);
+  letter-spacing: 1px;
+  border-top: 1px solid var(--line);
+  padding-top: 1rem;
+}
+
+.gradient-text {
+  background: linear-gradient(135deg, var(--cyan) 0%, var(--blue) 45%, var(--purple) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.hero-tagline {
+  font-family: var(--mono);
+  font-size: clamp(0.95rem, 2vw, 1.15rem);
+  color: var(--cyan);
+  max-width: 620px;
+  margin: 0;
+}
+
+.hero-title, .hero-tagline {
+  animation: contentRise .8s cubic-bezier(.16,1,.3,1) both;
+}
+.hero-tagline { animation-delay: .12s; }
+
+.hero-title, .hero-tagline {
+  animation: contentRise .8s cubic-bezier(.16,1,.3,1) both;
+}
+.hero-tagline { animation-delay: .12s; }
+
+/* ==========================================
+   SECCIONES GENERALES
+   ========================================== */
+.section {
+  max-width: var(--max);
+  margin: 0 auto;
+  padding: clamp(2.6rem, 5vw, 4rem) clamp(1.25rem, 4vw, 3rem);
+  border-top: 1px solid var(--line);
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity .6s ease, transform .6s ease;
+}
+.section.is-visible { opacity: 1; transform: translateY(0); }
+
+.section.is-visible h2,
+.section.is-visible .section__lead,
+.section.is-visible .demo-hint {
+  animation: contentRise .7s cubic-bezier(.16,1,.3,1) both;
+}
+.section.is-visible .section__lead { animation-delay: .08s; }
+.section.is-visible .demo-hint { animation-delay: .16s; }
+.section.is-visible .parcial-card {
+  animation: cardLift .75s .12s cubic-bezier(.16,1,.3,1) both;
+}
+.section.is-visible .tips-list li,
+.section.is-visible .signals-list li {
+  animation: contentSlide .55s cubic-bezier(.16,1,.3,1) both;
+}
+.section.is-visible li:nth-child(2) { animation-delay: .08s; }
+.section.is-visible li:nth-child(3) { animation-delay: .16s; }
+.section.is-visible li:nth-child(4) { animation-delay: .24s; }
+.section.is-visible li:nth-child(5) { animation-delay: .32s; }
+.section.is-visible li:nth-child(6) { animation-delay: .4s; }
+
+.section__lead { color: var(--ink); font-size: 1.02rem; max-width: 72ch; }
+.section__lead--muted { color: var(--muted); }
+
+.tips-list, .signals-list {
+  list-style: none;
+  padding: 0;
+  margin: 1.5rem 0 0;
+  display: grid;
+  gap: 0.9rem;
+}
+.tips-list li, .signals-list li {
+  background: var(--paper-card);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 0.9rem 1.2rem;
+  display: flex;
+  gap: 0.7rem;
+  align-items: flex-start;
+  font-size: 0.96rem;
+  color: var(--ink);
+  backdrop-filter: blur(8px);
+}
+.tips-list li span.mark, .signals-list li span.mark {
+  flex-shrink: 0;
+  font-size: 1.1rem;
+}
+
+/* ==========================================
+   TARJETAS DE PARCIAL
+   ========================================== */
+.parcial-card {
+  background: var(--paper-card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: clamp(1.4rem, 4vw, 2.2rem);
+  margin-top: 2rem;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 15px 40px rgba(0,0,0,0.35);
+}
+
+.parcial-badge {
+  display: inline-block;
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  padding: 0.3rem 0.85rem;
+  border-radius: 20px;
+  background: rgba(168, 85, 247, 0.15);
+  color: var(--purple);
+  border: 1px solid rgba(168, 85, 247, 0.3);
+  margin-bottom: 0.8rem;
+}
+
+.parcial-card h3 { font-size: 1.35rem; }
+
+.demo-hint {
+  font-family: var(--mono);
+  font-size: 0.82rem;
+  color: var(--cyan);
+  margin-top: 1.2rem;
+  margin-bottom: 0.8rem;
+}
+
+.demo-result {
+  text-align: center;
+  font-family: var(--mono);
+  font-size: 0.85rem;
+  color: var(--ink);
+  background: var(--paper-alt);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 0.8rem 1rem;
+  margin-top: 1rem;
+}
+.demo-result.status--good { color: var(--green); border-color: rgba(46,230,134,0.4); }
+.demo-result.status--bad { color: var(--rojo); border-color: rgba(230,57,70,0.4); }
+.demo-result.status--mid { color: var(--orange); border-color: rgba(255,123,56,0.4); }
+
+/* ---- Demo Parcial 1: cableado eléctrico (estilo Among Us) ---- */
+.wiring-panel {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  gap: 2rem;
+  min-height: 280px;
+  padding: 1rem 1.5rem;
+}
+
+.wiring-col {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  z-index: 2;
+}
+
+.wiring-lines {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.wire-plug, .wire-socket {
+  --wc: #999;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: rgba(255,255,255,0.05);
+  border: 2px solid var(--wc);
+  color: var(--wc);
+  border-radius: 30px;
+  padding: 0.5rem 1rem;
+  font-size: 1.1rem;
+  font-family: var(--mono);
+  cursor: pointer;
+  user-select: none;
+  touch-action: none;
+  transition: transform .15s ease, opacity .2s ease;
+}
+
+.wire-socket { flex-direction: row-reverse; }
+
+.wire-plug:hover:not(.connected), .wire-socket:hover:not(.connected) { transform: scale(1.06); }
+.wire-plug.dragging { transform: scale(1.08); box-shadow: 0 0 22px var(--wc); }
+.wiring-panel.is-dragging .wire-socket { animation: socketPulse .9s ease-in-out infinite; }
+.wire-socket.drop-target { transform: scale(1.08); box-shadow: 0 0 22px var(--wc); }
+
+.wire-plug.selected, .wire-socket.selected {
+  box-shadow: 0 0 14px var(--wc);
+  background: rgba(255,255,255,0.1);
+}
+
+.wire-plug.connected, .wire-socket.connected {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.wire-shake { animation: wireShake .35s ease; }
+
+@keyframes wireShake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-6px); }
+  75% { transform: translateX(6px); }
+}
+
+@keyframes socketPulse {
+  0%, 100% { border-color: var(--wc); }
+  50% { border-color: #fff; box-shadow: 0 0 16px var(--wc); }
+}
+
+.wiring-actions {
+  display: flex;
+  gap: 0.7rem;
+  justify-content: center;
+  margin-top: 1rem;
+  flex-wrap: wrap;
+}
+
+/* ---- Demo Parcial 2: ensamblaje de computadora contrarreloj ---- */
+.assembly-topline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+  margin-bottom: 1rem;
+}
+
+.assembly-timer {
+  font-family: var(--mono);
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--cyan);
+}
+.assembly-timer.urgent { color: var(--rojo); }
+
+.assembly-tray {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-bottom: 1.2rem;
+}
+
+.part-chip {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--body-font);
+  font-size: 0.82rem;
+  font-weight: 600;
+  padding: 0.55rem 0.9rem;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  background: rgba(255,255,255,0.05);
+  color: var(--ink);
+  cursor: pointer;
+  transition: .15s;
+}
+.part-chip {
+  min-width: 125px;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+}
+.part-chip .part-image, .part-slot .part-image {
+  width: 58px;
+  height: 44px;
+  object-fit: contain;
+  border-radius: 6px;
+  background: #fff;
+  padding: 2px;
+}
+.part-slot .part-image { width: 92px; height: 60px; }
+.part-chip:hover { border-color: var(--cyan); color: var(--cyan); }
+.part-chip.selected { border-color: #fff; background: rgba(0,240,255,0.12); box-shadow: 0 0 10px rgba(0,240,255,0.3); }
+.part-chip.used { display: none; }
+.part-chip.inactive { opacity: 0.4; pointer-events: none; }
+
+.assembly-case {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.7rem;
+  margin-bottom: 1rem;
+}
+
+.part-slot {
+  min-height: 85px;
+  border: 2px dashed rgba(255,255,255,0.22);
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3rem;
+  text-align: center;
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  color: var(--muted);
+  padding: 0.5rem;
+  cursor: pointer;
+  transition: border-color .2s ease, background .2s ease;
+}
+.part-slot:hover { border-color: var(--cyan); }
+.part-slot.filled { border-style: solid; color: var(--ink); font-size: 0.76rem; }
+.part-slot.inactive { opacity: 0.55; pointer-events: none; }
+.part-slot .part-icon { font-size: 1.2rem; }
+
+.part-slot.result-correct { border-color: var(--green); background: rgba(46,230,134,0.12); }
+.part-slot.result-wrong { border-color: var(--rojo); background: rgba(230,57,70,0.12); }
+.part-slot.wrong-flash { animation: slotFlash .4s ease; }
+
+@keyframes slotFlash {
+  0%, 100% { background: transparent; }
+  40% { background: rgba(230,57,70,0.35); border-color: var(--rojo); }
+}
+
+.part-info-box {
+  background: var(--paper-alt);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 0.9rem 1.1rem;
+  font-size: 0.85rem;
+  min-height: 56px;
+  color: var(--ink);
+}
+
+/* ---- Demo Parcial 3: organización de archivos ---- */
+.files-tray {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  justify-content: center;
+  margin-bottom: 1.2rem;
+  min-height: 44px;
+}
+
+.file-chip {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--mono);
+  font-size: 0.8rem;
+  padding: 0.55rem 0.9rem;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  background: rgba(255,255,255,0.05);
+  color: var(--ink);
+  cursor: pointer;
+  transition: .15s;
+}
+.file-chip:hover { border-color: var(--cyan); color: var(--cyan); }
+.file-chip.selected { border-color: #fff; background: rgba(0,240,255,0.12); box-shadow: 0 0 10px rgba(0,240,255,0.3); }
+
+.folders-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 0.9rem;
+}
+
+.folder-card {
+  background: var(--paper-alt);
+  border: 2px solid var(--line);
+  border-radius: 10px;
+  padding: 0.9rem;
+  transition: border-color .2s ease;
+}
+.folder-card.folder-shake { animation: wireShake .35s ease; }
+
+.folder-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+}
+.folder-icon { font-size: 1.4rem; }
+.folder-name { font-family: var(--mono); font-size: 0.78rem; color: var(--ink); flex: 1; }
+.folder-badge {
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  background: rgba(255,255,255,0.08);
+  border-radius: 10px;
+  padding: 0.15rem 0.5rem;
+  color: var(--muted);
+}
+
+.folder-contents {
+  max-height: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  transition: max-height .3s ease, margin-top .3s ease;
+}
+.folder-contents.open { max-height: 240px; margin-top: 0.7rem; overflow-y: auto; }
+
+.folder-file-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  background: rgba(255,255,255,0.04);
+  border-radius: 6px;
+  padding: 0.4rem 0.6rem;
+  font-size: 0.76rem;
+  color: var(--ink);
+}
+.folder-file-row button {
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  color: var(--cyan);
+  padding: 0.2rem 0.5rem;
+  cursor: pointer;
+}
+.folder-file-row button:hover { border-color: var(--cyan); }
+
+.retrieve-box {
+  margin-top: 1rem;
+  background: var(--paper-alt);
+  border: 1px solid var(--purple);
+  border-radius: 10px;
+  padding: 1rem 1.2rem;
+  text-align: center;
+}
+.retrieve-target {
+  font-family: var(--mono);
+  color: var(--cyan);
+  font-weight: 700;
+  font-size: 1rem;
+}
+.retrieve-timer {
+  font-family: var(--mono);
+  color: var(--orange);
+  font-weight: 700;
+}
+.retrieve-timer.urgent { color: var(--rojo); }
+
+/* ---- Demo Parcial 4: limpieza de almohadillas de impresora ---- */
+.printer-pad-wrap {
+  position: relative;
+  width: 100%;
+  max-width: 360px;
+  aspect-ratio: 1/1;
+  margin: 0 auto;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 2px solid var(--line);
+  cursor: grab;
+  touch-action: none;
+}
+
+#pad-clean-layer, #pad-dirt-layer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.clean-progress-track {
+  max-width: 360px;
+  margin: 1rem auto 0.4rem;
+  height: 8px;
+  border-radius: 8px;
+  background: rgba(255,255,255,0.1);
+  overflow: hidden;
+}
+.clean-progress-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, var(--cyan), var(--green));
+  transition: width .15s ease;
+}
+
+.clean-progress-label {
+  text-align: center;
+  font-family: var(--mono);
+  font-size: 0.82rem;
+  color: var(--ink);
+  margin-bottom: 0.5rem;
+}
+   FOOTER
+   ========================================== */
+.footer {
+  text-align: center;
+  padding: 3rem 1.25rem;
+  color: var(--muted);
+  font-size: 0.85rem;
+  border-top: 1px solid var(--line);
+}
+.footer__muted { font-family: var(--mono); font-size: 0.8rem; color: var(--cyan); margin-top: 0.4rem; }
+
+@media (max-width: 640px) {
+  .camera-countdown { font-size: 3.6rem; }
+  .hero-section {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    text-align: center;
+  }
+  .hero-tagline { margin: 0 auto; }
+}
+
+@keyframes contentRise {
+  from { opacity: 0; transform: translateY(18px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes contentSlide {
+  from { opacity: 0; transform: translateX(-18px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+@keyframes cardLift {
+  from { opacity: 0; transform: translateY(24px) scale(.985); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-title, .hero-tagline, .section.is-visible h2,
+  .section.is-visible .section__lead, .section.is-visible .demo-hint,
+  .section.is-visible .parcial-card, .section.is-visible li {
+    animation: none;
+  }
+}
+  </style>
+</head>
+<body>
+
+<canvas id="network-bg"></canvas>
+<div class="grid-overlay"></div>
+
+<!-- Menú de tres líneas, misma estética y función que la página principal -->
+<div class="menu-btn" id="menuBtn">☰</div>
+<div class="menu-overlay" id="menuOverlay"></div>
+
+<nav class="menu-lateral" id="menuLateral">
+  <div class="logo"><h2>Mantenimiento y Reparación</h2></div>
+  <ul>
+    <li><a href="#inicio">Inicio</a></li>
+    <li><a href="#que-se-ve">¿Qué se ve?</a></li>
+    <li><a href="#te-gustara">¿Te gustará?</a></li>
+    <li><a href="#tips">Tips</a></li>
+    <li><a href="#parcial-1">Parcial 1 — Cableado</a></li>
+    <li><a href="#parcial-2">Parcial 2 — Ensamblaje</a></li>
+    <li><a href="#parcial-3">Parcial 3 — Archivos</a></li>
+    <li><a href="#parcial-4">Parcial 4 — Impresoras</a></li>
+    <li><a href="index (2).html">← Volver</a></li>
+  </ul>
+</nav>
+
+<div class="page-shell">
+  <nav class="topbar">
+    <div class="topbar__label">INSTITUTO · INFORMÁTICA</div>
+    <a href="index (2).html" class="btn btn--ghost btn--sm">← Volver</a>
+  </nav>
+
+<header class="hero-section" id="inicio">
+  <div class="hero-bg-glow"></div>
+  <h1 class="hero-title">Mantenimiento <span class="gradient-text">y Reparación</span></h1>
+  <p class="hero-tagline">De un cable suelto a un equipo funcionando como nuevo</p>
+</header>
+
+<main>
+
+  <section class="section" id="que-se-ve">
+    <h2>¿Qué se Ve en la Materia de Mantenimiento y Reparación?</h2>
+    <p class="section__lead">
+      En Mantenimiento y Reparación aprenderás a diagnosticar, reparar y darle mantenimiento preventivo a los
+      equipos de cómputo: identificación y conexión segura de cableado eléctrico, ensamblaje y desensamblaje de
+      computadoras de escritorio, organización y respaldo de archivos, y limpieza y mantenimiento de periféricos
+      como impresoras. A lo largo del año practicas con equipo real hasta sentirte cómodo abriendo, revisando y
+      arreglando una computadora sin miedo a dañarla.
+    </p>
+  </section>
+
+  <section class="section" id="te-gustara">
+    <h2>¿Cómo Sabrás que te Gustará la Materia?</h2>
+    <p class="section__lead section__lead--muted">Estas son señales de que esta materia va a encajar contigo:</p>
+
+    <ul class="signals-list">
+      <li><span class="mark"></span> Te gusta desarmar y armar cosas para entender cómo funcionan.</li>
+      <li><span class="mark"></span> Te llama la atención saber por qué un aparato dejó de funcionar.</li>
+      <li><span class="mark"></span> No te da miedo usar un destornillador o meterle mano a un equipo.</li>
+      <li><span class="mark"></span> Disfrutas resolver problemas prácticos paso a paso.</li>
+      <li><span class="mark"></span> Te gusta dejar las cosas limpias, organizadas y funcionando bien.</li>
+    </ul>
+  </section>
+
+  <section class="section" id="tips">
+    <h2>Tips para Cuando Curses Mantenimiento y Reparación</h2>
+
+    <ul class="tips-list">
+      <li><span class="mark"></span> Siempre desconecta el equipo de la corriente antes de manipular cualquier cable o componente.</li>
+      <li><span class="mark"></span> Guarda los tornillos y piezas pequeñas organizados; se pierden fácil y se necesitan todos.</li>
+      <li><span class="mark"></span> Toma una foto del cableado antes de desconectar algo, te ayuda a recordar cómo iba.</li>
+      <li><span class="mark"></span> Limpia los equipos regularmente — el polvo acumulado es una de las causas más comunes de fallas.</li>
+      <li><span class="mark"></span> Si algo no enciende, no le tengas miedo a preguntar antes de forzar algo.</li>
+      <li><span class="mark"></span> Practica primero en equipo viejo o que ya no se use antes de trabajar en uno importante.</li>
+    </ul>
+  </section>
+
+  <!-- ==========================================
+       PARCIAL 1 — CABLEADO ELÉCTRICO (estilo Among Us)
+       ========================================== -->
+  <section class="section" id="parcial-1">
+    <div class="parcial-card">
+      <span class="parcial-badge">Parcial 01</span>
+      <h3>Seguridad Eléctrica y Cableado</h3>
+      <p>
+        En el primer parcial aprenderás sobre seguridad eléctrica y cómo identificar y conectar cables por color,
+        una de las bases del mantenimiento de cualquier equipo.
+      </p>
+
+      <p class="demo-hint">🔌 Arrastra cada cable hasta el conector que elijas (no tienen que ser del mismo color). Cuando termines, presiona "Verificar Conexiones" y te diremos cuántos quedaron en su color correcto y cuántos no. Arrastra un cable ya conectado para cambiarlo.</p>
+
+      <div class="demo-box">
+        <div class="wiring-panel" id="wiringPanel">
+          <div class="wiring-col" id="wiringLeft"></div>
+          <svg class="wiring-lines" id="wiringLines"></svg>
+          <div class="wiring-col" id="wiringRight"></div>
+        </div>
+
+        <div class="wiring-actions">
+          <button class="btn btn--primary btn--glow btn--sm" id="checkWiringBtn">Verificar Conexiones</button>
+          <button class="btn btn--ghost btn--sm" id="resetWiringBtn">Reiniciar</button>
+        </div>
+        <p class="demo-result" id="wiringResult">&nbsp;</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==========================================
+       PARCIAL 2 — ENSAMBLAJE DE COMPUTADORA
+       ========================================== -->
+  <section class="section" id="parcial-2">
+    <div class="parcial-card">
+      <span class="parcial-badge">Parcial 02</span>
+      <h3>Ensamblaje de Equipos de Escritorio</h3>
+      <p>
+        En el segundo parcial aprenderás a identificar cada componente interno de una computadora de escritorio
+        y cómo se ensambla correctamente.
+      </p>
+
+       <p class="demo-hint">Toca una imagen para ver su información (¡ojo, hay piezas señuelo que no van en ningún lado!). Presiona "Iniciar Reto" y arma la computadora antes de que se acabe el tiempo: selecciona una pieza y luego toca la ranura donde va. Colocar una pieza equivocada te resta segundos.</p>
+
+      <div class="demo-box">
+        <div class="assembly-topline">
+          <div class="assembly-timer" id="assemblyTimer">1:00</div>
+          <div style="display:flex; gap:0.6rem;">
+            <button class="btn btn--purple btn--sm" id="startAssemblyBtn">Iniciar Reto</button>
+            <button class="btn btn--ghost btn--sm" id="resetAssemblyBtn">Reiniciar</button>
+          </div>
+        </div>
+
+        <div class="assembly-tray" id="assemblyTray"></div>
+
+        <div class="assembly-case" id="assemblyCase"></div>
+
+        <div class="part-info-box" id="partInfoBox">Toca una pieza para conocer para qué sirve.</div>
+        <p class="demo-result" id="assemblyResult">&nbsp;</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==========================================
+       PARCIAL 3 — ORGANIZACIÓN DE ARCHIVOS
+       ========================================== -->
+  <section class="section" id="parcial-3">
+    <div class="parcial-card">
+      <span class="parcial-badge">Parcial 03</span>
+      <h3>Organización y Respaldo de Archivos</h3>
+      <p>
+        En el tercer parcial veremos cómo guardar, organizar y respaldar archivos correctamente: una tarea
+        simple pero esencial en el mantenimiento de cualquier equipo.
+      </p>
+
+      <p class="demo-hint">Toca un archivo y luego la carpeta que le corresponde para guardarlo (cada error cuenta). Toca una carpeta para abrirla y sacar un archivo de vuelta. Cuando guardes todos, aparecerá un reto de recuperación contrarreloj.</p>
+
+      <div class="demo-box">
+        <div class="files-tray" id="filesTray"></div>
+        <div class="folders-grid" id="foldersGrid"></div>
+        <p class="demo-result" id="filesScore">Aciertos: 0 &nbsp;|&nbsp; Errores: 0</p>
+        <p class="demo-result" id="filesResult">&nbsp;</p>
+
+        <div class="retrieve-box hidden" id="retrieveBox">
+          <p>📤 Reto de recuperación: encuentra y saca este archivo antes de que se acabe el tiempo</p>
+          <p class="retrieve-target" id="retrieveTarget">archivo.ext</p>
+          <p class="retrieve-timer" id="retrieveTimer">⏱ 10s</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==========================================
+       PARCIAL 4 — LIMPIEZA DE IMPRESORAS
+       ========================================== -->
+  <section class="section" id="parcial-4">
+    <div class="parcial-card">
+      <span class="parcial-badge">Parcial 04</span>
+      <h3>Mantenimiento de Impresoras</h3>
+      <p>
+        Ya en el cuarto parcial veremos el mantenimiento de impresoras: limpieza de cabezales, almohadillas de
+        tinta y por qué esta limpieza periódica evita que una impresora se dañe o imprima mal.
+      </p>
+
+      <p class="demo-hint">🧽 Arrastra el dedo o el mouse sobre la almohadilla manchada de tinta para limpiarla:</p>
+
+      <div class="demo-box">
+        <div class="printer-pad-wrap" id="printerPadWrap">
+          <canvas id="pad-clean-layer"></canvas>
+          <canvas id="pad-dirt-layer"></canvas>
+        </div>
+        <div class="clean-progress-track"><div class="clean-progress-fill" id="cleanProgressFill"></div></div>
+        <p class="clean-progress-label" id="cleanProgressLabel">Limpieza: 0%</p>
+        <div class="wiring-actions">
+          <button class="btn btn--ghost btn--sm" id="resetPadBtn">Ensuciar de Nuevo</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <p>Instituto Oficial Franklin Delano Roosevelt — Mantenimiento y Reparación</p>
+  <p class="footer__muted">// Cuidado, Precisión y Buen Funcionamiento</p>
+</footer>
+</div>
+
+
+  <script>
+// ==========================================
+// FONDO 3D — CONSTELACIÓN DE NODOS EN PROFUNDIDAD
+// ==========================================
+function init3DNodeField(canvas) {
+  const ctx = canvas.getContext("2d");
+  const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const FOCAL = 520;
+  let width = 0, height = 0, cx = 0, cy = 0;
+  let nodes = [];
+  let targetX = 0, targetY = 0, tiltX = 0, tiltY = 0;
+
+  function resize() {
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    width = window.innerWidth;
+    height = window.innerHeight;
+    cx = width / 2;
+    cy = height / 2;
+    canvas.width = Math.floor(width * dpr);
+    canvas.height = Math.floor(height * dpr);
+    canvas.style.width = width + "px";
+    canvas.style.height = height + "px";
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    // Campo amplio: los nodos ocupan toda la pantalla en lugar de amontonarse
+    // alrededor del centro como una esfera compacta.
+    const count = Math.min(92, Math.max(42, Math.floor((width * height) / 15500)));
+    nodes = Array.from({ length: count }, (_, i) => {
+      return {
+        // Distribución irregular en un volumen 3D ancho, con algunos
+        // elementos entrando desde los bordes para dar sensación de espacio.
+        x: (Math.random() - .5) * width * 1.65,
+        y: (Math.random() - .5) * height * 1.55,
+        z: -520 + Math.random() * 1040,
+        size: 1.3 + Math.random() * 2.8,
+        phase: i * .7 + Math.random() * 4,
+        drift: .15 + Math.random() * .25
+      };
+    });
+  }
+
+  function rotate(p, time) {
+    const ay = reduced ? .12 : time * .00016 + tiltX * .45;
+    const ax = reduced ? -.18 : tiltY * .35;
+    const cy = Math.cos(ay), sy = Math.sin(ay);
+    const x = p.x * cy - p.z * sy;
+    const z = p.x * sy + p.z * cy;
+    const cx = Math.cos(ax), sx = Math.sin(ax);
+    return { x, y: p.y * cx - z * sx, z: p.y * sx + z * cx };
+  }
+
+  function project(p) {
+    const scale = FOCAL / (FOCAL + p.z + 260);
+    return { x: cx + p.x * scale, y: cy + p.y * scale, scale, z: p.z };
+  }
+
+  function frame(time) {
+    ctx.clearRect(0, 0, width, height);
+    tiltX += (targetX - tiltX) * .035;
+    tiltY += (targetY - tiltY) * .035;
+    const projected = nodes.map((node) => project(rotate(node, time)));
+    const maxDistance = width < 600 ? 112 : 165;
+
+    ctx.save();
+    ctx.globalCompositeOperation = "lighter";
+    for (let i = 0; i < projected.length; i++) {
+      for (let j = i + 1; j < projected.length; j++) {
+        const a = projected[i], b = projected[j];
+        const dx = a.x - b.x, dy = a.y - b.y;
+        const distance = Math.hypot(dx, dy);
+        if (distance < maxDistance && Math.abs(a.z - b.z) < 280) {
+          const alpha = (1 - distance / maxDistance) * .28 * Math.min(a.scale, b.scale);
+          ctx.strokeStyle = `rgba(0, 240, 255, ${alpha})`;
+          ctx.lineWidth = .7 + Math.min(a.scale, b.scale) * .45;
+          ctx.beginPath();
+          ctx.moveTo(a.x, a.y);
+          ctx.lineTo(b.x, b.y);
+          ctx.stroke();
+        }
+      }
+    }
+
+    projected
+      .map((point, index) => ({ point, index }))
+      .sort((a, b) => a.point.z - b.point.z)
+      .forEach(({ point, index }) => {
+        const pulse = reduced ? 1 : 1 + Math.sin(time * .002 + nodes[index].phase) * .18;
+        const radius = nodes[index].size * point.scale * pulse;
+        ctx.globalAlpha = Math.min(1, .35 + point.scale * .7);
+        ctx.fillStyle = index % 7 === 0 ? "#a855f7" : index % 4 === 0 ? "#3A64FF" : "#00f0ff";
+        ctx.shadowBlur = 12 * point.scale;
+        ctx.shadowColor = ctx.fillStyle;
+        ctx.beginPath();
+        ctx.arc(point.x, point.y, radius, 0, Math.PI * 2);
+        ctx.fill();
+      });
+
+    // Destellos que recorren el campo sin convertirlo en una bola central.
+    if (!reduced) {
+      const sweep = (time * .00012) % 1;
+      const sweepX = -width * .72 + sweep * width * 1.44;
+      ctx.globalAlpha = .32;
+      ctx.strokeStyle = "rgba(0, 240, 255, .28)";
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(sweepX, 0);
+      ctx.lineTo(sweepX + width * .18, height);
+      ctx.stroke();
+    }
+    ctx.restore();
+
+    // El fondo nunca termina: la escena se redibuja continuamente.
+    if (!reduced) window.requestAnimationFrame(frame);
+  }
+
+  window.addEventListener("resize", resize);
+  window.addEventListener("pointermove", (event) => {
+    targetX = (event.clientX / width - .5) * 1.8;
+    targetY = (event.clientY / height - .5) * 1.8;
+  }, { passive: true });
+  resize();
+  if (reduced) {
+    frame(0);
+  } else {
+    window.requestAnimationFrame(frame);
+  }
+}
+
+// ==========================================
+// 0. FONDO ANIMADO NARRATIVO — VERSIÓN 3D "WOW"
+//    Empieza IGUAL que la página principal (red de nodos 2D).
+//    A partir de ahí, el cambio es MUY notorio: perspectiva
+//    exagerada, piso 3D con fuga de perspectiva propio de cada
+//    escena, objetos más grandes y rápidos, y una onda expansiva
+//    de color justo en el momento del cruce entre escenas.
+// ==========================================
+(function initSceneBackground() {
+  const canvas = document.getElementById("network-bg");
+  init3DNodeField(canvas);
+  return;
+  const ctx = canvas.getContext("2d");
+  let width, height, cx, cy;
+  const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const FOCAL = 340; // más chico = perspectiva mucho más exagerada / "wow"
+
+  function resize() {
+    width = canvas.width = window.innerWidth;
+    height = canvas.height = window.innerHeight;
+    cx = width / 2;
+    cy = height / 2;
+  }
+
+  function rnd(a, b) { return a + Math.random() * (b - a); }
+
+  /* ---------- Helpers de proyección 3D (sin librerías) ---------- */
+  function rotateY(p, a) {
+    const c = Math.cos(a), s = Math.sin(a);
+    return { x: p.x * c - p.z * s, y: p.y, z: p.x * s + p.z * c };
+  }
+  function rotateX(p, a) {
+    const c = Math.cos(a), s = Math.sin(a);
+    return { x: p.x, y: p.y * c - p.z * s, z: p.y * s + p.z * c };
+  }
+  function project(p) {
+    const scale = FOCAL / (FOCAL + p.z);
+    return { x: cx + p.x * scale, y: cy + p.y * scale, scale };
+  }
+
+  /* ---------- Piso 3D con fuga de perspectiva (reutilizable) ---------- */
+  function drawGridFloor(alpha, colorHex, angle, t) {
+    if (alpha <= 0.01) return;
+    ctx.save();
+    ctx.strokeStyle = colorHex;
+    ctx.lineWidth = 1.2;
+
+    const half = 620;
+    const rows = 16;
+    const zNear = -160;
+    const zFar = 620;
+    const scroll = (t * 0.22) % ((zFar - zNear) / rows);
+
+    for (let i = 0; i <= rows; i++) {
+      const z = zNear + i * ((zFar - zNear) / rows) + scroll;
+      const p1 = project(rotateY({ x: -half, y: 230, z }, angle));
+      const p2 = project(rotateY({ x: half, y: 230, z }, angle));
+      const depthAlpha = Math.max(0, Math.min(1, 1 - (z - zNear) / (zFar - zNear)));
+      ctx.globalAlpha = alpha * 0.5 * depthAlpha;
+      ctx.beginPath();
+      ctx.moveTo(p1.x, p1.y);
+      ctx.lineTo(p2.x, p2.y);
+      ctx.stroke();
+    }
+
+    const cols = 14;
+    ctx.globalAlpha = alpha * 0.35;
+    for (let i = 0; i <= cols; i++) {
+      const x = -half + i * ((2 * half) / cols);
+      const p1 = project(rotateY({ x, y: 230, z: zNear }, angle));
+      const p2 = project(rotateY({ x, y: 230, z: zFar }, angle));
+      ctx.beginPath();
+      ctx.moveTo(p1.x, p1.y);
+      ctx.lineTo(p2.x, p2.y);
+      ctx.stroke();
+    }
+    ctx.restore();
+  }
+
+  /* ============================================================
+     ZONA 1 — RED DE NODOS 2D (idéntica a la página principal)
+     ============================================================ */
+  let nodes = [], packets = [];
+
+  function initNodes() {
+    const density = Math.min(70, Math.floor((width * height) / 22000));
+    nodes = Array.from({ length: density }, () => ({
+      x: Math.random() * width,
+      y: Math.random() * height,
+      vx: rnd(-0.18, 0.18),
+      vy: rnd(-0.18, 0.18),
+      r: rnd(1.2, 2.4)
+    }));
+    packets = [];
+  }
+
+  function drawNodes(alpha) {
+    if (alpha <= 0.01) return;
+    ctx.save();
+    ctx.globalAlpha = alpha;
+
+    nodes.forEach((n) => {
+      n.x += n.vx; n.y += n.vy;
+      if (n.x < 0 || n.x > width) n.vx *= -1;
+      if (n.y < 0 || n.y > height) n.vy *= -1;
+    });
+
+    const maxDist = Math.min(180, width / 6);
+    for (let i = 0; i < nodes.length; i++) {
+      for (let j = i + 1; j < nodes.length; j++) {
+        const dx = nodes[i].x - nodes[j].x;
+        const dy = nodes[i].y - nodes[j].y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < maxDist) {
+          ctx.strokeStyle = `rgba(58, 100, 255, ${(1 - dist / maxDist) * 0.35})`;
+          ctx.lineWidth = 1;
+          ctx.beginPath();
+          ctx.moveTo(nodes[i].x, nodes[i].y);
+          ctx.lineTo(nodes[j].x, nodes[j].y);
+          ctx.stroke();
+        }
+      }
+    }
+
+    nodes.forEach((n) => {
+      ctx.beginPath();
+      ctx.fillStyle = "rgba(58, 100, 255, 0.9)";
+      ctx.arc(n.x, n.y, n.r, 0, Math.PI * 2);
+      ctx.fill();
+    });
+
+    if (!prefersReducedMotion) {
+      if (Math.random() < 0.02 && nodes.length > 1) {
+        const a = nodes[Math.floor(Math.random() * nodes.length)];
+        const b = nodes[Math.floor(Math.random() * nodes.length)];
+        if (a !== b) packets.push({ a, b, t: 0, speed: rnd(0.004, 0.01) });
+      }
+      if (packets.length > 14) packets.shift();
+      packets.forEach((p) => {
+        p.t += p.speed;
+        const x = p.a.x + (p.b.x - p.a.x) * p.t;
+        const y = p.a.y + (p.b.y - p.a.y) * p.t;
+        ctx.beginPath();
+        ctx.fillStyle = "#00F0FF";
+        ctx.shadowBlur = 8;
+        ctx.shadowColor = "#00F0FF";
+        ctx.arc(x, y, 2.2, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.shadowBlur = 0;
+      });
+      packets = packets.filter((p) => p.t < 1);
+    }
+    ctx.restore();
+  }
+
+  /* ============================================================
+     ZONA 2 — ELECTRICIDAD: red eléctrica 3D con chispas (grande y rápida)
+     ============================================================ */
+  let sparkPts = [];
+  const WIRE_HEX = ["#E63946", "#3A64FF", "#FFD23F", "#2EE686", "#B389FF"];
+
+  function initSpark() {
+    sparkPts = Array.from({ length: 34 }, () => ({
+      x: rnd(-340, 340), y: rnd(-230, 230), z: rnd(-340, 340),
+      color: WIRE_HEX[Math.floor(Math.random() * WIRE_HEX.length)]
+    }));
+  }
+
+  function drawSpark(alpha, t) {
+    if (alpha <= 0.01) return;
+    const angle = t * 0.0016;
+
+    drawGridFloor(alpha, "#B389FF", angle, t);
+
+    ctx.save();
+    ctx.globalAlpha = alpha;
+    ctx.globalCompositeOperation = "lighter";
+
+    const proj = sparkPts.map((p, i) => {
+      const pulse = 1 + Math.sin(t * 0.003 + i) * 0.12;
+      const pulsed = { x: p.x * pulse, y: p.y * pulse, z: p.z * pulse };
+      return project(rotateX(rotateY(pulsed, angle), Math.sin(t * 0.0011) * 0.6));
+    });
+
+    for (let i = 0; i < proj.length; i++) {
+      for (let j = i + 1; j < proj.length; j++) {
+        const dx = proj[i].x - proj[j].x, dy = proj[i].y - proj[j].y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < 170) {
+          const a = (1 - dist / 170) * Math.min(proj[i].scale, proj[j].scale) * 0.85;
+          ctx.strokeStyle = sparkPts[i].color;
+          ctx.globalAlpha = alpha * a;
+          ctx.lineWidth = 2.2 * proj[i].scale;
+          ctx.beginPath();
+          ctx.moveTo(proj[i].x, proj[i].y);
+          ctx.lineTo(proj[j].x, proj[j].y);
+          ctx.stroke();
+        }
+      }
+    }
+
+    ctx.globalAlpha = alpha;
+    proj.forEach((p, i) => {
+      ctx.beginPath();
+      ctx.fillStyle = sparkPts[i].color;
+      ctx.shadowBlur = 22 * p.scale;
+      ctx.shadowColor = sparkPts[i].color;
+      ctx.arc(p.x, p.y, 4 * p.scale, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.shadowBlur = 0;
+    });
+
+    if (!prefersReducedMotion && Math.random() < 0.12 && proj.length > 1) {
+      const i = Math.floor(Math.random() * proj.length);
+      const j = Math.floor(Math.random() * proj.length);
+      if (i !== j) {
+        ctx.strokeStyle = "#ffffff";
+        ctx.globalAlpha = alpha;
+        ctx.lineWidth = 3;
+        ctx.shadowBlur = 16;
+        ctx.shadowColor = "#ffffff";
+        ctx.beginPath();
+        ctx.moveTo(proj[i].x, proj[i].y);
+        ctx.lineTo(proj[j].x, proj[j].y);
+        ctx.stroke();
+        ctx.shadowBlur = 0;
+      }
+    }
+    ctx.restore();
+  }
+
+  /* ============================================================
+     ZONA 3 — ENSAMBLAJE: chips y piezas 3D flotando (grande y rápido)
+     ============================================================ */
+  let hwBoxes = [];
+
+  function initHardware() {
+    hwBoxes = Array.from({ length: 16 }, () => ({
+      cx: rnd(-360, 360), cy: rnd(-230, 230), cz: rnd(-360, 360),
+      size: rnd(26, 56),
+      rx: Math.random() * Math.PI * 2,
+      ry: Math.random() * Math.PI * 2,
+      spinX: rnd(-0.045, 0.045),
+      spinY: rnd(-0.05, 0.05),
+      floatPhase: Math.random() * Math.PI * 2,
+      color: ["#3A64FF", "#B389FF", "#00F0FF"][Math.floor(Math.random() * 3)]
+    }));
+  }
+
+  const CUBE_VERTS = [
+    [-1, -1, -1], [1, -1, -1], [1, 1, -1], [-1, 1, -1],
+    [-1, -1, 1], [1, -1, 1], [1, 1, 1], [-1, 1, 1]
+  ];
+  const CUBE_EDGES = [
+    [0, 1], [1, 2], [2, 3], [3, 0],
+    [4, 5], [5, 6], [6, 7], [7, 4],
+    [0, 4], [1, 5], [2, 6], [3, 7]
+  ];
+
+  function drawHardware(alpha, t) {
+    if (alpha <= 0.01) return;
+    const sceneAngle = t * 0.0013;
+
+    drawGridFloor(alpha, "#3A64FF", sceneAngle, t);
+
+    ctx.save();
+    ctx.globalCompositeOperation = "lighter";
+
+    hwBoxes.forEach((b) => {
+      b.rx += b.spinX;
+      b.ry += b.spinY;
+      const bob = Math.sin(t * 0.0025 + b.floatPhase) * 24;
+
+      const verts3d = CUBE_VERTS.map(([vx, vy, vz]) => {
+        let p = { x: vx * b.size, y: vy * b.size, z: vz * b.size };
+        p = rotateX(p, b.rx);
+        p = rotateY(p, b.ry);
+        p = { x: p.x + b.cx, y: p.y + b.cy + bob, z: p.z + b.cz };
+        p = rotateY(p, sceneAngle);
+        return project(p);
+      });
+
+      ctx.strokeStyle = b.color;
+      ctx.lineWidth = 2;
+      ctx.shadowBlur = 14;
+      ctx.shadowColor = b.color;
+      CUBE_EDGES.forEach(([a, c]) => {
+        const p1 = verts3d[a], p2 = verts3d[c];
+        ctx.globalAlpha = alpha * Math.min(p1.scale, p2.scale);
+        ctx.beginPath();
+        ctx.moveTo(p1.x, p1.y);
+        ctx.lineTo(p2.x, p2.y);
+        ctx.stroke();
+      });
+      ctx.shadowBlur = 0;
+    });
+    ctx.restore();
+  }
+
+  /* ============================================================
+     ZONA 4 — ARCHIVOS: carpetas tumbando en 3D (grande y rápido)
+     ============================================================ */
+  let folderCards = [];
+
+  function initFolders3D() {
+    folderCards = Array.from({ length: 14 }, () => ({
+      cx: rnd(-360, 360), cy: rnd(-230, 230), cz: rnd(-360, 360),
+      w: rnd(70, 118), h: rnd(52, 84),
+      rx: Math.random() * Math.PI * 2,
+      ry: Math.random() * Math.PI * 2,
+      spinX: rnd(-0.038, 0.038),
+      spinY: rnd(-0.048, 0.048),
+      floatPhase: Math.random() * Math.PI * 2
+    }));
+  }
+
+  function drawFolders3D(alpha, t) {
+    if (alpha <= 0.01) return;
+    const sceneAngle = t * 0.0013;
+
+    drawGridFloor(alpha, "#FF9A3D", sceneAngle, t);
+
+    ctx.save();
+
+    folderCards.forEach((f) => {
+      f.rx += f.spinX;
+      f.ry += f.spinY;
+      const bob = Math.sin(t * 0.0022 + f.floatPhase) * 26;
+
+      const localCorners = [
+        { x: -f.w / 2, y: -f.h / 2, z: 0 },
+        { x: f.w / 2, y: -f.h / 2, z: 0 },
+        { x: f.w / 2, y: f.h / 2, z: 0 },
+        { x: -f.w / 2, y: f.h / 2, z: 0 }
+      ];
+
+      const projected = localCorners.map((p) => {
+        let q = rotateX(p, f.rx);
+        q = rotateY(q, f.ry);
+        q = { x: q.x + f.cx, y: q.y + f.cy + bob, z: q.z + f.cz };
+        q = rotateY(q, sceneAngle);
+        return project(q);
+      });
+
+      const avgScale = projected.reduce((s, p) => s + p.scale, 0) / 4;
+      ctx.globalAlpha = alpha * Math.min(1, avgScale);
+      ctx.fillStyle = "#FF9A3D";
+      ctx.shadowBlur = 18 * avgScale;
+      ctx.shadowColor = "#FF9A3D";
+      ctx.beginPath();
+      projected.forEach((p, i) => (i === 0 ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y)));
+      ctx.closePath();
+      ctx.fill();
+      ctx.shadowBlur = 0;
+
+      ctx.strokeStyle = "rgba(255,255,255,0.55)";
+      ctx.lineWidth = 1.4;
+      ctx.stroke();
+    });
+    ctx.restore();
+  }
+
+  /* ============================================================
+     ZONA 5 — IMPRESORAS: gotas de tinta CMYK en 3D (grande y rápido)
+     ============================================================ */
+  let inkDrops = [];
+  const INK_HEX = ["#00AEEF", "#EC008C", "#FFF200", "#f5f5f5"];
+
+  function initInk() {
+    inkDrops = Array.from({ length: 46 }, () => ({
+      x: rnd(-360, 360), y: rnd(-230, 230), z: rnd(-360, 360),
+      r: rnd(4, 11),
+      color: INK_HEX[Math.floor(Math.random() * INK_HEX.length)],
+      driftPhase: Math.random() * Math.PI * 2
+    }));
+  }
+
+  function drawInk(alpha, t) {
+    if (alpha <= 0.01) return;
+    const angle = t * 0.0011;
+
+    drawGridFloor(alpha, "#00AEEF", angle, t);
+
+    ctx.save();
+    ctx.globalCompositeOperation = "lighter";
+
+    const proj = inkDrops.map((d) => {
+      const drift = Math.sin(t * 0.0018 + d.driftPhase) * 34;
+      let p = { x: d.x, y: d.y + drift, z: d.z };
+      p = rotateY(p, angle);
+      return project(p);
+    });
+
+    proj.forEach((p, i) => {
+      ctx.globalAlpha = alpha * Math.min(1, p.scale);
+      ctx.beginPath();
+      ctx.fillStyle = inkDrops[i].color;
+      ctx.shadowBlur = 14 * p.scale;
+      ctx.shadowColor = inkDrops[i].color;
+      ctx.arc(p.x, p.y, inkDrops[i].r * p.scale, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.shadowBlur = 0;
+    });
+
+    if (!prefersReducedMotion && Math.random() < 0.1) {
+      const i = Math.floor(Math.random() * proj.length);
+      const p = proj[i];
+      ctx.globalAlpha = alpha;
+      ctx.strokeStyle = "#ffffff";
+      ctx.lineWidth = 1.4;
+      ctx.beginPath();
+      ctx.moveTo(p.x - 9, p.y);
+      ctx.lineTo(p.x + 9, p.y);
+      ctx.moveTo(p.x, p.y - 9);
+      ctx.lineTo(p.x, p.y + 9);
+      ctx.stroke();
+    }
+    ctx.restore();
+  }
+
+  /* ============================================================
+     ONDA EXPANSIVA — pulso de color justo al cruzar entre escenas
+     ============================================================ */
+  const zoneColors = {
+    nodes: "#3A64FF",
+    electricidad: "#B389FF",
+    ensamblaje: "#3A64FF",
+    archivos: "#FF9A3D",
+    impresoras: "#00AEEF"
+  };
+
+  function drawTransitionPulse(weights, t) {
+    if (prefersReducedMotion) return;
+    let a = 0, b = 0, blend = 0;
+    const keys = Object.keys(weights);
+    for (let i = 0; i < keys.length; i++) {
+      for (let j = i + 1; j < keys.length; j++) {
+        const wa = weights[keys[i]], wb = weights[keys[j]];
+        const mix = Math.min(wa, wb) * 2;
+        if (mix > blend) { blend = mix; a = keys[i]; b = keys[j]; }
+      }
+    }
+    if (blend < 0.05) return;
+
+    const pulse = (Math.sin(t * 0.004) * 0.5 + 0.5);
+    const radius = 160 + pulse * 260 + blend * 120;
+
+    ctx.save();
+    ctx.globalCompositeOperation = "lighter";
+    ctx.globalAlpha = blend * 0.22;
+    const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, radius);
+    grad.addColorStop(0, zoneColors[b] || "#ffffff");
+    grad.addColorStop(0.6, zoneColors[a] || "#ffffff");
+    grad.addColorStop(1, "transparent");
+    ctx.fillStyle = grad;
+    ctx.beginPath();
+    ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.globalAlpha = blend * 0.5;
+    ctx.strokeStyle = "#ffffff";
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.arc(cx, cy, radius * 0.9, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.restore();
+  }
+
+  /* ============================================================
+     CONTROL DE ESCENAS SEGÚN EL SCROLL
+     ============================================================ */
+  const zoneKeys = ["nodes", "electricidad", "ensamblaje", "archivos", "impresoras"];
+  let anchors = [0, 0, 0, 0, 0];
+
+  function computeAnchors() {
+    const ids = ["inicio", "parcial-1", "parcial-2", "parcial-3", "parcial-4"];
+    anchors = ids.map((id) => {
+      const el = document.getElementById(id);
+      return el ? el.offsetTop : 0;
+    });
+  }
+
+  function computeWeights() {
+    const weights = { nodes: 0, electricidad: 0, ensamblaje: 0, archivos: 0, impresoras: 0 };
+
+    // Zona muerta: mientras el usuario no haya bajado al menos 200px,
+    // se queda 100% en la red de nodos, igual que la página principal.
+    if (window.scrollY < 200) { weights.nodes = 1; return weights; }
+
+    const scrollRef = window.scrollY + window.innerHeight * 0.45;
+
+    if (scrollRef <= anchors[0]) { weights.nodes = 1; return weights; }
+    if (scrollRef >= anchors[anchors.length - 1]) { weights.impresoras = 1; return weights; }
+
+    for (let i = 0; i < anchors.length - 1; i++) {
+      if (scrollRef >= anchors[i] && scrollRef <= anchors[i + 1]) {
+        const span = anchors[i + 1] - anchors[i] || 1;
+        const t = (scrollRef - anchors[i]) / span;
+        weights[zoneKeys[i]] = 1 - t;
+        weights[zoneKeys[i + 1]] = t;
+        return weights;
+      }
+    }
+    return weights;
+  }
+
+  function step(t) {
+    ctx.clearRect(0, 0, width, height);
+    const w = computeWeights();
+    drawNodes(w.nodes);
+    drawSpark(w.electricidad, t);
+    drawHardware(w.ensamblaje, t);
+    drawFolders3D(w.archivos, t);
+    drawInk(w.impresoras, t);
+    drawTransitionPulse(w, t);
+    requestAnimationFrame(step);
+  }
+
+  function initAll() {
+    resize();
+    initNodes();
+    initSpark();
+    initHardware();
+    initFolders3D();
+    initInk();
+    computeAnchors();
+  }
+
+  window.addEventListener("resize", initAll);
+  window.addEventListener("load", computeAnchors);
+
+  initAll();
+  requestAnimationFrame(step);
+})();
+
+// ==========================================
+// 1. MENÚ DESLIZABLE (☰)
+// ==========================================
+const menuBtn = document.getElementById("menuBtn");
+const menu = document.getElementById("menuLateral");
+const menuOverlay = document.getElementById("menuOverlay");
+
+menuBtn.addEventListener("click", () => {
+  menu.classList.toggle("active");
+  menuOverlay.classList.toggle("active");
+});
+
+menuOverlay.addEventListener("click", () => {
+  menu.classList.remove("active");
+  menuOverlay.classList.remove("active");
+});
+
+document.querySelectorAll(".menu-lateral a").forEach((link) => {
+  link.addEventListener("click", () => {
+    menu.classList.remove("active");
+    menuOverlay.classList.remove("active");
+  });
+});
+
+// ==========================================
+// 2. REVELADO DE SECCIONES AL HACER SCROLL
+// ==========================================
+const sections = document.querySelectorAll(".section");
+const sectionObserver = new IntersectionObserver(
+  (entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add("is-visible");
+        sectionObserver.unobserve(entry.target);
+      }
+    });
+  },
+  { threshold: 0.1 }
+);
+sections.forEach((section) => sectionObserver.observe(section));
+// ==========================================
+// AUDIO — pitidos cortos reutilizables para dar feedback
+// ==========================================
+let sharedAudioCtx = null;
+function beep(freq, duration, type) {
+  try {
+    if (!sharedAudioCtx) sharedAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const ctx = sharedAudioCtx;
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = type || "sine";
+    osc.frequency.value = freq;
+    gain.gain.setValueAtTime(0.12, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start();
+    osc.stop(ctx.currentTime + duration);
+  } catch (e) { /* silencioso si el navegador bloquea audio */ }
+}
+function beepCorrect() { beep(880, 0.15, "sine"); }
+function beepWrong() { beep(180, 0.2, "sawtooth"); }
+function beepSuccess() {
+  beep(660, 0.12, "sine");
+  setTimeout(() => beep(880, 0.16, "sine"), 120);
+  setTimeout(() => beep(1100, 0.2, "sine"), 260);
+}
+
+// ==========================================
+// 3. PARCIAL 1 — CABLEADO ELÉCTRICO (conexión libre)
+// ==========================================
+(function initWiringGame() {
+  const leftCol = document.getElementById("wiringLeft");
+  const rightCol = document.getElementById("wiringRight");
+  const svg = document.getElementById("wiringLines");
+  const panel = document.getElementById("wiringPanel");
+  const checkBtn = document.getElementById("checkWiringBtn");
+  const resetBtn = document.getElementById("resetWiringBtn");
+  const resultEl = document.getElementById("wiringResult");
+
+  const WIRE_COLORS = [
+    { id: "rojo", hex: "#E63946" },
+    { id: "azul", hex: "#3A64FF" },
+    { id: "amarillo", hex: "#FFD23F" },
+    { id: "verde", hex: "#2EE686" },
+    { id: "morado", hex: "#B389FF" }
+  ];
+
+  let selectedPlug = null;
+  let dragPreview = null;
+  // connections: Map de plugId -> socketId (y viceversa vía dataset)
+  let connections = [];
+
+  function shuffled(arr) {
+    const a = [...arr];
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+
+  function buildGame() {
+    leftCol.innerHTML = "";
+    rightCol.innerHTML = "";
+    svg.innerHTML = "";
+    selectedPlug = null;
+    dragPreview = null;
+    connections = [];
+    resultEl.textContent = "\u00A0";
+    resultEl.className = "demo-result";
+
+    const leftOrder = shuffled(WIRE_COLORS);
+    const rightOrder = shuffled(WIRE_COLORS);
+
+    leftOrder.forEach((c, idx) => {
+      const btn = document.createElement("button");
+      btn.className = "wire-plug";
+      btn.style.setProperty("--wc", c.hex);
+      btn.dataset.color = c.id;
+      btn.dataset.uid = "plug-" + idx;
+      btn.textContent = "●";
+      btn.addEventListener("pointerdown", (event) => startWireDrag(event, btn));
+      leftCol.appendChild(btn);
+    });
+
+    rightOrder.forEach((c, idx) => {
+      const btn = document.createElement("button");
+      btn.className = "wire-socket";
+      btn.style.setProperty("--wc", c.hex);
+      btn.dataset.color = c.id;
+      btn.dataset.uid = "socket-" + idx;
+      btn.textContent = "○";
+      btn.addEventListener("pointerup", () => {
+        if (selectedPlug) connectPlugToSocket(btn);
+      });
+      btn.addEventListener("pointerenter", () => {
+        if (selectedPlug) btn.classList.add("drop-target");
+      });
+      btn.addEventListener("pointerleave", () => btn.classList.remove("drop-target"));
+      rightCol.appendChild(btn);
+    });
+  }
+
+  function startWireDrag(event, btn) {
+    if (btn.classList.contains("connected")) {
+      disconnect(btn.dataset.uid, "plug");
+      return;
+    }
+    event.preventDefault();
+    if (selectedPlug) selectedPlug.classList.remove("selected", "dragging");
+    selectedPlug = btn;
+    btn.classList.add("selected", "dragging");
+    panel.classList.add("is-dragging");
+    dragPreview = document.createElementNS("http://www.w3.org/2000/svg", "line");
+    dragPreview.setAttribute("stroke", cHex(btn));
+    dragPreview.setAttribute("stroke-width", "5");
+    dragPreview.setAttribute("stroke-linecap", "round");
+    dragPreview.setAttribute("stroke-dasharray", "8 7");
+    dragPreview.setAttribute("data-preview", "true");
+    svg.appendChild(dragPreview);
+    updateDragPreview(event.clientX, event.clientY);
+    btn.setPointerCapture?.(event.pointerId);
+  }
+
+  function cHex(el) {
+    return getComputedStyle(el).getPropertyValue("--wc") || "#fff";
+  }
+
+  function updateDragPreview(clientX, clientY) {
+    if (!selectedPlug || !dragPreview) return;
+    const panelRect = panel.getBoundingClientRect();
+    const p = selectedPlug.getBoundingClientRect();
+    dragPreview.setAttribute("x1", p.left + p.width / 2 - panelRect.left);
+    dragPreview.setAttribute("y1", p.top + p.height / 2 - panelRect.top);
+    dragPreview.setAttribute("x2", clientX - panelRect.left);
+    dragPreview.setAttribute("y2", clientY - panelRect.top);
+  }
+
+  document.addEventListener("pointermove", (event) => {
+    if (!selectedPlug) return;
+    updateDragPreview(event.clientX, event.clientY);
+    const target = document.elementFromPoint(event.clientX, event.clientY);
+    document.querySelectorAll(".drop-target").forEach((el) => el.classList.remove("drop-target"));
+    target?.closest?.(".wire-socket")?.classList.add("drop-target");
+  });
+
+  function connectPlugToSocket(socketBtn) {
+    if (!selectedPlug || socketBtn.classList.contains("connected")) return;
+    selectedPlug.classList.remove("selected", "dragging");
+    socketBtn.classList.remove("drop-target");
+    socketBtn.classList.add("connected");
+    selectedPlug.classList.add("connected");
+    drawWireLine(selectedPlug, socketBtn);
+    dragPreview?.remove();
+    dragPreview = null;
+    connections.push({
+      plugUid: selectedPlug.dataset.uid,
+      socketUid: socketBtn.dataset.uid,
+      plugColor: selectedPlug.dataset.color,
+      socketColor: socketBtn.dataset.color
+    });
+    selectedPlug = null;
+    panel.classList.remove("is-dragging");
+    resultEl.textContent = "\u00A0";
+  }
+
+  document.addEventListener("pointerup", (event) => {
+    if (selectedPlug) {
+      const target = document.elementFromPoint(event.clientX, event.clientY);
+      const socket = target?.closest?.(".wire-socket");
+      if (socket) connectPlugToSocket(socket);
+      if (!selectedPlug) return;
+      selectedPlug.classList.remove("selected", "dragging");
+      selectedPlug = null;
+      dragPreview?.remove();
+      dragPreview = null;
+      panel.classList.remove("is-dragging");
+      document.querySelectorAll(".drop-target").forEach((el) => el.classList.remove("drop-target"));
+    }
+  });
+
+  function onPlugClick(btn) {
+    if (btn.classList.contains("connected")) {
+      disconnect(btn.dataset.uid, "plug");
+      return;
+    }
+    if (selectedPlug) selectedPlug.classList.remove("selected");
+    if (selectedPlug === btn) { selectedPlug = null; return; }
+    selectedPlug = btn;
+    btn.classList.add("selected");
+  }
+
+  function onSocketClick(socketBtn) {
+    if (socketBtn.classList.contains("connected")) {
+      disconnect(socketBtn.dataset.uid, "socket");
+      return;
+    }
+    if (!selectedPlug) return;
+
+    // Conexión LIBRE: se acepta cualquier color, la corrección se evalúa después
+    selectedPlug.classList.remove("selected");
+    selectedPlug.classList.add("connected");
+    socketBtn.classList.add("connected");
+    drawWireLine(selectedPlug, socketBtn);
+
+    connections.push({
+      plugUid: selectedPlug.dataset.uid,
+      socketUid: socketBtn.dataset.uid,
+      plugColor: selectedPlug.dataset.color,
+      socketColor: socketBtn.dataset.color
+    });
+
+    selectedPlug = null;
+    resultEl.textContent = "\u00A0";
+  }
+
+  function disconnect(uid, side) {
+    const conn = connections.find((c) => (side === "plug" ? c.plugUid === uid : c.socketUid === uid));
+    if (!conn) return;
+    connections = connections.filter((c) => c !== conn);
+
+    const plugEl = leftCol.querySelector(`[data-uid="${conn.plugUid}"]`);
+    const socketEl = rightCol.querySelector(`[data-uid="${conn.socketUid}"]`);
+    if (plugEl) plugEl.classList.remove("connected");
+    if (socketEl) socketEl.classList.remove("connected");
+
+    const line = svg.querySelector(`[data-conn="${conn.plugUid}|${conn.socketUid}"]`);
+    if (line) line.remove();
+
+    resultEl.textContent = "\u00A0";
+    resultEl.className = "demo-result";
+  }
+
+  function drawWireLine(plugEl, socketEl) {
+    const panelRect = panel.getBoundingClientRect();
+    const p = plugEl.getBoundingClientRect();
+    const s = socketEl.getBoundingClientRect();
+    const x1 = p.left + p.width / 2 - panelRect.left;
+    const y1 = p.top + p.height / 2 - panelRect.top;
+    const x2 = s.left + s.width / 2 - panelRect.left;
+    const y2 = s.top + s.height / 2 - panelRect.top;
+
+    const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+    line.setAttribute("x1", x1);
+    line.setAttribute("y1", y1);
+    line.setAttribute("x2", x2);
+    line.setAttribute("y2", y2);
+    line.setAttribute("stroke", getComputedStyle(plugEl).getPropertyValue("--wc") || "#fff");
+    line.setAttribute("stroke-width", "3");
+    line.setAttribute("stroke-linecap", "round");
+    line.setAttribute("data-conn", `${plugEl.dataset.uid}|${socketEl.dataset.uid}`);
+    svg.appendChild(line);
+  }
+
+  checkBtn.addEventListener("click", () => {
+    const total = WIRE_COLORS.length;
+    const madeConnections = connections.length;
+
+    if (madeConnections === 0) {
+      resultEl.textContent = "❌ No conectaste ningún cable todavía.";
+      resultEl.className = "demo-result status--bad";
+      beepWrong();
+      return;
+    }
+
+    let correct = 0, wrong = 0;
+    connections.forEach((c) => {
+      if (c.plugColor === c.socketColor) correct++;
+      else wrong++;
+    });
+
+    const pending = total - madeConnections;
+    let msg = `✅ ${correct} cable${correct === 1 ? "" : "s"} correcto${correct === 1 ? "" : "s"} &nbsp;|&nbsp; ❌ ${wrong} cable${wrong === 1 ? "" : "s"} incorrecto${wrong === 1 ? "" : "s"}`;
+    if (pending > 0) msg += ` &nbsp;|&nbsp; ⏳ ${pending} sin conectar`;
+
+    if (correct === total) {
+      resultEl.innerHTML = "🎉 ¡Felicidades! Los " + total + " cables quedaron en su color correspondiente.";
+      resultEl.className = "demo-result status--good";
+      beepSuccess();
+    } else if (correct === 0) {
+      resultEl.innerHTML = msg;
+      resultEl.className = "demo-result status--bad";
+      beepWrong();
+    } else {
+      resultEl.innerHTML = msg;
+      resultEl.className = "demo-result status--mid";
+      beepCorrect();
+    }
+  });
+
+  resetBtn.addEventListener("click", buildGame);
+
+  buildGame();
+})();
+// ==========================================
+// 4. PARCIAL 2 — ENSAMBLAJE DE COMPUTADORA (difícil)
+// ==========================================
+(function initAssemblyGame() {
+  const tray = document.getElementById("assemblyTray");
+  const caseGrid = document.getElementById("assemblyCase");
+  const timerEl = document.getElementById("assemblyTimer");
+  const startBtn = document.getElementById("startAssemblyBtn");
+  const resetBtn = document.getElementById("resetAssemblyBtn");
+  const infoBox = document.getElementById("partInfoBox");
+  const resultEl = document.getElementById("assemblyResult");
+
+  const PARTS_POOL = [
+    { id: "placa", icon: "Placa Madre", image: "", name: "Placa Madre", info: "Es la base que conecta entre sí todos los componentes de la computadora." },
+    { id: "cpu", icon: "Procesador (CPU)", image: "", name: "Procesador (CPU)", info: "Es el \"cerebro\" de la computadora: ejecuta las instrucciones y cálculos." },
+    { id: "ram", icon: "Memoria RAM", image: "", name: "Memoria RAM", info: "Guarda temporalmente los datos que la computadora está usando en el momento." },
+    { id: "gpu", icon: "Tarjeta Gráfica", image: "", name: "Tarjeta Gráfica", info: "Procesa y muestra en pantalla las imágenes y el video." },
+    { id: "cooler", icon: "Disipador / Cooler", image: "", name: "Disipador / Cooler", info: "Enfría el procesador para que no se sobrecaliente mientras trabaja." },
+    { id: "red", icon: "Tarjeta de Red / WiFi", image: "", name: "Tarjeta de Red / WiFi", info: "Permite que la computadora se conecte a internet o a una red local." },
+    { id: "optica", icon: "Unidad Óptica", image: "", name: "Unidad Óptica", info: "Lee y graba discos CD, DVD o Blu-ray (cada vez menos común, pero aún se usa)." },
+    { id: "panel", icon: "Panel Frontal / Cables del Case", image: "", name: "Panel Frontal / Cables del Case", info: "Conecta el botón de encendido, LEDs y puertos USB frontales a la placa madre." }
+  ];
+
+  const DECOY_POOL = [
+    { id: "destornillador", icon: "🪛", name: "Destornillador", info: "Es una herramienta para abrir el gabinete, no es un componente interno. No va en ninguna ranura." },
+    { id: "manual", icon: "📖", name: "Manual de Usuario", info: "Es solo información en papel, no se instala dentro de la computadora." },
+    { id: "pulsera", icon: "🧤", name: "Pulsera Antiestática", info: "Se usa en la muñeca para evitar descargas de electricidad estática, no se coloca dentro del equipo." },
+    { id: "taza", icon: "☕", name: "Taza de Café", info: "¡Cuidado! Nunca dejes líquidos cerca de una computadora abierta. Esto no va en ninguna parte." }
+  ];
+
+  const PARTS_IN_GAME = 8;
+  const DECOYS_IN_GAME = 2;
+  const GAME_SECONDS = 60;
+  const WRONG_PENALTY = 3;
+  const CORRECT_BONUS = 1;
+
+  let PARTS = [];
+  let secondsLeft = GAME_SECONDS;
+  let timerInterval = null;
+  let gameStarted = false;
+  let gameOver = false;
+  let selectedItemId = null;
+
+  function shuffled(arr) {
+    const a = [...arr];
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+
+  function formatTime(s) {
+    const safe = Math.max(0, s);
+    const m = Math.floor(safe / 60);
+    const sec = safe % 60;
+    return `${m}:${sec.toString().padStart(2, "0")}`;
+  }
+
+  function flashResult(text, cls, ms) {
+    resultEl.textContent = text;
+    resultEl.className = "demo-result" + (cls ? " " + cls : "");
+    if (ms) {
+      setTimeout(() => {
+        if (!gameOver) { resultEl.textContent = "\u00A0"; resultEl.className = "demo-result"; }
+      }, ms);
+    }
+  }
+
+  function buildGame() {
+    clearInterval(timerInterval);
+    PARTS = shuffled(PARTS_POOL).slice(0, PARTS_IN_GAME);
+    const decoys = shuffled(DECOY_POOL).slice(0, DECOYS_IN_GAME);
+    const trayItems = shuffled([...PARTS, ...decoys]);
+
+    secondsLeft = GAME_SECONDS;
+    gameStarted = false;
+    gameOver = false;
+    selectedItemId = null;
+    timerEl.textContent = formatTime(secondsLeft);
+    timerEl.classList.remove("urgent");
+    resultEl.textContent = "\u00A0";
+    resultEl.className = "demo-result";
+    infoBox.textContent = "Toca una pieza para conocer para qué sirve. ¡Ojo con las piezas señuelo!";
+
+    tray.innerHTML = "";
+    trayItems.forEach((item) => {
+      const chip = document.createElement("div");
+      chip.className = "part-chip inactive";
+      chip.dataset.item = item.id;
+      chip.innerHTML = `<span class="part-name">${item.name}</span>`;
+      chip.addEventListener("click", () => onItemClick(chip, item));
+      tray.appendChild(chip);
+    });
+
+    caseGrid.innerHTML = "";
+    shuffled(PARTS).forEach((part) => {
+      const slot = document.createElement("div");
+      slot.className = "part-slot inactive";
+      slot.dataset.correct = part.id;
+      slot.innerHTML = slotMarkup(part);
+      slot.addEventListener("click", () => onSlotClick(slot));
+      caseGrid.appendChild(slot);
+    });
+  }
+
+  function onItemClick(chip, item) {
+    infoBox.textContent = `${item.icon} ${item.name}: ${item.info}`;
+    if (!gameStarted || gameOver) return;
+    if (chip.classList.contains("used")) return;
+
+    document.querySelectorAll(".part-chip").forEach((c) => c.classList.remove("selected"));
+    if (selectedItemId === item.id) { selectedItemId = null; return; }
+    selectedItemId = item.id;
+    chip.classList.add("selected");
+  }
+
+  function slotMarkup(item) {
+    return item.image
+      ? `<img class="part-image" src="${item.image}" alt="${item.name}">`
+      : `<span class="part-icon">${item.icon}</span>`;
+  }
+
+  function onSlotClick(slot) {
+    if (!gameStarted || gameOver) return;
+
+    if (slot.classList.contains("filled")) {
+      const itemId = slot.dataset.placed;
+      slot.classList.remove("filled");
+      delete slot.dataset.placed;
+      const emptyPart = PARTS.find((p) => p.id === slot.dataset.correct);
+      slot.innerHTML = slotMarkup(emptyPart);
+      const chip = tray.querySelector(`.part-chip[data-item="${itemId}"]`);
+      if (chip) chip.classList.remove("used");
+      checkAllFilled();
+      return;
+    }
+
+    if (!selectedItemId) return;
+    const allItems = [...PARTS_POOL, ...DECOY_POOL];
+    const item = allItems.find((p) => p.id === selectedItemId);
+
+    slot.classList.add("filled");
+    slot.dataset.placed = selectedItemId;
+    slot.innerHTML = slotMarkup(item);
+
+    const chip = tray.querySelector(`.part-chip[data-item="${selectedItemId}"]`);
+    if (chip) { chip.classList.add("used"); chip.classList.remove("selected"); }
+
+    const isCorrect = selectedItemId === slot.dataset.correct;
+    if (isCorrect) {
+      secondsLeft = Math.min(GAME_SECONDS, secondsLeft + CORRECT_BONUS);
+      beepCorrect();
+      flashResult(`✅ ¡Correcto! +${CORRECT_BONUS}s`, "status--good", 1100);
+      slot.classList.add("wrong-flash");
+      setTimeout(() => slot.classList.remove("wrong-flash"), 400);
+    } else {
+      secondsLeft = Math.max(0, secondsLeft - WRONG_PENALTY);
+      beepWrong();
+      flashResult(`⚠️ Esa pieza no va ahí. -${WRONG_PENALTY}s`, "status--bad", 1300);
+      slot.classList.add("wrong-flash");
+      setTimeout(() => slot.classList.remove("wrong-flash"), 400);
+    }
+    timerEl.textContent = formatTime(secondsLeft);
+    if (secondsLeft <= 10) timerEl.classList.add("urgent");
+
+    selectedItemId = null;
+    if (secondsLeft <= 0) {
+      evaluate();
+    } else {
+      checkAllFilled();
+    }
+  }
+
+  function checkAllFilled() {
+    const slots = caseGrid.querySelectorAll(".part-slot");
+    const allFilled = [...slots].every((s) => s.classList.contains("filled"));
+    if (allFilled) evaluate();
+  }
+
+  function evaluate() {
+    if (gameOver) return;
+    gameOver = true;
+    clearInterval(timerInterval);
+
+    const slots = [...caseGrid.querySelectorAll(".part-slot")];
+    let correct = 0;
+    slots.forEach((slot) => {
+      const isCorrect = slot.dataset.placed === slot.dataset.correct;
+      if (slot.dataset.placed) {
+        slot.classList.add(isCorrect ? "result-correct" : "result-wrong");
+        if (isCorrect) correct++;
+      }
+    });
+
+    const total = PARTS.length;
+    if (correct === total) {
+      resultEl.textContent = " ¡Felicidades, lo lograste! Armaste la computadora correctamente.";
+      resultEl.className = "demo-result status--good";
+      beepSuccess();
+    } else if (correct === 0) {
+      resultEl.textContent = " Lástima, no lograste armar la computadora.";
+      resultEl.className = "demo-result status--bad";
+      beepWrong();
+    } else {
+      resultEl.textContent = ` Casi lograste armarla bien (${correct}/${total} piezas correctas), pero está bien, no te preocupes.`;
+      resultEl.className = "demo-result status--mid";
+      beepCorrect();
+    }
+
+    document.querySelectorAll(".part-chip, .part-slot").forEach((el) => el.classList.add("inactive"));
+  }
+
+  startBtn.addEventListener("click", () => {
+    if (gameStarted) return;
+    gameStarted = true;
+    document.querySelectorAll(".part-chip, .part-slot").forEach((el) => el.classList.remove("inactive"));
+    startBtn.disabled = true;
+
+    timerInterval = setInterval(() => {
+      secondsLeft--;
+      timerEl.textContent = formatTime(secondsLeft);
+      if (secondsLeft <= 10) timerEl.classList.add("urgent");
+      if (secondsLeft <= 0) {
+        clearInterval(timerInterval);
+        evaluate();
+      }
+    }, 1000);
+  });
+
+  resetBtn.addEventListener("click", () => {
+    buildGame();
+    startBtn.disabled = false;
+  });
+
+  buildGame();
+})();
+// ==========================================
+// 5. PARCIAL 3 — ORGANIZACIÓN Y RESPALDO DE ARCHIVOS (difícil)
+// ==========================================
+(function initFilesGame() {
+  const tray = document.getElementById("filesTray");
+  const foldersGrid = document.getElementById("foldersGrid");
+  const resultEl = document.getElementById("filesResult");
+  const scoreEl = document.getElementById("filesScore");
+  const retrieveBox = document.getElementById("retrieveBox");
+  const retrieveTargetEl = document.getElementById("retrieveTarget");
+  const retrieveTimerEl = document.getElementById("retrieveTimer");
+
+  const FOLDER_TYPES = [
+    { type: "imagen", icon: "🖼️", name: "Imágenes" },
+    { type: "documento", icon: "📄", name: "Documentos" },
+    { type: "hoja", icon: "📊", name: "Hojas de Cálculo" },
+    { type: "audio", icon: "🎵", name: "Música" },
+    { type: "comprimido", icon: "🗜️", name: "Comprimidos" },
+    { type: "video", icon: "🎬", name: "Videos" }
+  ];
+
+  const FILES = [
+    { id: "f1", type: "imagen", icon: "", name: "Foto_playa.jpg" },
+    { id: "f2", type: "documento", icon: "", name: "Contrato.docx" },
+    { id: "f3", type: "hoja", icon: "", name: "Presupuesto.xlsx" },
+    { id: "f4", type: "audio", icon: "", name: "Cancion.mp3" },
+    { id: "f5", type: "comprimido", icon: "", name: "Backup.zip" },
+    { id: "f6", type: "video", icon: "", name: "Tutorial.mp4" },
+    { id: "f7", type: "imagen", icon: "", name: "Logo_empresa.png" },
+    { id: "f8", type: "documento", icon: "", name: "Carta_recomendacion.pdf" },
+    { id: "f9", type: "audio", icon: "", name: "Podcast_ep1.mp3" }
+  ];
+
+  const RETRIEVE_SECONDS = 10;
+
+  let selectedFileId = null;
+  const folderContents = {};
+  let correctCount = 0;
+  let wrongCount = 0;
+
+  let retrieveActive = false;
+  let retrieveTargetFile = null;
+  let retrieveTimeLeft = RETRIEVE_SECONDS;
+  let retrieveInterval = null;
+
+  function shuffled(arr) {
+    const a = [...arr];
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+
+  function updateScore() {
+    scoreEl.textContent = `Aciertos: ${correctCount}   |   Errores: ${wrongCount}`;
+  }
+
+  function buildGame() {
+    selectedFileId = null;
+    correctCount = 0;
+    wrongCount = 0;
+    retrieveActive = false;
+    retrieveTargetFile = null;
+    clearInterval(retrieveInterval);
+    retrieveBox.classList.add("hidden");
+    FOLDER_TYPES.forEach((f) => (folderContents[f.type] = []));
+    resultEl.textContent = "\u00A0";
+    resultEl.className = "demo-result";
+    updateScore();
+
+    tray.innerHTML = "";
+    shuffled(FILES).forEach((file) => {
+      const chip = document.createElement("div");
+      chip.className = "file-chip";
+      chip.dataset.file = file.id;
+      chip.innerHTML = `<span class="file-icon">${file.icon}</span><span class="file-name">${file.name}</span>`;
+      chip.addEventListener("click", () => onFileClick(chip, file));
+      tray.appendChild(chip);
+    });
+
+    foldersGrid.innerHTML = "";
+    FOLDER_TYPES.forEach((folder) => {
+      const card = document.createElement("div");
+      card.className = "folder-card";
+      card.dataset.type = folder.type;
+      card.innerHTML = `
+        <div class="folder-header">
+          <span class="folder-icon"></span>
+          <span class="folder-name">${folder.name}</span>
+          <span class="folder-badge" data-badge>0</span>
+        </div>
+        <div class="folder-contents" data-contents></div>
+      `;
+      card.querySelector(".folder-header").addEventListener("click", () => onFolderClick(card, folder));
+      foldersGrid.appendChild(card);
+    });
+  }
+
+  function onFileClick(chip, file) {
+    document.querySelectorAll(".file-chip").forEach((c) => c.classList.remove("selected"));
+    if (selectedFileId === file.id) { selectedFileId = null; return; }
+    selectedFileId = file.id;
+    chip.classList.add("selected");
+  }
+
+  function onFolderClick(card, folder) {
+    if (selectedFileId) {
+      const file = FILES.find((f) => f.id === selectedFileId);
+      if (file.type === folder.type) {
+        placeFileInFolder(file, card, folder);
+      } else {
+        card.classList.add("folder-shake");
+        wrongCount++;
+        updateScore();
+        beepWrong();
+        setTimeout(() => card.classList.remove("folder-shake"), 350);
+      }
+      return;
+    }
+    const contents = card.querySelector("[data-contents]");
+    contents.classList.toggle("open");
+  }
+
+  function placeFileInFolder(file, card, folder) {
+    folderContents[folder.type].push(file);
+    renderFolderContents(card, folder);
+
+    const chip = tray.querySelector(`.file-chip[data-file="${file.id}"]`);
+    if (chip) chip.remove();
+
+    selectedFileId = null;
+    card.querySelector("[data-contents]").classList.add("open");
+
+    correctCount++;
+    updateScore();
+    beepCorrect();
+
+    checkAllFiled();
+  }
+
+  function renderFolderContents(card, folder) {
+    const contentsEl = card.querySelector("[data-contents]");
+    const badgeEl = card.querySelector("[data-badge]");
+    const items = folderContents[folder.type];
+    badgeEl.textContent = items.length;
+
+    contentsEl.innerHTML = "";
+    items.forEach((file) => {
+      const row = document.createElement("div");
+      row.className = "folder-file-row";
+      row.innerHTML = `<span>${file.icon} ${file.name}</span>`;
+      const btn = document.createElement("button");
+      btn.textContent = "↩ Sacar";
+      btn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        retrieveFile(file, folder, card);
+      });
+      row.appendChild(btn);
+      contentsEl.appendChild(row);
+    });
+  }
+
+  function retrieveFile(file, folder, card) {
+    folderContents[folder.type] = folderContents[folder.type].filter((f) => f.id !== file.id);
+    renderFolderContents(card, folder);
+
+    const chip = document.createElement("div");
+    chip.className = "file-chip";
+    chip.dataset.file = file.id;
+    chip.innerHTML = `<span class="file-icon">${file.icon}</span><span class="file-name">${file.name}</span>`;
+    chip.addEventListener("click", () => onFileClick(chip, file));
+    tray.appendChild(chip);
+
+    if (retrieveActive) {
+      if (retrieveTargetFile && file.id === retrieveTargetFile.id) {
+        finishRetrieveChallenge(true);
+      } else {
+        wrongCount++;
+        updateScore();
+        beepWrong();
+        resultEl.textContent = `❌ Ese no era. Sigue buscando "${retrieveTargetFile.name}"...`;
+        resultEl.className = "demo-result status--bad";
+      }
+    } else {
+      resultEl.textContent = "\u00A0";
+      resultEl.className = "demo-result";
+    }
+  }
+
+  function checkAllFiled() {
+    if (tray.children.length === 0 && !retrieveActive) {
+      resultEl.textContent = "🗂️ ¡Organizaste todos tus archivos en las carpetas correctas! Preparando un reto extra...";
+      resultEl.className = "demo-result status--good";
+      beepSuccess();
+      setTimeout(startRetrieveChallenge, 1400);
+    }
+  }
+
+  function startRetrieveChallenge() {
+    const filedFiles = FILES.filter((f) => f.type); // todos, ya están todos guardados
+    retrieveTargetFile = filedFiles[Math.floor(Math.random() * filedFiles.length)];
+    retrieveActive = true;
+    retrieveTimeLeft = RETRIEVE_SECONDS;
+
+    retrieveTargetEl.textContent = `${retrieveTargetFile.icon} ${retrieveTargetFile.name}`;
+    retrieveTimerEl.textContent = `⏱ ${retrieveTimeLeft}s`;
+    retrieveTimerEl.classList.remove("urgent");
+    retrieveBox.classList.remove("hidden");
+    resultEl.textContent = "\u00A0";
+    resultEl.className = "demo-result";
+
+    retrieveInterval = setInterval(() => {
+      retrieveTimeLeft--;
+      retrieveTimerEl.textContent = `⏱ ${retrieveTimeLeft}s`;
+      if (retrieveTimeLeft <= 3) retrieveTimerEl.classList.add("urgent");
+      if (retrieveTimeLeft <= 0) {
+        clearInterval(retrieveInterval);
+        finishRetrieveChallenge(false);
+      }
+    }, 1000);
+  }
+
+  function finishRetrieveChallenge(success) {
+    clearInterval(retrieveInterval);
+    retrieveActive = false;
+    retrieveBox.classList.add("hidden");
+
+    if (success) {
+      resultEl.textContent = `✅ ¡Sacaste "${retrieveTargetFile.name}" a tiempo! Reto de recuperación superado.`;
+      resultEl.className = "demo-result status--good";
+      beepSuccess();
+    } else {
+      resultEl.textContent = `⏰ Se acabó el tiempo. No lograste sacar "${retrieveTargetFile.name}" a tiempo.`;
+      resultEl.className = "demo-result status--bad";
+      beepWrong();
+    }
+    retrieveTargetFile = null;
+  }
+
+  buildGame();
+})();
+// ==========================================
+// 6. PARCIAL 4 — LIMPIEZA DE ALMOHADILLAS DE IMPRESORA
+// ==========================================
+(function initPrinterCleaning() {
+  const wrap = document.getElementById("printerPadWrap");
+  const cleanCanvas = document.getElementById("pad-clean-layer");
+  const dirtCanvas = document.getElementById("pad-dirt-layer");
+  const cleanCtx = cleanCanvas.getContext("2d");
+  const dirtCtx = dirtCanvas.getContext("2d");
+  const progressFill = document.getElementById("cleanProgressFill");
+  const progressLabel = document.getElementById("cleanProgressLabel");
+  const resetBtn = document.getElementById("resetPadBtn");
+
+  const BRUSH_RADIUS = 22;
+  const SAMPLE_COLS = 18;
+  const SAMPLE_ROWS = 11;
+  let isDrawing = false;
+  let lastSampleTime = 0;
+  let successShown = false;
+
+  function rnd(a, b) { return a + Math.random() * (b - a); }
+
+  function sizeCanvases() {
+    const rect = wrap.getBoundingClientRect();
+    [cleanCanvas, dirtCanvas].forEach((c) => {
+      c.width = rect.width;
+      c.height = rect.height;
+    });
+  }
+
+  function drawCleanPad() {
+    const w = cleanCanvas.width, h = cleanCanvas.height;
+    cleanCtx.clearRect(0, 0, w, h);
+    cleanCtx.fillStyle = "#e7e2d6";
+    cleanCtx.fillRect(0, 0, w, h);
+    // Textura suave tipo esponja/almohadilla
+    for (let i = 0; i < 90; i++) {
+      cleanCtx.fillStyle = `rgba(255,255,255,${rnd(0.03, 0.09)})`;
+      cleanCtx.beginPath();
+      cleanCtx.arc(Math.random() * w, Math.random() * h, rnd(4, 10), 0, Math.PI * 2);
+      cleanCtx.fill();
+    }
+  }
+
+  function drawDirtLayer() {
+    const w = dirtCanvas.width, h = dirtCanvas.height;
+    dirtCtx.globalCompositeOperation = "source-over";
+    dirtCtx.clearRect(0, 0, w, h);
+
+    const inkColors = ["#1a1a1a", "#00AEEF", "#EC008C", "#FFF200"]; // negro, cian, magenta, amarillo (tinta CMYK)
+    for (let i = 0; i < 26; i++) {
+      const cx = Math.random() * w;
+      const cy = Math.random() * h;
+      const color = inkColors[Math.floor(Math.random() * inkColors.length)];
+      const blobRadius = rnd(14, 32);
+      const clusters = 4 + Math.floor(Math.random() * 4);
+      for (let c = 0; c < clusters; c++) {
+        dirtCtx.fillStyle = color;
+        dirtCtx.globalAlpha = rnd(0.5, 0.85);
+        dirtCtx.beginPath();
+        dirtCtx.arc(
+          cx + rnd(-blobRadius, blobRadius),
+          cy + rnd(-blobRadius, blobRadius),
+          rnd(blobRadius * 0.4, blobRadius),
+          0, Math.PI * 2
+        );
+        dirtCtx.fill();
+      }
+    }
+    dirtCtx.globalAlpha = 1;
+  }
+
+  function getPointerPos(e) {
+    const rect = dirtCanvas.getBoundingClientRect();
+    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+    return {
+      x: (clientX - rect.left) * (dirtCanvas.width / rect.width),
+      y: (clientY - rect.top) * (dirtCanvas.height / rect.height)
+    };
+  }
+
+  function eraseAt(x, y) {
+    dirtCtx.globalCompositeOperation = "destination-out";
+    dirtCtx.beginPath();
+    dirtCtx.arc(x, y, BRUSH_RADIUS, 0, Math.PI * 2);
+    dirtCtx.fill();
+    dirtCtx.globalCompositeOperation = "source-over";
+  }
+
+  function updateProgress() {
+    const w = dirtCanvas.width, h = dirtCanvas.height;
+    if (!w || !h) return;
+    let dirty = 0;
+    const total = SAMPLE_COLS * SAMPLE_ROWS;
+    for (let row = 0; row < SAMPLE_ROWS; row++) {
+      for (let col = 0; col < SAMPLE_COLS; col++) {
+        const px = Math.floor((col + 0.5) * (w / SAMPLE_COLS));
+        const py = Math.floor((row + 0.5) * (h / SAMPLE_ROWS));
+        const alpha = dirtCtx.getImageData(px, py, 1, 1).data[3];
+        if (alpha > 25) dirty++;
+      }
+    }
+    const cleanPct = Math.round(((total - dirty) / total) * 100);
+    progressFill.style.width = cleanPct + "%";
+    progressLabel.textContent = `Limpieza: ${cleanPct}%`;
+
+    if (cleanPct >= 92 && !successShown) {
+      successShown = true;
+      progressLabel.textContent = `Limpieza: ${cleanPct}% — ¡Almohadilla limpia! 🧽✨ Buen mantenimiento.`;
+    }
+  }
+
+  function startDraw(e) {
+    isDrawing = true;
+    const pos = getPointerPos(e);
+    eraseAt(pos.x, pos.y);
+  }
+
+  function moveDraw(e) {
+    if (!isDrawing) return;
+    e.preventDefault();
+    const pos = getPointerPos(e);
+    eraseAt(pos.x, pos.y);
+
+    const now = performance.now();
+    if (now - lastSampleTime > 120) {
+      lastSampleTime = now;
+      updateProgress();
+    }
+  }
+
+  function endDraw() {
+    if (isDrawing) updateProgress();
+    isDrawing = false;
+  }
+
+  wrap.addEventListener("mousedown", startDraw);
+  wrap.addEventListener("mousemove", moveDraw);
+  window.addEventListener("mouseup", endDraw);
+
+  wrap.addEventListener("touchstart", startDraw, { passive: true });
+  wrap.addEventListener("touchmove", moveDraw, { passive: false });
+  window.addEventListener("touchend", endDraw);
+
+  function resetPad() {
+    successShown = false;
+    sizeCanvases();
+    drawCleanPad();
+    drawDirtLayer();
+    progressFill.style.width = "0%";
+    progressLabel.textContent = "Limpieza: 0%";
+  }
+
+  resetBtn.addEventListener("click", resetPad);
+  window.addEventListener("resize", resetPad);
+
+  resetPad();
+})();
+  </script>
+</body>
+</html>

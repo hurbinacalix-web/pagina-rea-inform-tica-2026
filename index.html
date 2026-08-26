@@ -1,0 +1,2725 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Área de Informática — Instituto Oficial Franklin D. Roosevelt</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+/* ============================================================
+   ÁREA DE INFORMÁTICA — Instituto Oficial Franklin D. Roosevelt
+   Sistema de diseño: "terminal viva" — estética de editor de
+   código + fondo animado de red neuronal/circuitos.
+   ============================================================ */
+
+:root {
+  --paper: #0B0E14;
+  --paper-card: rgba(18, 24, 38, 0.72);
+  --paper-alt: #10151F;
+  --ink: #F0F4FC;
+  --muted: #8A98B0;
+  --line: rgba(255, 255, 255, 0.1);
+
+  --blue: #3A64FF;
+  --blue-glow: rgba(58, 100, 255, 0.4);
+  --cyan: #00F0FF;
+  --orange: #FF7B38;
+  --green: #2EE686;
+  --purple: #B389FF;
+  --rojo: #E63946;
+  --amarillo: #FFB703;
+
+  --display: 'Space Grotesk', sans-serif;
+  --body: 'Inter', sans-serif;
+  --mono: 'JetBrains Mono', monospace;
+
+  --radius: 14px;
+  --max: 1160px;
+}
+
+* { box-sizing: border-box; }
+
+.hidden { display: none !important; }
+
+html { scroll-behavior: smooth; }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  * { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
+}
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--body);
+  line-height: 1.6;
+  font-size: 16px;
+  overflow-x: hidden;
+  position: relative;
+}
+
+a { color: inherit; }
+
+::selection { background: var(--blue); color: #fff; }
+
+/* ==========================================================
+   FONDO ANIMADO — Red de nodos / circuitos (canvas)
+========================================================== */
+#network-bg {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -2;
+  background:
+    radial-gradient(ellipse 80% 50% at 50% -10%, rgba(58, 100, 255, 0.16), transparent 60%),
+    radial-gradient(ellipse 60% 40% at 90% 110%, rgba(0, 240, 255, 0.08), transparent 60%),
+    var(--paper);
+}
+
+.grid-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.028) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.028) 1px, transparent 1px);
+  background-size: 42px 42px;
+  mask-image: radial-gradient(ellipse 90% 70% at 50% 20%, black 40%, transparent 85%);
+}
+
+h1, h2, h3 {
+  font-family: var(--display);
+  font-weight: 700;
+  line-height: 1.15;
+  margin: 0 0 0.5em;
+  color: #FFF;
+}
+
+h2 { font-size: clamp(1.8rem, 3.5vw, 2.5rem); }
+h3 { font-size: 1.25rem; }
+
+p { margin: 0 0 1em; color: var(--muted); }
+
+.eyebrow {
+  font-family: var(--mono);
+  font-size: 0.85rem;
+  color: var(--cyan);
+  margin-bottom: 0.75em;
+  letter-spacing: 1px;
+}
+
+/* =========================
+   BOTÓN MENÚ
+========================= */
+.menu-btn {
+  position: fixed;
+  top: 10px;
+  left: 20px;
+  width: 50px;
+  height: 50px;
+  background: var(--blue-glow);
+  color: white;
+  font-size: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 12px;
+  cursor: pointer;
+  z-index: 2000;
+  box-shadow: 0 6px 20px rgba(108, 162, 243, 0.479);
+  transition: .3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.menu-btn:hover {
+  background: var(--amarillo);
+  color: black;
+  transform: scale(1.1) rotate(5deg);
+}
+
+/* =========================
+   MENÚ DESLIZABLE
+========================= */
+.menu-lateral {
+  position: fixed;
+  top: 0;
+  left: -320px;
+  width: 280px;
+  height: 100vh;
+  background: rgba(11, 14, 20, 0.97);
+  backdrop-filter: blur(20px);
+  padding: 90px 24px 40px;
+  transition: .4s cubic-bezier(0.16, 1, 0.3, 1);
+  z-index: 1500;
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid var(--line);
+}
+
+.menu-lateral.active { left: 0; }
+
+.menu-lateral .logo h2 {
+  color: var(--cyan);
+  font-size: 18px;
+  text-align: center;
+}
+
+.menu-lateral ul {
+  list-style: none;
+  margin-top: 30px;
+  padding: 0;
+  width: 100%;
+}
+
+.menu-lateral li { margin: 16px 0; text-align: center; }
+
+.menu-lateral a {
+  color: var(--ink);
+  text-decoration: none;
+  font-size: 17px;
+  font-weight: 600;
+  transition: .3s;
+}
+
+.menu-lateral a:hover {
+  color: var(--cyan);
+  padding-left: 8px;
+}
+
+.menu-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 1400;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .35s ease;
+}
+
+.menu-overlay.active { opacity: 1; pointer-events: auto; }
+
+/* ---------- NAV BAR ---------- */
+.nav {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem clamp(1.25rem, 4vw, 3rem) 1rem 90px;
+  background: rgba(11, 14, 20, 0.75);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--line);
+}
+
+.nav__brand {
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 1.05rem;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  color: #FFF;
+}
+
+.nav__dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--cyan);
+  box-shadow: 0 0 10px var(--cyan);
+  animation: blink 1.6s infinite;
+}
+
+.nav__logo {
+  height: 46px;
+  width: 46px;
+  object-fit: contain;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.92);
+  padding: 3px;
+  box-shadow: 0 0 0 1px var(--line), 0 4px 14px rgba(0, 0, 0, 0.35);
+  flex-shrink: 0;
+}
+
+.nav__cta {
+  font-family: var(--mono);
+  font-size: 0.85rem;
+  text-decoration: none;
+  background: var(--blue);
+  color: #FFF;
+  padding: 0.6rem 1.2rem;
+  border-radius: var(--radius);
+  transition: .3s;
+  box-shadow: 0 0 15px var(--blue-glow);
+}
+
+.nav__cta:hover { transform: translateY(-2px); background: #2852f5; }
+
+@keyframes blink { 50% { opacity: 0.3; } }
+
+/* ---------- PORTADA / HERO ---------- */
+.hero-section {
+  position: relative;
+  padding: clamp(4rem, 10vw, 7rem) clamp(1.25rem, 4vw, 3rem) 5rem;
+  max-width: var(--max);
+  margin: 0 auto;
+}
+
+.hero-bg-glow {
+  position: absolute;
+  top: -10%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 600px;
+  height: 400px;
+  background: radial-gradient(circle, var(--blue-glow) 0%, rgba(0, 240, 255, 0.15) 50%, transparent 70%);
+  filter: blur(60px);
+  z-index: -1;
+  pointer-events: none;
+}
+
+.hero-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--line);
+  padding: 0.4rem 1rem;
+  border-radius: 50px;
+  font-family: var(--mono);
+  font-size: 0.82rem;
+  color: var(--cyan);
+  margin-bottom: 1.5rem;
+  backdrop-filter: blur(10px);
+}
+
+.badge-dot {
+  width: 8px;
+  height: 8px;
+  background: var(--green);
+  border-radius: 50%;
+  box-shadow: 0 0 8px var(--green);
+  animation: blink 1.5s infinite;
+}
+
+.hero-title {
+  font-size: clamp(2.3rem, 5vw, 4rem);
+  max-width: 900px;
+  margin-bottom: 1rem;
+  letter-spacing: -1px;
+}
+
+.gradient-text {
+  background: linear-gradient(135deg, var(--cyan) 0%, var(--blue) 50%, var(--green) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.hero-subtitle {
+  font-size: clamp(1.05rem, 2vw, 1.25rem);
+  max-width: 720px;
+  margin-bottom: 2.5rem;
+}
+
+.hero-terminal {
+  width: 100%;
+  max-width: 750px;
+  text-align: left;
+  margin-bottom: 2.5rem;
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), 0 0 0 1px var(--line);
+}
+
+.editor-chrome {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #171E2B;
+  padding: 0.75rem 1rem;
+}
+
+.editor-chrome__dot { width: 11px; height: 11px; border-radius: 50%; }
+.editor-chrome__dot--red { background: #FF5F56; }
+.editor-chrome__dot--yellow { background: #FFBD2E; }
+.editor-chrome__dot--green { background: #27C93F; }
+
+.editor-chrome__filename {
+  margin-left: 0.5rem;
+  font-family: var(--mono);
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.hero__code {
+  margin: 0;
+  background: #0D1117;
+  color: #E6EDF3;
+  padding: 1.5rem;
+  font-family: var(--mono);
+  font-size: clamp(0.85rem, 2vw, 1rem);
+  overflow-x: auto;
+  min-height: 168px;
+}
+
+.tok-comment { color: #8B949E; }
+.tok-key { color: #FF7B72; }
+.tok-func { color: #D2A8FF; }
+.tok-string { color: #A5D6FF; }
+.tok-attr { color: #7EE787; }
+.tok-num { color: #79C0FF; }
+
+.cursor {
+  display: inline-block;
+  background: var(--cyan);
+  width: 0.5em;
+  animation: blink 1s step-end infinite;
+}
+
+.hero__actions {
+  display: flex;
+  gap: 1.2rem;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-bottom: 3.5rem;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  font-family: var(--body);
+  font-weight: 600;
+  font-size: 1rem;
+  padding: 0.9rem 1.8rem;
+  border-radius: var(--radius);
+  transition: all 0.3s ease;
+  border: none;
+  cursor: pointer;
+}
+
+.btn--primary {
+  background: var(--blue);
+  color: #fff;
+}
+
+.btn--glow {
+  box-shadow: 0 0 25px var(--blue-glow);
+}
+
+.btn--primary:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 30px rgba(58, 100, 255, 0.6);
+  background: #2B55FF;
+}
+
+.btn--ghost {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--line);
+  color: #FFF;
+}
+
+.btn--ghost:hover {
+  border-color: var(--cyan);
+  color: var(--cyan);
+  background: rgba(0, 240, 255, 0.05);
+}
+
+.btn--block { width: 100%; }
+
+.reward-locked-hint {
+  font-family: var(--mono);
+  font-size: 0.82rem;
+  color: var(--muted);
+  text-align: center;
+  margin: 0.2rem 0 0;
+}
+
+.reward-games {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: center;
+  width: 100%;
+}
+
+.reward-game-btn {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 220px;
+  border-radius: var(--radius);
+  overflow: hidden;
+  text-decoration: none;
+  background: var(--paper-alt);
+  border: 1px solid var(--line);
+  transition: all 0.3s ease;
+}
+
+.reward-game-btn img {
+  display: block;
+  width: 100%;
+  height: 110px;
+  object-fit: contain;
+  background: #000;
+  padding: 0.4rem 0;
+  filter: grayscale(100%) brightness(0.5);
+  transition: filter 0.3s ease;
+}
+
+.reward-game-btn__label {
+  display: block;
+  width: 100%;
+  padding: 0.7rem 0.6rem;
+  text-align: center;
+  font-family: var(--body);
+  font-weight: 600;
+  font-size: 0.88rem;
+  color: var(--muted);
+}
+
+.reward-game-btn[aria-disabled="true"] {
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.reward-game-btn:not([aria-disabled="true"]) {
+  border-color: var(--cyan);
+  box-shadow: 0 0 20px rgba(0, 240, 255, 0.25);
+}
+
+.reward-game-btn:not([aria-disabled="true"]) img {
+  filter: none;
+}
+
+.reward-game-btn:not([aria-disabled="true"]) .reward-game-btn__label {
+  color: var(--ink);
+}
+
+.reward-game-btn:not([aria-disabled="true"]):hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 30px rgba(0, 240, 255, 0.45);
+}
+
+.hero-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+  width: 100%;
+  max-width: 800px;
+  border-top: 1px solid var(--line);
+  padding-top: 2rem;
+}
+
+.stat-box h3 {
+  font-size: 1.8rem;
+  color: var(--cyan);
+  margin-bottom: 0.2rem;
+  font-family: var(--mono);
+}
+
+.stat-box p { font-size: 0.9rem; margin: 0; }
+
+@media (max-width: 600px) {
+  .hero-stats { grid-template-columns: 1fr; gap: 1rem; }
+}
+
+/* ---------- SECCIONES ---------- */
+.section {
+  position: relative;
+  max-width: var(--max);
+  margin: 0 auto;
+  padding: clamp(3rem, 6vw, 5rem) clamp(1.25rem, 4vw, 3rem);
+  border-top: 1px solid var(--line);
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.section.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.line-no {
+  position: absolute;
+  left: clamp(0.25rem, 1.5vw, 0.5rem);
+  top: clamp(3rem, 6vw, 5rem);
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.15);
+}
+
+@media (max-width: 900px) { .line-no { display: none; } }
+
+.section__lead { color: var(--muted); max-width: 60ch; margin-bottom: 2rem; }
+
+/* ---------- ¿POR QUÉ INFORMÁTICA? ---------- */
+.why-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 1.4rem;
+  margin-top: 2rem;
+}
+
+.why-card {
+  background: var(--paper-card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 1.6rem;
+  backdrop-filter: blur(10px);
+  transition: transform .3s ease, border-color .3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.why-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 20% 0%, rgba(0,240,255,0.08), transparent 60%);
+  opacity: 0;
+  transition: opacity .3s ease;
+}
+
+.why-card:hover {
+  transform: translateY(-6px);
+  border-color: rgba(0, 240, 255, 0.35);
+}
+
+.why-card:hover::before { opacity: 1; }
+
+.why-icon {
+  font-size: 1.8rem;
+  display: inline-flex;
+  width: 48px;
+  height: 48px;
+  align-items: center;
+  justify-content: center;
+  background: rgba(58,100,255,0.12);
+  border-radius: 12px;
+  margin-bottom: 1rem;
+}
+
+.why-card h3 { font-size: 1.05rem; margin-bottom: 0.4rem; }
+.why-card p { font-size: 0.92rem; margin: 0; }
+
+/* ---------- TARJETAS DESPLEGABLES (ACORDEÓN PLAN DE ESTUDIO) ---------- */
+.accordion-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  margin-top: 2rem;
+}
+
+.accordion-card {
+  background: var(--paper-card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  overflow: hidden;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+}
+
+.accordion-card:hover {
+  border-color: rgba(0, 240, 255, 0.3);
+}
+
+.accordion-header {
+  padding: 1.5rem 1.8rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.accordion-title-group {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.accordion-badge {
+  font-family: var(--mono);
+  font-size: 0.8rem;
+  padding: 0.3rem 0.8rem;
+  border-radius: 20px;
+  background: rgba(58, 100, 255, 0.15);
+  color: var(--cyan);
+  border: 1px solid rgba(0, 240, 255, 0.2);
+}
+
+.accordion-header h3 {
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+.accordion-icon {
+  font-family: var(--mono);
+  font-size: 1.5rem;
+  color: var(--cyan);
+  transition: transform 0.3s ease;
+}
+
+.accordion-body {
+  max-height: 0;
+  overflow: hidden;
+  padding: 0 1.8rem;
+  transition: max-height 0.4s ease, padding 0.4s ease;
+}
+
+.accordion-card.open {
+  border-color: var(--blue);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.accordion-card.open .accordion-icon {
+  transform: rotate(45deg);
+  color: var(--rojo);
+}
+
+.accordion-card.open .accordion-body {
+  max-height: 600px;
+  padding: 0 1.8rem 1.8rem 1.8rem;
+}
+
+.accordion-desc {
+  font-size: 0.95rem;
+  color: var(--muted);
+  margin-bottom: 1.2rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.subjects-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 0.8rem;
+}
+
+.subjects-list li {
+  background: rgba(255, 255, 255, 0.03);
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  font-size: 0.92rem;
+  color: #E2E8F0;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.subj-icon { font-size: 1.1rem; }
+
+/* ---------- MATERIAS (GRID TARJETAS VOLTEABLES) ---------- */
+.file-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+.file-card {
+  perspective: 1200px;
+  height: 220px;
+}
+
+.file-card__inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.6s cubic-bezier(.4,.2,.2,1);
+  transform-style: preserve-3d;
+}
+
+.file-card:hover .file-card__inner,
+.file-card.flipped .file-card__inner {
+  transform: rotateY(180deg);
+}
+
+.file-card__face {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  border: 1px solid var(--line);
+  border-top: 3px solid var(--accent);
+  background: var(--paper-card);
+  backdrop-filter: blur(10px);
+  display: flex;
+  flex-direction: column;
+}
+
+.file-card__face--back {
+  transform: rotateY(180deg);
+  background: var(--paper-alt);
+  justify-content: center;
+}
+
+.file-card__name {
+  font-family: var(--mono);
+  font-weight: 600;
+  font-size: 1.1rem;
+  margin-bottom: 0.6rem;
+  color: #FFF;
+}
+
+.file-card .ext { color: var(--accent); }
+
+.file-card__hint {
+  margin-top: auto;
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  color: var(--muted);
+  opacity: .7;
+}
+
+.tool-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.tool-tags span {
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  padding: 0.3rem 0.7rem;
+  border-radius: 20px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid var(--line);
+  color: var(--ink);
+}
+
+/* ---------- CAMPO LABORAL / STATS ---------- */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.4rem;
+  margin-top: 2rem;
+}
+
+.big-stat {
+  background: var(--paper-card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 1.8rem;
+  text-align: center;
+  backdrop-filter: blur(10px);
+}
+
+.big-stat .num {
+  font-family: var(--mono);
+  font-size: clamp(2rem, 4vw, 2.6rem);
+  font-weight: 700;
+  color: var(--cyan);
+  display: block;
+}
+
+.big-stat .label {
+  font-size: 0.88rem;
+  color: var(--muted);
+  margin: 0;
+}
+
+.roles-strip {
+  margin-top: 2rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.7rem;
+}
+
+.role-chip {
+  font-family: var(--mono);
+  font-size: 0.85rem;
+  padding: 0.55rem 1rem;
+  border-radius: 30px;
+  border: 1px solid var(--line);
+  background: rgba(255,255,255,0.03);
+  color: var(--ink);
+  transition: .25s;
+}
+
+.role-chip:hover {
+  border-color: var(--green);
+  color: var(--green);
+  transform: translateY(-2px);
+}
+
+/* ---------- TERMINAL INTERACTIVA ---------- */
+.terminal-playground {
+  margin-top: 2rem;
+  max-width: 800px;
+}
+
+.playground-hint {
+  font-family: var(--mono);
+  font-size: 0.85rem;
+  color: var(--muted);
+  margin-bottom: 1rem;
+}
+
+.playground-hint kbd {
+  background: rgba(255,255,255,0.08);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 0.1rem 0.4rem;
+  font-family: var(--mono);
+  color: var(--cyan);
+}
+
+#terminal-output {
+  height: 260px;
+  overflow-y: auto;
+  padding: 1.25rem;
+  font-family: var(--mono);
+  font-size: 0.9rem;
+  background: #0D1117;
+  color: #E6EDF3;
+}
+
+#terminal-output p { margin: 0 0 0.5em; color: #E6EDF3; }
+#terminal-output .term-echo { color: var(--cyan); }
+#terminal-output .term-error { color: var(--rojo); }
+#terminal-output .term-sys { color: var(--green); }
+
+.terminal-input-row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: #171E2B;
+  padding: 0.85rem 1.25rem;
+  border-top: 1px solid var(--line);
+}
+
+.terminal-input-row span {
+  font-family: var(--mono);
+  color: var(--cyan);
+}
+
+#terminal-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--ink);
+  font-family: var(--mono);
+  font-size: 0.9rem;
+}
+
+.term-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.term-chip {
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  padding: 0.4rem 0.8rem;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  background: rgba(255,255,255,0.03);
+  color: var(--cyan);
+  cursor: pointer;
+  transition: .2s;
+}
+
+.term-chip:hover { background: rgba(0,240,255,0.1); border-color: var(--cyan); }
+
+/* ---------- QUIZ DE ESPECIALIDAD ---------- */
+.quiz-card {
+  background: var(--paper-card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 2rem;
+  max-width: 640px;
+  margin-top: 2rem;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 20px 45px rgba(0,0,0,0.35);
+}
+
+.quiz-progress-track {
+  width: 100%;
+  height: 6px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 1.2rem;
+}
+
+.quiz-progress-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, var(--blue), var(--cyan));
+  transition: width .4s ease;
+}
+
+.quiz-step-label {
+  font-family: var(--mono);
+  font-size: 0.8rem;
+  color: var(--cyan);
+  letter-spacing: 1px;
+}
+
+.quiz-options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  margin-top: 1.2rem;
+}
+
+.quiz-option {
+  text-align: left;
+  padding: 0.95rem 1.2rem;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  background: rgba(255,255,255,0.03);
+  color: var(--ink);
+  font-family: var(--body);
+  font-size: 0.98rem;
+  cursor: pointer;
+  transition: .2s;
+}
+
+.quiz-option:hover {
+  border-color: var(--cyan);
+  background: rgba(0,240,255,0.06);
+  transform: translateX(4px);
+}
+
+.quiz-result {
+  text-align: center;
+}
+
+.quiz-result .result-icon {
+  font-size: 3rem;
+  margin-bottom: 0.6rem;
+}
+
+.quiz-result .result-tag {
+  font-family: var(--mono);
+  color: var(--cyan);
+  font-size: 0.85rem;
+  letter-spacing: 1px;
+}
+
+.quiz-bar-row {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  margin: 0.5rem 0;
+  font-size: 0.85rem;
+}
+
+.quiz-bar-row .bar-label { width: 130px; flex-shrink: 0; color: var(--muted); font-family: var(--mono); font-size: 0.78rem; }
+.quiz-bar-track { flex: 1; height: 8px; background: rgba(255,255,255,0.06); border-radius: 6px; overflow: hidden; }
+.quiz-bar-fill { height: 100%; background: linear-gradient(90deg, var(--blue), var(--green)); width: 0%; transition: width 1s ease; }
+
+/* ---------- TESTIMONIOS ---------- */
+.testi-track-wrap {
+  overflow: hidden;
+  margin-top: 2rem;
+  position: relative;
+}
+
+.testi-track {
+  display: flex;
+  gap: 1.4rem;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  padding-bottom: 1rem;
+}
+
+.testi-card {
+  scroll-snap-align: start;
+  flex: 0 0 300px;
+  background: var(--paper-card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 1.6rem;
+  backdrop-filter: blur(10px);
+}
+
+.testi-quote {
+  font-size: 0.95rem;
+  color: #E2E8F0;
+  margin-bottom: 1rem;
+}
+
+.testi-name {
+  font-family: var(--mono);
+  font-size: 0.85rem;
+  color: var(--cyan);
+  margin: 0;
+}
+
+.testi-role {
+  font-size: 0.8rem;
+  color: var(--muted);
+  margin: 0;
+}
+
+/* ---------- FAQ ---------- */
+.faq-list { margin-top: 2rem; display: flex; flex-direction: column; gap: .8rem; }
+
+.faq-item {
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--paper-card);
+  overflow: hidden;
+}
+
+.faq-q {
+  padding: 1.1rem 1.4rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  font-weight: 600;
+  color: #fff;
+}
+
+.faq-q .faq-icon { color: var(--cyan); font-family: var(--mono); transition: transform .3s; }
+.faq-item.open .faq-icon { transform: rotate(45deg); color: var(--rojo); }
+
+.faq-a {
+  max-height: 0;
+  overflow: hidden;
+  padding: 0 1.4rem;
+  transition: max-height .35s ease, padding .35s ease;
+  font-size: 0.92rem;
+  color: var(--muted);
+}
+
+.faq-item.open .faq-a { max-height: 300px; padding: 0 1.4rem 1.2rem; }
+
+/* ---------- CÓMO LLEGAR & VIDEO ---------- */
+.location-card {
+  background: var(--paper-card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+.video-wrapper {
+  position: relative;
+  width: 100%;
+  padding-bottom: 56.25%; /* Relación de aspecto 16:9 */
+  height: 0;
+  overflow: hidden;
+  border-radius: var(--radius);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+.video-wrapper video {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: var(--radius);
+}
+
+.cta {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3rem;
+  align-items: start;
+}
+
+@media (max-width: 800px) { .cta { grid-template-columns: 1fr; } }
+
+.contact-form {
+  background: var(--paper-card);
+  padding: 2rem;
+  border-radius: var(--radius);
+  border: 1px solid var(--line);
+  box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+  margin-top: 2rem;
+  max-width: 560px;
+}
+
+.form-group { margin-bottom: 1.2rem; }
+
+.form-group label {
+  display: block;
+  font-family: var(--mono);
+  font-size: 0.82rem;
+  margin-bottom: 0.4rem;
+  color: var(--cyan);
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  padding: 0.85rem;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  font-family: var(--body);
+  font-size: 0.95rem;
+  background: rgba(0, 0, 0, 0.3);
+  color: #FFF;
+  transition: border-color 0.3s;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: var(--cyan);
+  box-shadow: 0 0 10px rgba(0, 240, 255, 0.2);
+}
+
+.form-success {
+  display: none;
+  align-items: center;
+  gap: 0.8rem;
+  background: rgba(46, 230, 134, 0.1);
+  border: 1px solid rgba(46, 230, 134, 0.4);
+  color: var(--green);
+  padding: 1rem 1.2rem;
+  border-radius: 10px;
+  font-family: var(--mono);
+  font-size: 0.88rem;
+  margin-top: 1rem;
+}
+
+.form-success.show { display: flex; }
+
+/* ---------- EVALUACIÓN FINAL ---------- */
+.eval-card {
+  background: var(--paper-card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 2rem;
+  max-width: 640px;
+  margin-top: 2rem;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 20px 45px rgba(0,0,0,0.35);
+}
+
+.eval-top-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.6rem;
+}
+
+.eval-meta-right {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.eval-timer {
+  font-family: var(--mono);
+  font-size: 0.85rem;
+  color: var(--cyan);
+  border: 1px solid var(--line);
+  padding: 0.25rem 0.7rem;
+  border-radius: 20px;
+  background: rgba(0, 240, 255, 0.06);
+  min-width: 2.6em;
+  text-align: center;
+  transition: color .2s ease, border-color .2s ease;
+}
+
+.eval-timer.eval-timer--urgent {
+  color: var(--rojo);
+  border-color: var(--rojo);
+  background: rgba(230, 57, 70, 0.1);
+  animation: pulseCorrect .6s ease infinite;
+}
+
+.eval-score-live {
+  font-family: var(--mono);
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.eval-score-live strong { color: var(--green); }
+
+.eval-options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  margin-top: 1.2rem;
+  margin-bottom: 0.6rem;
+}
+
+.eval-option {
+  position: relative;
+  text-align: left;
+  padding: 0.95rem 1.2rem;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  background: rgba(255,255,255,0.03);
+  color: var(--ink);
+  font-family: var(--body);
+  font-size: 0.98rem;
+  cursor: pointer;
+  transition: transform .15s ease, border-color .2s ease, background .2s ease;
+}
+
+.eval-option:hover:not(:disabled) {
+  border-color: var(--cyan);
+  background: rgba(0,240,255,0.06);
+  transform: translateX(4px);
+}
+
+.eval-option.is-selected:not(.is-correct):not(.is-incorrect) {
+  border-color: var(--blue);
+  background: rgba(58, 100, 255, 0.14);
+  color: #fff;
+}
+
+.eval-option.is-selected:not(.is-correct):not(.is-incorrect)::after {
+  content: "●";
+  position: absolute;
+  right: 1.2rem;
+  color: var(--blue);
+}
+
+.eval-option:disabled { cursor: not-allowed; }
+
+.eval-option.is-correct {
+  border-color: var(--green);
+  background: rgba(46, 230, 134, 0.14);
+  color: #fff;
+  animation: pulseCorrect .4s ease;
+}
+
+.eval-option.is-correct::after {
+  content: "✔";
+  position: absolute;
+  right: 1.2rem;
+  color: var(--green);
+  font-weight: 700;
+}
+
+.eval-option.is-incorrect {
+  border-color: var(--rojo);
+  background: rgba(230, 57, 70, 0.14);
+  color: #fff;
+  animation: shakeWrong .4s ease;
+}
+
+.eval-option.is-incorrect::after {
+  content: "✘";
+  position: absolute;
+  right: 1.2rem;
+  color: var(--rojo);
+  font-weight: 700;
+}
+
+.eval-option:disabled:not(.is-correct):not(.is-incorrect) {
+  opacity: 0.45;
+}
+
+@keyframes pulseCorrect {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.02); }
+  100% { transform: scale(1); }
+}
+
+@keyframes shakeWrong {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-6px); }
+  75% { transform: translateX(6px); }
+}
+
+.eval-feedback {
+  min-height: 1.4em;
+  font-family: var(--mono);
+  font-size: 0.85rem;
+  margin: 0 0 1.2rem;
+}
+
+.eval-feedback.correct { color: var(--green); }
+.eval-feedback.incorrect { color: var(--rojo); }
+
+#eval-next-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}
+
+.eval-final-score {
+  font-family: var(--mono);
+  font-size: 2.6rem;
+  font-weight: 700;
+  color: var(--cyan);
+  margin: 0.3rem 0 0.6rem;
+}
+
+#eval-unlock-btn[aria-disabled="true"] {
+  background: rgba(255,255,255,0.06);
+  color: var(--muted);
+  box-shadow: none;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* ---------- FOOTER ---------- */
+.footer {
+  text-align: center;
+  padding: 3rem 1.25rem;
+  color: var(--muted);
+  font-size: 0.85rem;
+  border-top: 1px solid var(--line);
+  position: relative;
+}
+
+.footer__muted {
+  font-family: var(--mono);
+  font-size: 0.8rem;
+  color: var(--cyan);
+  margin-top: 0.4rem;
+}
+
+/* Scrollbar terminal */
+#terminal-output::-webkit-scrollbar, .testi-track::-webkit-scrollbar { height: 6px; width: 6px; }
+#terminal-output::-webkit-scrollbar-thumb { background: rgba(0,240,255,0.3); border-radius: 6px; }
+
+@media (max-width: 768px) { .nav__links { display: none; } }
+  </style>
+</head>
+<body>
+
+<!-- Fondo animado: red de nodos / circuitos -->
+<canvas id="network-bg"></canvas>
+<div class="grid-overlay"></div>
+
+<div class="menu-btn" id="menuBtn">☰</div>
+<div class="menu-overlay" id="menuOverlay"></div>
+
+<nav class="menu-lateral" id="menuLateral">
+  <div class="logo">
+    <h2>Área de Informática</h2>
+  </div>
+  <ul>
+    <li><a href="#inicio">Inicio</a></li>
+    <li><a href="#porque">¿Por qué Informática?</a></li>
+    <li><a href="#plan">Plan de estudio</a></li>
+    <li><a href="#materias">Materias</a></li>
+    <li><a href="#campo-laboral">Campo laboral</a></li>
+    <li><a href="#terminal">Terminal interactiva</a></li>
+    <li><a href="#quiz">Descubre tu especialidad</a></li>
+    <li><a href="#testimonios">Egresados</a></li>
+    <li><a href="#faq">Preguntas frecuentes</a></li>
+    <li><a href="#como-llegar">Cómo llegar</a></li>
+    <li><a href="#evaluacion-final">Evaluación final</a></li>
+  </ul>
+</nav>
+
+<nav class="nav">
+  <div class="nav__brand">
+    <span class="nav__dot"></span>
+    Instituto Oficial Franklin Delano Roosevelt
+  </div>
+  <img class="nav__logo" src="222450c5-f8f1-46c5-b533-70dcfaf3bf57 (1).png" alt="Escudo del Instituto Oficial Franklin Delano Roosevelt">
+</nav>
+
+<header class="hero-section" id="inicio">
+  <div class="hero-bg-glow"></div>
+  <div class="hero-container">
+
+    <div class="hero-badge">
+      <span class="badge-dot"></span> Bachillerato Técnico Profesional
+    </div>
+
+    <h1 class="hero-title">
+      Bienvenidos al Área de <span class="gradient-text">Informática</span>
+    </h1>
+
+    <p class="hero-subtitle">
+      Aprende a programar, diseñar redes, administrar bases de datos y construir tecnología real. Sal con un título técnico oficial y un portafolio profesional listo para la industria.
+    </p>
+
+    <div class="hero-terminal">
+      <div class="editor-chrome">
+        <span class="editor-chrome__dot editor-chrome__dot--red"></span>
+        <span class="editor-chrome__dot editor-chrome__dot--yellow"></span>
+        <span class="editor-chrome__dot editor-chrome__dot--green"></span>
+        <span class="editor-chrome__filename">bienvenida.js</span>
+      </div>
+      <pre class="hero__code"><code id="typewriter-code"></code></pre>
+    </div>
+
+    <div class="hero__actions">
+      <a href="#plan" class="btn btn--primary btn--glow">Explorar Plan de Estudio ➔</a>
+      <a href="#evaluacion-final" class="btn btn--ghost">Pon a Prueba lo que Aprendiste</a>
+    </div>
+
+    <div class="hero-stats">
+      <div class="stat-box">
+        <h3 class="counter" data-target="3">0</h3>
+        <p>Años de Formación Práctica</p>
+      </div>
+      <div class="stat-box">
+        <h3 class="counter" data-target="100" data-suffix="%">0</h3>
+        <p>Laboratorios Equipados</p>
+      </div>
+      <div class="stat-box">
+        <h3>Título</h3>
+        <p>Técnico Oficial</p>
+      </div>
+    </div>
+
+  </div>
+</header>
+
+<main>
+
+  <section class="section" id="porque">
+    
+    <h2>Cuatro razones para especializarte en Informática</h2>
+    <p class="section__lead">No es solo aprender a usar una computadora: es aprender a construir el mundo digital que ya usas todos los días.</p>
+
+    <div class="why-grid">
+      <div class="why-card">
+        <span class="why-icon">📈</span>
+        <h3>Alta demanda laboral</h3>
+        <p>La tecnología es uno de los sectores que más rápido crece en Honduras y el mundo. Salir con conocimientos reales te pone un paso adelante.</p>
+      </div>
+      <div class="why-card">
+        <span class="why-icon">💰</span>
+        <h3>Ingresos competitivos</h3>
+        <p>Desde soporte técnico hasta desarrollo web, las habilidades tecnológicas suelen pagarse mejor que muchos oficios tradicionales.</p>
+      </div>
+      <div class="why-card">
+        <span class="why-icon">🚀</span>
+        <h3>Emprende tu propio negocio</h3>
+        <p>Aprenderás a crear páginas web, sistemas y redes: herramientas suficientes para ofrecer tus propios servicios desde que te gradúes.</p>
+      </div>
+      <div class="why-card">
+        <span class="why-icon">🌎</span>
+        <h3>Habilidades sin fronteras</h3>
+        <p>Programar, administrar redes o bases de datos son habilidades que puedes ofrecer de forma remota a cualquier parte del mundo.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="plan">
+    
+    <h2>Plan de Estudio Desplegable</h2>
+    <p class="section__lead">Haz clic en cada año para desplegar y descubrir las materias detalladas:</p>
+
+    <div class="accordion-container">
+
+      <div class="accordion-card">
+        <div class="accordion-header">
+          <div class="accordion-title-group">
+            <span class="accordion-badge">Año 01</span>
+            <h3>Primer Año — Fundamentos & Lógica</h3>
+          </div>
+          <span class="accordion-icon">+</span>
+        </div>
+        <div class="accordion-body">
+          <p class="accordion-desc">Construye las bases sólidas de la computación, pensamiento lógico y arquitectura de hardware.</p>
+          <ul class="subjects-list">
+            <li><span class="subj-icon"></span> Lógica de Programación & Algoritmos</li>
+            <li><span class="subj-icon"></span> Mantenimiento e Introducción al Hardware</li>
+            <li><span class="subj-icon"></span> Fundamentos de Redes e Internet</li>
+            <li><span class="subj-icon"></span> Ofimática Avanzada y Sistemas Operativos</li>
+            <li><span class="subj-icon"></span> Inglés Técnico Especializado I</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="accordion-card">
+        <div class="accordion-header">
+          <div class="accordion-title-group">
+            <span class="accordion-badge">Año 02</span>
+            <h3>Segundo Año — Desarrollo & Sistemas</h3>
+          </div>
+          <span class="accordion-icon">+</span>
+        </div>
+        <div class="accordion-body">
+          <p class="accordion-desc">Crea aplicaciones completas, administra bases de datos complejas y diseña interfaces web modernas.</p>
+          <ul class="subjects-list">
+            <li><span class="subj-icon"></span> Programación Orientada a Objetos (POO)</li>
+            <li><span class="subj-icon"></span> Diseño y Administración de Bases de Datos (SQL)</li>
+            <li><span class="subj-icon"></span> Diseño & Desarrollo Web Frontend (HTML, CSS, JS)</li>
+            <li><span class="subj-icon"></span> Soporte Técnico & Reparación de Equipos</li>
+            <li><span class="subj-icon"></span> Inglés Técnico Especializado II</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="accordion-card">
+        <div class="accordion-header">
+          <div class="accordion-title-group">
+            <span class="accordion-badge">Año 03</span>
+            <h3>Tercer Año — Especialización & Proyecto</h3>
+          </div>
+          <span class="accordion-icon">+</span>
+        </div>
+        <div class="accordion-body">
+          <p class="accordion-desc">Implementación de redes avanzadas, seguridad informática y desarrollo de tu proyecto final de graduación.</p>
+          <ul class="subjects-list">
+            <li><span class="subj-icon"></span> Desarrollo de Software Full-Stack & APIs</li>
+            <li><span class="subj-icon"></span> Redes Avanzadas, Enrutamiento & Seguridad</li>
+            <li><span class="subj-icon"></span> Administración de Servidores & Linux Shell</li>
+            <li><span class="subj-icon"></span> Emprendimiento Tecnológico y Gestión de Proyectos</li>
+            <li><span class="subj-icon"></span> Proyecto de Graduación y Práctica Profesional</li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <section class="section" id="materias">
+    
+    <h2>Seis Áreas, Seis Especialidades</h2>
+    <p class="section__lead">Módulos prácticos que dominarás a lo largo de la carrera. Voltea cada tarjeta para ver las herramientas que usarás.</p>
+
+    <div class="file-grid">
+      <article class="file-card" style="--accent: var(--blue)">
+        <div class="file-card__inner">
+          <div class="file-card__face">
+            <div class="file-card__name">algoritmos<span class="ext">.py</span></div>
+            <p>Aprende a pensar como programador: estructuras de datos, lógica y resolución de problemas.</p>
+            <span class="file-card__hint">// toca para ver herramientas</span>
+          </div>
+          <div class="file-card__face file-card__face--back">
+            <div class="tool-tags">
+              <span>Apache Netbeans</span><span>Java</span><span>Diagramas de flujo</span><span>Pseudocódigo</span>
+            </div>
+          </div>
+        </div>
+      </article>
+      <article class="file-card" style="--accent: var(--orange)">
+        <div class="file-card__inner">
+          <div class="file-card__face">
+            <div class="file-card__name">basededatos<span class="ext">.sql</span></div>
+            <p>Diseña, modela y consulta bases de datos relacionales con estándares de la industria.</p>
+            <span class="file-card__hint">// toca para ver herramientas</span>
+          </div>
+          <div class="file-card__face file-card__face--back">
+            <div class="tool-tags">
+              <span>MySQL</span><span>SQL Server</span><span>Modelo E-R</span><span>Workbench</span>
+            </div>
+          </div>
+        </div>
+      </article>
+      <article class="file-card" style="--accent: var(--green)">
+        <div class="file-card__inner">
+          <div class="file-card__face">
+            <div class="file-card__name">redes<span class="ext">.conf</span></div>
+            <p>Configura, asegura y administra infraestructura de redes LAN, WAN y WiFi.</p>
+            <span class="file-card__hint">// toca para ver herramientas</span>
+          </div>
+          <div class="file-card__face file-card__face--back">
+            <div class="tool-tags">
+              <span>Cisco Packet Tracer</span><span>Switches</span><span>Routers</span><span>Cableado estructurado</span>
+            </div>
+          </div>
+        </div>
+      </article>
+      <article class="file-card" style="--accent: var(--blue)">
+        <div class="file-card__inner">
+          <div class="file-card__face">
+            <div class="file-card__name">interfaz<span class="ext">.html</span></div>
+            <p>Crea páginas y aplicaciones web dinámicas con interfaces interactivas y adaptables.</p>
+            <span class="file-card__hint">// toca para ver herramientas</span>
+          </div>
+          <div class="file-card__face file-card__face--back">
+            <div class="tool-tags">
+              <span>HTML5</span><span>CSS3</span><span>JavaScript</span><span>Figma</span>
+            </div>
+          </div>
+        </div>
+      </article>
+      <article class="file-card" style="--accent: var(--orange)">
+        <div class="file-card__inner">
+          <div class="file-card__face">
+            <div class="file-card__name">sistema<span class="ext">.sh</span></div>
+            <p>Instala, automatiza y repara sistemas operativos Windows y Linux desde la terminal.</p>
+            <span class="file-card__hint">// toca para ver herramientas</span>
+          </div>
+          <div class="file-card__face file-card__face--back">
+            <div class="tool-tags">
+              <span>Windows</span><span>Linux</span><span>Bash</span><span>Ensamblaje de equipos</span>
+            </div>
+          </div>
+        </div>
+      </article>
+      <article class="file-card" style="--accent: var(--green)">
+        <div class="file-card__inner">
+          <div class="file-card__face">
+            <div class="file-card__name">proyecto<span class="ext">.final</span></div>
+            <p>Construye un sistema real completo y defiéndelo frente a un jurado evaluador.</p>
+            <span class="file-card__hint">// toca para ver herramientas</span>
+          </div>
+          <div class="file-card__face file-card__face--back">
+            <div class="tool-tags">
+              <span>Trabajo en equipo</span><span>Documentación</span><span>Presentación</span><span>Defensa oral</span>
+            </div>
+          </div>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <section class="section" id="campo-laboral">
+    
+    <h2>Campo Laboral & Oportunidades</h2>
+    <p class="section__lead">Un título técnico en Informática abre puertas en oficinas, empresas, bancos, call centers y negocios propios.</p>
+
+    <div class="stats-grid">
+      <div class="big-stat">
+        <span class="num counter" data-target="6">0</span>
+        <p class="label">Especialidades técnicas dominadas al graduarte</p>
+      </div>
+      <div class="big-stat">
+        <span class="num counter" data-target="100" data-suffix="+">0</span>
+        <p class="label">Horas de práctica profesional en ultimo año</p>
+      </div>
+      <div class="big-stat">
+        <span class="num counter" data-target="12">0</span>
+        <p class="label">Materias técnicas especializadas en el pénsum</p>
+      </div>
+      <div class="big-stat">
+        <span class="num counter" data-target="144">0</span>
+        <p class="label">Horas de Trabajo Educativo Social (tes)</p>
+      </div>
+    </div>
+
+    <p class="section__lead" style="margin-top:2.5rem;">Algunas materias que veras en tu ultimo año de la carrera:</p>
+    <div class="roles-strip">
+      <a href="programacion.html" class="role-chip role-chip--link">Programación</a>
+      <a href="mantenimiento.html" class="role-chip role-chip--link">Mantenimiento y Reparacion</a>
+        <a href="producciones.html" class="role-chip role-chip--link">Producciones Digitales</a>
+        <a href="D.html" class="role-chip role-chip--link">Diseño Web</a>
+        <a href="gestion2.html" class="role-chip role-chip--link">Gestion Empresarial</a>
+        <a href="REDES.HTML" class="role-chip role-chip--link">Redes Informaticas</a>
+    </div>
+      
+    </div>
+  </section>
+
+  <section class="section" id="terminal">
+    
+    <h2>Terminal Interactiva del Área</h2>
+    <p class="section__lead">Escribe comandos reales y descubre información sobre la carrera, como si ya fueras estudiante de Informática.</p>
+
+    <div class="terminal-playground">
+      <p class="playground-hint">Escribe <kbd>ayuda</kbd> y presiona Enter para ver los comandos disponibles.</p>
+      <div class="hero-terminal" style="margin-bottom:0;">
+        <div class="editor-chrome">
+          <span class="editor-chrome__dot editor-chrome__dot--red"></span>
+          <span class="editor-chrome__dot editor-chrome__dot--yellow"></span>
+          <span class="editor-chrome__dot editor-chrome__dot--green"></span>
+          <span class="editor-chrome__filename">estudiante@informatica: ~</span>
+        </div>
+        <div id="terminal-output">
+          <p class="term-sys">Bienvenido a la terminal del Área de Informática. Escribe "ayuda" para comenzar.</p>
+        </div>
+        <div class="terminal-input-row">
+          <span>&gt;</span>
+          <input type="text" id="terminal-input" autocomplete="off" placeholder="escribe un comando...">
+        </div>
+      </div>
+      <div class="term-chips">
+        <span class="term-chip" data-cmd="ayuda">ayuda</span>
+        <span class="term-chip" data-cmd="materias">materias</span>
+        <span class="term-chip" data-cmd="requisitos">requisitos</span>
+        <span class="term-chip" data-cmd="contacto">contacto</span>
+        <span class="term-chip" data-cmd="sorpresa">sorpresa</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="quiz">
+    
+    <h2>Descubre tu Especialidad Ideal</h2>
+    <p class="section__lead">Responde 6 preguntas rápidas sobre tus gustos y te diremos qué área de la Informática combina mejor contigo.</p>
+
+    <div class="quiz-card" id="quiz-card">
+      <div id="quiz-question-view">
+        <div class="quiz-progress-track"><div class="quiz-progress-fill" id="quiz-progress-fill"></div></div>
+        <span class="quiz-step-label" id="quiz-step-label">PREGUNTA 1 DE 6</span>
+        <h3 id="quiz-question-text">Pregunta</h3>
+        <div class="quiz-options" id="quiz-options-container"></div>
+      </div>
+
+      <div id="quiz-result-view" class="quiz-result hidden">
+        <div class="result-icon" id="result-icon"></div>
+        <span class="result-tag" id="result-tag">TU ESPECIALIDAD</span>
+        <h3 id="result-title">Resultado</h3>
+        <p id="result-desc"></p>
+
+        <div id="result-bars" style="text-align:left; margin: 1.5rem 0;"></div>
+
+        <div class="actions-group" style="display:flex; flex-direction:column; gap:0.8rem; align-items:center;">
+          <button id="quiz-retry" class="btn btn--primary btn--glow btn--block">Volver a intentar</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="testimonios">
+  
+    <h2>Lo Que Dicen Nuestros Egresados</h2>
+    <p class="section__lead">Historias representativas de estudiantes que pasaron por el Área de Informática.</p>
+
+    <div class="testi-track-wrap">
+      <div class="testi-track">
+        <div class="testi-card">
+          <p class="testi-quote">"Entré sin saber prender una computadora de escritorio y salí armando redes completas. El proyecto final fue mi mejor experiencia."</p>
+          <p class="testi-name">Egresado, Promoción reciente</p>
+          <p class="testi-role">Técnico en Redes</p>
+        </div>
+        <div class="testi-card">
+          <p class="testi-quote">"Lo que aprendí en bases de datos y programación me sirvió para conseguir mi primer trabajo como soporte técnico antes de graduarme."</p>
+          <p class="testi-name">Egresado, Promoción reciente</p>
+          <p class="testi-role">Soporte Técnico</p>
+        </div>
+        <div class="testi-card">
+          <p class="testi-quote">"Hoy hago páginas web para negocios de mi barrio. Todo empezó con la materia de diseño web de tercer año."</p>
+          <p class="testi-name">Egresada, Promoción reciente</p>
+          <p class="testi-role">Desarrolladora Web Freelance</p>
+        </div>
+        <div class="testi-card">
+          <p class="testi-quote">"Los laboratorios de hardware me dieron confianza para reparar equipos y hoy tengo mi propio taller de mantenimiento."</p>
+          <p class="testi-name">Egresado, Promoción reciente</p>
+          <p class="testi-role">Técnico en Mantenimiento</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="faq">
+   
+    <h2>Preguntas Frecuentes</h2>
+    <p class="section__lead">Lo que más preguntan los estudiantes y padres de familia antes de inscribirse.</p>
+
+    <div class="faq-list">
+      <div class="faq-item">
+        <div class="faq-q">¿Necesito saber programar antes de entrar? <span class="faq-icon">+</span></div>
+        <div class="faq-a"><p>No. Empezamos desde cero con lógica de programación en primer año. Solo necesitas ganas de aprender.</p></div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">¿Qué materiales o equipo debo llevar? <span class="faq-icon">+</span></div>
+        <div class="faq-a"><p>Los laboratorios cuentan con computadoras equipadas. Solo necesitas tu uniforme, cuaderno y muchas ganas de practicar.</p></div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">¿El título tiene validez oficial? <span class="faq-icon">+</span></div>
+        <div class="faq-a"><p>Sí, es un título de Bachillerato Técnico Profesional en Informática reconocido oficialmente, con el que puedes trabajar o continuar estudios universitarios.</p></div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">¿Hay práctica profesional? <span class="faq-icon">+</span></div>
+        <div class="faq-a"><p>Sí, en tercer año realizas tu Proyecto de Graduación y Práctica Profesional, aplicando todo lo aprendido en un caso real.</p></div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">¿Puedo cambiar de especialidad durante la carrera? <span class="faq-icon">+</span></div>
+        <div class="faq-a"><p>El plan de estudio cubre todas las áreas (redes, programación, bases de datos, hardware) para que descubras tu favorita antes de tu proyecto final.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="como-llegar">
+   
+    <h2>Cómo Llegar</h2>
+    <p class="section__lead">Visita nuestras instalaciones y laboratorios de cómputo de alta tecnología.</p>
+
+    <div class="location-card">
+      <div class="video-wrapper">
+        <video controls preload="metadata">
+          <source src="WhatsApp Video 2026-08-23 at 7.02.13 PM.mp4" type="video/mp4">
+          Tu navegador no soporta la reproducción de video.
+        </video>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="evaluacion-final">
+    
+    <h2>Pon a Prueba lo que Aprendiste</h2>
+    <p class="section__lead">6 preguntas, 3 opciones cada una, 1 punto por respuesta correcta. Consigue 5 o 6 puntos para desbloquear tu recompensa final.</p>
+    <p class="playground-hint"> Sube el volumen: una voz leerá cada pregunta y tendrás <strong>6 segundos</strong> para responder antes de escuchar el resultado.</p>
+
+    <div class="eval-card" id="eval-card">
+      <div id="eval-question-view">
+        <div class="quiz-progress-track"><div class="quiz-progress-fill" id="eval-progress-fill"></div></div>
+
+        <div class="eval-top-row">
+          <span class="quiz-step-label" id="eval-step-label">PREGUNTA 1 DE 6</span>
+          <div class="eval-meta-right">
+            <span class="eval-timer" id="eval-timer">⏱ 6</span>
+            <span class="eval-score-live">Puntos: <strong id="eval-score-live">0</strong>/6</span>
+          </div>
+        </div>
+
+        <h3 id="eval-question-text">Pregunta</h3>
+        <div class="eval-options" id="eval-options-container"></div>
+        <p class="eval-feedback" id="eval-feedback">&nbsp;</p>
+
+        <button id="eval-next-btn" class="btn btn--primary btn--glow btn--block" disabled>Siguiente pregunta ➔</button>
+      </div>
+
+      <div id="eval-result-view" class="quiz-result hidden">
+        <div class="result-icon" id="eval-result-icon">🏆</div>
+        <span class="result-tag">RESULTADO FINAL</span>
+        <div class="eval-final-score" id="eval-final-score">0 / 6</div>
+        <h3 id="eval-result-title">Resultado</h3>
+        <p id="eval-result-desc"></p>
+
+        <div class="actions-group" style="display:flex; flex-direction:column; gap:0.8rem; align-items:center; margin-top: 1.2rem;">
+          <button id="eval-retry" class="btn btn--ghost btn--block">Volver a intentar</button>
+
+          <p class="reward-locked-hint" id="reward-locked-hint">🔒 Consigue 5 o 6 puntos para desbloquear tus recompensas</p>
+
+          <div class="reward-games" id="reward-games">
+            <a id="eval-unlock-btn" class="reward-game-btn" href="inscripcion.html" tabindex="-1" aria-disabled="true">
+              <img src="WhatsApp Image 2026-08-09 at 6.13.23 PM.jpeg" alt="Understreets">
+              <span class="reward-game-btn__label">Jugar Understreets</span>
+            </a>
+
+            <a id="eval-unlock-btn-2" class="reward-game-btn" href="inscripcion.html" tabindex="-1" aria-disabled="true">
+              <img src="WhatsApp Image 2026-08-26 at 12.40.29 PM.jpeg" alt="Honduras Kombat: Political Clash">
+              <span class="reward-game-btn__label">Jugar Honduras Kombat</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <p>Instituto Oficial Franklin Delano Roosevelt — Área de Informática</p>
+  <p class="footer__muted">Innovación, Código y Futuro</p>
+</footer>
+
+<script>
+// ==========================================
+// 0. FONDO ANIMADO — RED DE NODOS / CIRCUITOS
+// ==========================================
+(function initNetworkBackground() {
+  const canvas = document.getElementById("network-bg");
+  const ctx = canvas.getContext("2d");
+  let width, height, nodes, packets;
+  const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  const NODE_COLOR = "rgba(58, 100, 255, 0.9)";
+  const LINE_COLOR = "58, 100, 255";
+  const PACKET_COLOR = "#00F0FF";
+
+  function resize() {
+    width = canvas.width = window.innerWidth;
+    height = canvas.height = window.innerHeight;
+  }
+
+  function randomBetween(a, b) { return a + Math.random() * (b - a); }
+
+  function createNodes() {
+    const density = Math.min(70, Math.floor((width * height) / 22000));
+    nodes = Array.from({ length: density }, () => ({
+      x: Math.random() * width,
+      y: Math.random() * height,
+      vx: randomBetween(-0.18, 0.18),
+      vy: randomBetween(-0.18, 0.18),
+      r: randomBetween(1.2, 2.4)
+    }));
+  }
+
+  function createPacket(a, b) {
+    return { a, b, t: 0, speed: randomBetween(0.004, 0.01) };
+  }
+
+  function maybeSpawnPacket() {
+    if (Math.random() < 0.02 && nodes.length > 1) {
+      const a = nodes[Math.floor(Math.random() * nodes.length)];
+      const b = nodes[Math.floor(Math.random() * nodes.length)];
+      if (a !== b) packets.push(createPacket(a, b));
+    }
+    if (packets.length > 14) packets.shift();
+  }
+
+  function step() {
+    ctx.clearRect(0, 0, width, height);
+
+    // Mover nodos
+    nodes.forEach((n) => {
+      n.x += n.vx;
+      n.y += n.vy;
+      if (n.x < 0 || n.x > width) n.vx *= -1;
+      if (n.y < 0 || n.y > height) n.vy *= -1;
+    });
+
+    // Conexiones entre nodos cercanos
+    const maxDist = Math.min(180, width / 6);
+    for (let i = 0; i < nodes.length; i++) {
+      for (let j = i + 1; j < nodes.length; j++) {
+        const dx = nodes[i].x - nodes[j].x;
+        const dy = nodes[i].y - nodes[j].y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < maxDist) {
+          const alpha = (1 - dist / maxDist) * 0.35;
+          ctx.strokeStyle = `rgba(${LINE_COLOR}, ${alpha})`;
+          ctx.lineWidth = 1;
+          ctx.beginPath();
+          ctx.moveTo(nodes[i].x, nodes[i].y);
+          ctx.lineTo(nodes[j].x, nodes[j].y);
+          ctx.stroke();
+        }
+      }
+    }
+
+    // Dibujar nodos
+    nodes.forEach((n) => {
+      ctx.beginPath();
+      ctx.fillStyle = NODE_COLOR;
+      ctx.arc(n.x, n.y, n.r, 0, Math.PI * 2);
+      ctx.fill();
+    });
+
+    // Paquetes de datos viajando entre nodos
+    if (!prefersReducedMotion) {
+      maybeSpawnPacket();
+      packets.forEach((p) => {
+        p.t += p.speed;
+        const x = p.a.x + (p.b.x - p.a.x) * p.t;
+        const y = p.a.y + (p.b.y - p.a.y) * p.t;
+        ctx.beginPath();
+        ctx.fillStyle = PACKET_COLOR;
+        ctx.shadowBlur = 8;
+        ctx.shadowColor = PACKET_COLOR;
+        ctx.arc(x, y, 2.2, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.shadowBlur = 0;
+      });
+      packets = packets.filter((p) => p.t < 1);
+    }
+
+    requestAnimationFrame(step);
+  }
+
+  window.addEventListener("resize", () => {
+    resize();
+    createNodes();
+  });
+
+  resize();
+  createNodes();
+  packets = [];
+  step();
+})();
+
+// ==========================================
+// 1. LÓGICA DEL MENÚ DESLIZABLE
+// ==========================================
+const menuBtn = document.getElementById("menuBtn");
+const menu = document.getElementById("menuLateral");
+const menuOverlay = document.getElementById("menuOverlay");
+
+menuBtn.addEventListener("click", () => {
+  menu.classList.toggle("active");
+  menuOverlay.classList.toggle("active");
+});
+
+menuOverlay.addEventListener("click", () => {
+  menu.classList.remove("active");
+  menuOverlay.classList.remove("active");
+});
+
+document.querySelectorAll(".menu-lateral a").forEach((link) => {
+  link.addEventListener("click", () => {
+    menu.classList.remove("active");
+    menuOverlay.classList.remove("active");
+  });
+});
+
+// ==========================================
+// 2. ACORDEÓN DESLIZABLE (Plan de Estudio)
+// ==========================================
+const accordionCards = document.querySelectorAll(".accordion-card");
+
+accordionCards.forEach((card) => {
+  const header = card.querySelector(".accordion-header");
+  header.addEventListener("click", () => {
+    const isOpen = card.classList.contains("open");
+    accordionCards.forEach((item) => item.classList.remove("open"));
+    if (!isOpen) card.classList.add("open");
+  });
+});
+
+if (accordionCards.length > 0) {
+  accordionCards[0].classList.add("open");
+}
+
+// ==========================================
+// 3. ANIMACIÓN DE REVELADO DE SECCIONES (Scroll)
+// ==========================================
+const sections = document.querySelectorAll(".section");
+
+const sectionObserver = new IntersectionObserver(
+  (entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add("is-visible");
+        sectionObserver.unobserve(entry.target);
+      }
+    });
+  },
+  { threshold: 0.12 }
+);
+
+sections.forEach((section) => sectionObserver.observe(section));
+
+// ==========================================
+// 4. MÁQUINA DE ESCRIBIR EN EL HERO
+// ==========================================
+const typewriterEl = document.getElementById("typewriter-code");
+
+const codeLines = [
+  { text: "// Bienvenidos al área de informática", cls: "tok-comment" },
+  { html: '<span class="tok-key">const</span> <span class="tok-func">estudiante</span> = {' },
+  { html: '&nbsp;&nbsp;<span class="tok-attr">carrera</span>: <span class="tok-string">"Bachillerato Técnico en Informática"</span>,' },
+  { html: '&nbsp;&nbsp;<span class="tok-attr">nivel</span>: <span class="tok-num">100</span>,' },
+  { html: '&nbsp;&nbsp;<span class="tok-attr">estado</span>: <span class="tok-string">"Listo para construir el futuro 🚀"</span>' },
+  { html: "};" },
+  { html: '<span class="tok-key">console</span>.log(<span class="tok-func">estudiante</span>);' }
+];
+
+function typeWriter() {
+  let lineIndex = 0;
+  typewriterEl.innerHTML = "";
+
+  function typeLine() {
+    if (lineIndex >= codeLines.length) {
+      const cursor = document.createElement("span");
+      cursor.className = "cursor";
+      cursor.innerHTML = "&nbsp;";
+      typewriterEl.appendChild(cursor);
+      return;
+    }
+    const line = codeLines[lineIndex];
+    const content = line.html || `<span class="${line.cls}">${line.text}</span>`;
+    const lineEl = document.createElement("div");
+    typewriterEl.appendChild(lineEl);
+
+    // Efecto de tecleo simplificado por línea (aparece completa con leve retraso)
+    lineEl.innerHTML = content;
+    lineEl.style.opacity = "0";
+    requestAnimationFrame(() => {
+      lineEl.style.transition = "opacity .25s ease";
+      lineEl.style.opacity = "1";
+    });
+
+    lineIndex++;
+    setTimeout(typeLine, 260);
+  }
+
+  typeLine();
+}
+
+typeWriter();
+
+// ==========================================
+// 5. CONTADORES ANIMADOS (Stats)
+// ==========================================
+const counters = document.querySelectorAll(".counter");
+
+const counterObserver = new IntersectionObserver(
+  (entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        animateCounter(entry.target);
+        counterObserver.unobserve(entry.target);
+      }
+    });
+  },
+  { threshold: 0.4 }
+);
+
+function animateCounter(el) {
+  const target = parseInt(el.dataset.target, 10);
+  const suffix = el.dataset.suffix || "";
+  const duration = 1200;
+  const start = performance.now();
+
+  function tick(now) {
+    const progress = Math.min((now - start) / duration, 1);
+    const value = Math.floor(progress * target);
+    el.textContent = value + suffix;
+    if (progress < 1) requestAnimationFrame(tick);
+    else el.textContent = target + suffix;
+  }
+  requestAnimationFrame(tick);
+}
+
+counters.forEach((c) => counterObserver.observe(c));
+
+// ==========================================
+// 6. TARJETAS VOLTEABLES (Materias) — soporte táctil
+// ==========================================
+document.querySelectorAll(".file-card").forEach((card) => {
+  card.addEventListener("click", () => {
+    if (window.matchMedia("(hover: none)").matches) {
+      card.classList.toggle("flipped");
+    }
+  });
+});
+
+// ==========================================
+// 7. TERMINAL INTERACTIVA
+// ==========================================
+const terminalOutput = document.getElementById("terminal-output");
+const terminalInput = document.getElementById("terminal-input");
+
+const terminalResponses = {
+  ayuda: `Comandos disponibles:
+  ayuda        → muestra esta lista
+  materias     → lista las áreas de especialización
+  requisitos   → requisitos de inscripción
+  contacto     → información de contacto
+  plan         → resumen del plan de estudio
+  sorpresa     → ????`,
+  materias: `Áreas de especialización:
+  1. Algoritmos & Programación
+  2. Bases de Datos
+  3. Redes & Ciberseguridad
+  4. Desarrollo Web
+  5. Sistemas & Soporte Técnico
+  6. Proyecto Final Integrador`,
+  requisitos: `Requisitos de inscripción:
+  - Haber aprobado el ciclo común
+  - Partida de nacimiento y certificados
+  - Muchas ganas de aprender tecnología
+  - Ninguna experiencia previa en programación necesaria`,
+  contacto: `Contacto del Área de Informática:
+  Correo: informatica@fdroosevelt.edu.hn
+  Teléfono: +504 0000-0000
+  Horario: Lunes a Viernes, 7:00 AM - 4:00 PM`,
+  plan: `Plan de estudio (resumen):
+  Año 1 → Fundamentos y lógica
+  Año 2 → Desarrollo y sistemas
+  Año 3 → Especialización y proyecto final`,
+  sorpresa: `01001000 01101111 01101100 01100001
+  Traducción: "Hola". ¡Ya empezaste a pensar como programador! 🎉`
+};
+
+function printToTerminal(text, cls) {
+  const p = document.createElement("p");
+  if (cls) p.className = cls;
+  p.textContent = text;
+  p.style.whiteSpace = "pre-wrap";
+  terminalOutput.appendChild(p);
+  terminalOutput.scrollTop = terminalOutput.scrollHeight;
+}
+
+function runCommand(raw) {
+  const cmd = raw.trim().toLowerCase();
+  printToTerminal("> " + raw, "term-echo");
+  if (!cmd) return;
+  if (cmd === "clear" || cmd === "limpiar") {
+    terminalOutput.innerHTML = "";
+    return;
+  }
+  if (terminalResponses[cmd]) {
+    printToTerminal(terminalResponses[cmd]);
+  } else {
+    printToTerminal(`Comando no reconocido: "${cmd}". Escribe "ayuda" para ver opciones.`, "term-error");
+  }
+}
+
+terminalInput.addEventListener("keydown", (e) => {
+  if (e.key === "Enter" && terminalInput.value.trim() !== "") {
+    runCommand(terminalInput.value);
+    terminalInput.value = "";
+  }
+});
+
+document.querySelectorAll(".term-chip").forEach((chip) => {
+  chip.addEventListener("click", () => {
+    runCommand(chip.dataset.cmd);
+  });
+});
+
+// ==========================================
+// 8. QUIZ — DESCUBRE TU ESPECIALIDAD IDEAL
+// ==========================================
+const quizQuestions = [
+  {
+    question: "¿Qué actividad te suena más entretenida?",
+    options: [
+      { text: "Resolver acertijos y puzles de lógica", area: "programacion" },
+      { text: "Organizar información en tablas y listas", area: "basededatos" },
+      { text: "Armar o desarmar equipos electrónicos", area: "soporte" },
+      { text: "Configurar el WiFi de la casa para que llegue a todos lados", area: "redes" }
+    ]
+  },
+  {
+    question: "En un proyecto grupal, ¿qué rol prefieres?",
+    options: [
+      { text: "El que escribe el código de la aplicación", area: "programacion" },
+      { text: "El que diseña cómo se ve la página web", area: "web" },
+      { text: "El que organiza y ordena toda la información", area: "basededatos" },
+      { text: "El que revisa que todos los equipos funcionen", area: "soporte" }
+    ]
+  },
+  {
+    question: "¿Qué problema te gustaría resolver?",
+    options: [
+      { text: "Que una app calcule algo automáticamente", area: "programacion" },
+      { text: "Que una tienda no encuentre sus productos en el sistema", area: "basededatos" },
+      { text: "Que el internet de una oficina no llegue bien a todos lados", area: "redes" },
+      { text: "Que una computadora esté lenta o dañada", area: "soporte" }
+    ]
+  },
+  {
+    question: "¿Qué te gustaría mostrar en tu portafolio?",
+    options: [
+      { text: "Una página web con animaciones e interactividad", area: "web" },
+      { text: "Un sistema con base de datos funcionando", area: "basededatos" },
+      { text: "Una pequeña red doméstica bien configurada", area: "redes" },
+      { text: "Un programa que resuelve un problema real", area: "programacion" }
+    ]
+  },
+  {
+    question: "¿Qué herramienta te llama más la atención?",
+    options: [
+      { text: "Un editor de código", area: "programacion" },
+      { text: "Un panel de administración de servidores", area: "redes" },
+      { text: "Un destornillador y piezas de computadora", area: "soporte" },
+      { text: "Un editor visual de páginas web", area: "web" }
+    ]
+  },
+  {
+    question: "Después de graduarte, ¿qué te imaginas haciendo?",
+    options: [
+      { text: "Creando sistemas o aplicaciones", area: "programacion" },
+      { text: "Diseñando páginas web para negocios", area: "web" },
+      { text: "Administrando redes de una empresa", area: "redes" },
+      { text: "Dando soporte técnico y mantenimiento", area: "soporte" }
+    ]
+  }
+];
+
+const areaInfo = {
+  programacion: {
+    icon: "💻",
+    title: "Programación & Algoritmos",
+    desc: "Tienes mente lógica y te gusta resolver problemas paso a paso. La programación y el desarrollo de software son tu camino natural."
+  },
+  basededatos: {
+    icon: "🗄️",
+    title: "Bases de Datos",
+    desc: "Te gusta el orden y la estructura. Diseñar y administrar bases de datos encaja perfecto con tu manera de pensar."
+  },
+  redes: {
+    icon: "📡",
+    title: "Redes & Ciberseguridad",
+    desc: "Te atrae la infraestructura y la conectividad. Administrar redes y seguridad informática es tu fuerte potencial."
+  },
+  web: {
+    icon: "🎨",
+    title: "Desarrollo Web",
+    desc: "Combinas lógica con creatividad visual. El desarrollo web frontend es donde más brillarías."
+  },
+  soporte: {
+    icon: "🛠️",
+    title: "Soporte & Hardware",
+    desc: "Te gusta lo práctico y manual. El mantenimiento de equipos y soporte técnico son tu área ideal."
+  }
+};
+
+let quizIndex = 0;
+const quizScores = { programacion: 0, basededatos: 0, redes: 0, web: 0, soporte: 0 };
+
+const quizQuestionView = document.getElementById("quiz-question-view");
+const quizResultView = document.getElementById("quiz-result-view");
+const quizStepLabel = document.getElementById("quiz-step-label");
+const quizQuestionText = document.getElementById("quiz-question-text");
+const quizOptionsContainer = document.getElementById("quiz-options-container");
+const quizProgressFill = document.getElementById("quiz-progress-fill");
+
+function loadQuizQuestion() {
+  const q = quizQuestions[quizIndex];
+  quizStepLabel.textContent = `PREGUNTA ${quizIndex + 1} DE ${quizQuestions.length}`;
+  quizQuestionText.textContent = q.question;
+  quizProgressFill.style.width = `${(quizIndex / quizQuestions.length) * 100}%`;
+
+  quizOptionsContainer.innerHTML = "";
+  q.options.forEach((opt) => {
+    const btn = document.createElement("button");
+    btn.className = "quiz-option";
+    btn.textContent = opt.text;
+    btn.onclick = () => selectQuizOption(opt.area);
+    quizOptionsContainer.appendChild(btn);
+  });
+}
+
+function selectQuizOption(area) {
+  quizScores[area]++;
+  quizIndex++;
+  if (quizIndex < quizQuestions.length) {
+    loadQuizQuestion();
+  } else {
+    showQuizResult();
+  }
+}
+
+function showQuizResult() {
+  quizQuestionView.classList.add("hidden");
+  quizResultView.classList.remove("hidden");
+  quizProgressFill.style.width = "100%";
+
+  const topArea = Object.keys(quizScores).reduce((a, b) => (quizScores[a] >= quizScores[b] ? a : b));
+  const info = areaInfo[topArea];
+
+  document.getElementById("result-icon").textContent = info.icon;
+  document.getElementById("result-title").textContent = info.title;
+  document.getElementById("result-desc").textContent = info.desc;
+
+  const barsContainer = document.getElementById("result-bars");
+  barsContainer.innerHTML = "";
+  Object.keys(areaInfo).forEach((key) => {
+    const pct = Math.round((quizScores[key] / quizQuestions.length) * 100);
+    const row = document.createElement("div");
+    row.className = "quiz-bar-row";
+    row.innerHTML = `
+      <span class="bar-label">${areaInfo[key].title}</span>
+      <div class="quiz-bar-track"><div class="quiz-bar-fill" data-pct="${pct}"></div></div>
+    `;
+    barsContainer.appendChild(row);
+  });
+
+  requestAnimationFrame(() => {
+    barsContainer.querySelectorAll(".quiz-bar-fill").forEach((fill) => {
+      fill.style.width = fill.dataset.pct + "%";
+    });
+  });
+}
+
+document.getElementById("quiz-retry").addEventListener("click", () => {
+  quizIndex = 0;
+  Object.keys(quizScores).forEach((k) => (quizScores[k] = 0));
+  quizResultView.classList.add("hidden");
+  quizQuestionView.classList.remove("hidden");
+  loadQuizQuestion();
+});
+
+loadQuizQuestion();
+
+// ==========================================
+// 9. FAQ ACORDEÓN
+// ==========================================
+document.querySelectorAll(".faq-item").forEach((item) => {
+  const q = item.querySelector(".faq-q");
+  q.addEventListener("click", () => {
+    const isOpen = item.classList.contains("open");
+    document.querySelectorAll(".faq-item").forEach((f) => f.classList.remove("open"));
+    if (!isOpen) item.classList.add("open");
+  });
+});
+
+// ==========================================
+// 10. EVALUACIÓN FINAL — QUIZ DE CONOCIMIENTOS
+// ==========================================
+const evalQuestions = [
+  {
+    question: "¿Cuántos años dura el Bachillerato Técnico Profesional en Informática?",
+    options: ["2 años", "3 años", "5 años"],
+    correct: 1,
+    feedback: {
+      correct: "¡Correcto! El plan de estudio se cursa en 3 años.",
+      incorrect: "No es correcto. La carrera dura 3 años (revisa el Plan de Estudio)."
+    }
+  },
+  {
+    question: "¿Qué se estudia principalmente en el Primer Año?",
+    options: ["Redes Avanzadas y Seguridad", "Lógica de Programación y Algoritmos", "Proyecto de Graduación"],
+    correct: 1,
+    feedback: {
+      correct: "¡Exacto! El primer año construye las bases con lógica y algoritmos.",
+      incorrect: "Esa materia es de años más avanzados. En primer año se ven las bases: lógica de programación y algoritmos."
+    }
+  },
+  {
+    question: "¿Qué herramienta se usa en el área de Bases de Datos?",
+    options: ["Cisco Packet Tracer", "Bash", "MySQL"],
+    correct: 2,
+    feedback: {
+      correct: "¡Así es! MySQL es una de las herramientas clave para bases de datos.",
+      incorrect: "Esa herramienta pertenece a otra área. Bases de Datos usa MySQL."
+    }
+  },
+  {
+    question: "¿En qué año se realiza la practica profesional y horas TES?",
+    options: ["Primer año", "Segundo año", "Tercer año"],
+    correct: 2,
+    feedback: {
+      correct: "¡Correcto! La practica profesional y horas TES se realiza en tercer año.",
+      incorrect: "No es correcto. La practica profesional y horas TES se realiza en tercer año."
+    }
+  },
+  {
+    question: "Según el campo laboral, ¿cuántas especialidades técnicas dominas al graduarte?",
+    options: ["4", "6", "8"],
+    correct: 1,
+    feedback: {
+      correct: "¡Exacto! Son 6 especialidades técnicas.",
+      incorrect: "No es correcto. La sección de Campo Laboral muestra 6 especialidades técnicas."
+    }
+  },
+  {
+    question: "¿Qué herramienta usarás en el área de Redes?",
+    options: ["Figma", "Cisco Packet Tracer", "SQL Workbench"],
+    correct: 1,
+    feedback: {
+      correct: "¡Correcto! Cisco Packet Tracer se usa para practicar redes.",
+      incorrect: "Esa herramienta es de otra área. Redes utiliza Cisco Packet Tracer."
+    }
+  }
+];
+
+let evalIndex = 0;
+let evalScore = 0;
+let evalSelectedIdx = null;
+let evalRevealed = false;
+let evalTimerInterval = null;
+let evalRevealTimeout = null;
+
+const evalQuestionView = document.getElementById("eval-question-view");
+const evalResultView = document.getElementById("eval-result-view");
+const evalStepLabel = document.getElementById("eval-step-label");
+const evalQuestionText = document.getElementById("eval-question-text");
+const evalOptionsContainer = document.getElementById("eval-options-container");
+const evalProgressFill = document.getElementById("eval-progress-fill");
+const evalFeedback = document.getElementById("eval-feedback");
+const evalNextBtn = document.getElementById("eval-next-btn");
+const evalScoreLive = document.getElementById("eval-score-live");
+const evalTimerEl = document.getElementById("eval-timer");
+
+const EVAL_RESPONSE_SECONDS = 10;
+
+// ---- Voz (Web Speech API) ----
+function hablar(texto) {
+  if (!("speechSynthesis" in window)) return;
+  window.speechSynthesis.cancel();
+  const utter = new SpeechSynthesisUtterance(texto);
+  utter.lang = "es-ES";
+  utter.rate = 1;
+  utter.pitch = 1;
+  window.speechSynthesis.speak(utter);
+}
+
+function limpiarTemporizadorEval() {
+  if (evalTimerInterval) clearInterval(evalTimerInterval);
+  if (evalRevealTimeout) clearTimeout(evalRevealTimeout);
+  evalTimerInterval = null;
+  evalRevealTimeout = null;
+  evalTimerEl.classList.remove("eval-timer--urgent");
+}
+
+function loadEvalQuestion() {
+  limpiarTemporizadorEval();
+  evalSelectedIdx = null;
+  evalRevealed = false;
+
+  const q = evalQuestions[evalIndex];
+  evalStepLabel.textContent = `PREGUNTA ${evalIndex + 1} DE ${evalQuestions.length}`;
+  evalQuestionText.textContent = q.question;
+  evalProgressFill.style.width = `${(evalIndex / evalQuestions.length) * 100}%`;
+  evalScoreLive.textContent = evalScore;
+
+  evalFeedback.textContent = "\u00A0";
+  evalFeedback.className = "eval-feedback";
+
+  evalNextBtn.disabled = true;
+  evalNextBtn.textContent = evalIndex === evalQuestions.length - 1 ? "Ver resultados ➔" : "Siguiente pregunta ➔";
+
+  evalOptionsContainer.innerHTML = "";
+  q.options.forEach((optText, idx) => {
+    const btn = document.createElement("button");
+    btn.className = "eval-option";
+    btn.textContent = optText;
+    btn.onclick = () => selectEvalOption(idx);
+    evalOptionsContainer.appendChild(btn);
+  });
+
+  // Iniciar timer y síntesis de voz
+  let timeLeft = EVAL_RESPONSE_SECONDS;
+  evalTimerEl.textContent = `⏱ ${timeLeft}`;
+
+  hablar(q.question);
+
+  evalTimerInterval = setInterval(() => {
+    timeLeft--;
+    if (timeLeft <= 3) {
+      evalTimerEl.classList.add("eval-timer--urgent");
+    }
+    if (timeLeft >= 0) {
+      evalTimerEl.textContent = `⏱ ${timeLeft}`;
+    }
+    if (timeLeft <= 0) {
+      clearInterval(evalTimerInterval);
+      evalTimerInterval = null;
+    }
+  }, 1000);
+
+  evalRevealTimeout = setTimeout(() => {
+    revelarResultadoEval();
+  }, EVAL_RESPONSE_SECONDS * 1000);
+}
+
+function selectEvalOption(idx) {
+  if (evalRevealed) return;
+  evalSelectedIdx = idx;
+  const buttons = evalOptionsContainer.querySelectorAll(".eval-option");
+  buttons.forEach((btn, i) => {
+    btn.classList.toggle("is-selected", i === idx);
+  });
+}
+
+function revelarResultadoEval() {
+  if (evalRevealed) return;
+  evalRevealed = true;
+  limpiarTemporizadorEval();
+
+  const q = evalQuestions[evalIndex];
+  const buttons = evalOptionsContainer.querySelectorAll(".eval-option");
+
+  buttons.forEach((btn) => (btn.disabled = true));
+
+  let esCorrecto = false;
+  if (evalSelectedIdx === q.correct) {
+    esCorrecto = true;
+    evalScore++;
+    evalScoreLive.textContent = evalScore;
+  }
+
+  buttons.forEach((btn, i) => {
+    if (i === q.correct) {
+      btn.classList.add("is-correct");
+    } else if (i === evalSelectedIdx && !esCorrecto) {
+      btn.classList.add("is-incorrect");
+    }
+  });
+
+  const txtFeedback = esCorrecto ? q.feedback.correct : q.feedback.incorrect;
+  evalFeedback.textContent = txtFeedback;
+  evalFeedback.className = `eval-feedback ${esCorrecto ? "correct" : "incorrect"}`;
+
+  hablar(txtFeedback);
+
+  evalNextBtn.disabled = false;
+}
+
+function avanzarEval() {
+  if (!evalRevealed) return;
+  evalIndex++;
+  if (evalIndex < evalQuestions.length) {
+    loadEvalQuestion();
+  } else {
+    showEvalResult();
+  }
+}
+
+function showEvalResult() {
+  limpiarTemporizadorEval();
+  evalQuestionView.classList.add("hidden");
+  evalResultView.classList.remove("hidden");
+  evalProgressFill.style.width = "100%";
+
+  document.getElementById("eval-final-score").textContent = `${evalScore} / ${evalQuestions.length}`;
+
+  const iconEl = document.getElementById("eval-result-icon");
+  const titleEl = document.getElementById("eval-result-title");
+  const descEl = document.getElementById("eval-result-desc");
+  const lockedHint = document.getElementById("reward-locked-hint");
+  const unlockBtns = [
+    document.getElementById("eval-unlock-btn"),
+    document.getElementById("eval-unlock-btn-2")
+  ];
+
+  if (evalScore >= 5) {
+    iconEl.textContent = "🏆";
+    titleEl.textContent = "¡Excelente Trabajo!";
+    descEl.textContent = `Puntaje: ${evalScore}/${evalQuestions.length}. Demostraste un gran dominio del contenido. ¡Puedes desbloquear tus recompensas!`;
+    lockedHint.classList.add("hidden");
+    unlockBtns.forEach((btn) => {
+      btn.removeAttribute("aria-disabled");
+      btn.removeAttribute("tabindex");
+    });
+  } else {
+    iconEl.textContent = "📚";
+    titleEl.textContent = "¡Casi lo Logras!";
+    descEl.textContent = `Obtuviste ${evalScore}/${evalQuestions.length} puntos. Necesitas al menos 5 puntos para desbloquear la recompensa. Revisa las secciones y vuelve a intentarlo.`;
+    lockedHint.classList.remove("hidden");
+    unlockBtns.forEach((btn) => {
+      btn.setAttribute("aria-disabled", "true");
+      btn.setAttribute("tabindex", "-1");
+    });
+  }
+
+  
+}
+
+
+
+evalNextBtn.addEventListener("click", avanzarEval);
+
+document.getElementById("eval-retry").addEventListener("click", () => {
+  evalIndex = 0;
+  evalScore = 0;
+  evalResultView.classList.add("hidden");
+  evalQuestionView.classList.remove("hidden");
+  loadQuizQuestion(); // reiniciar quiz de ser necesario
+  loadEvalQuestion();
+});
+
+// ==========================================
+// 11. ACTIVAR LA EVALUACIÓN (Y LA VOZ) SOLO
+//     CUANDO EL USUARIO LLEGA A LA SECCIÓN
+// ==========================================
+const evalSectionEl = document.getElementById("evaluacion-final");
+
+const evalSectionObserver = new IntersectionObserver(
+  (entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        loadEvalQuestion();
+        evalSectionObserver.unobserve(entry.target);
+      }
+    });
+  },
+  { threshold: 0.35 }
+);
+
+evalSectionObserver.observe(evalSectionEl);
+</script>
+</body>
+</html>

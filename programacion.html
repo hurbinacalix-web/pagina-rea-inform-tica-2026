@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Programación — Instituto Oficial Franklin D. Roosevelt</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="programacion.css">
+</head>
+<body>
+
+<canvas id="node-globe"></canvas>
+<div class="bg-wash"></div>
+
+<div class="menu-overlay" id="menuOverlay"></div>
+<nav class="menu-lateral" id="menuLateral">
+  <ul>
+    <li><a href="#inicio">Inicio</a></li>
+    <li><a href="#aprenderas">¿Qué vas a programar?</a></li>
+    <li><a href="#herramientas">Herramientas</a></li>
+    <li><a href="#formularios">Formularios</a></li>
+    <li><a href="#practica">Practica un Login</a></li>
+    <li><a href="infoo.html">← Volver</a></li>
+  </ul>
+</nav>
+
+<nav class="topnav">
+  <div class="topnav__brand">
+    
+    Programación
+  </div>
+  <ul class="topnav__links">
+    <li><a href="#aprenderas">Qué aprenderás</a></li>
+    <li><a href="#herramientas">Herramientas</a></li>
+    <li><a href="#formularios">Formularios</a></li>
+    <li><a href="#practica">Práctica</a></li>
+  </ul>
+  <a href="index (2).html" class="topnav__cta">← Volver</a>
+  <div class="menu-btn-mobile" id="menuBtn">☰</div>
+</nav>
+
+<header class="hero" id="inicio">
+  <div class="hero-badge"><span class="dot"></span> Materia Técnica — Programación</div>
+  <h1>Convierte la lógica en <span class="gradient-text">software real</span></h1>
+  <p class="lead">De la primera línea de código a formularios completos con base de datos: aprende a programar pensando como ingeniero de software, no solo como alguien que sigue instrucciones.</p>
+
+  <div class="hero-actions">
+    <a href="#formularios" class="btn btn--solid">Ver Formularios ➔</a>
+    <a href="#practica" class="btn btn--outline">▶ Practicar un Login</a>
+  </div>
+
+  <div class="hero-stats">
+    <div><strong>POO</strong><span>Programación Orientada a Objetos</span></div>
+    <div><strong>SQL</strong><span>Bases de Datos Relacionales</span></div>
+    <div><strong>UI</strong><span>Interfaces Gráficas Reales</span></div>
+  </div>
+</header>
+
+<main>
+
+  <section class="section" id="aprenderas">
+    <div class="section__head">
+      <p class="eyebrow">// contenido de la materia</p>
+      <h2>¿Qué Vas a Programar?</h2>
+      <p>De la lógica básica a sistemas completos con formularios conectados a una base de datos.</p>
+    </div>
+
+    <div class="bento">
+      <div class="bento-card bento-card--wide">
+        <span class="b-icon">🧠</span>
+        <h3>Lógica y Algoritmos</h3>
+        <p>La base de todo: pensar en pasos, condiciones y repeticiones antes de escribir una sola línea.</p>
+      </div>
+      <div class="bento-card">
+        <span class="b-icon">☕</span>
+        <h3>POO en Java</h3>
+        <p>Clases, objetos, herencia y encapsulamiento.</p>
+      </div>
+      <div class="bento-card">
+        <span class="b-icon">🗄️</span>
+        <h3>Bases de Datos</h3>
+        <p>Diseño de tablas y consultas SQL reales.</p>
+      </div>
+      <div class="bento-card bento-card--tall">
+        <span class="b-icon">🖼️</span>
+        <h3>Interfaces Gráficas</h3>
+        <p>Formularios funcionales con Java Swing y NetBeans, como los que verás más abajo.</p>
+      </div>
+      <div class="bento-card">
+        <span class="b-icon">🔗</span>
+        <h3>Conexión JDBC</h3>
+        <p>Tus formularios hablando directo con la base de datos.</p>
+      </div>
+      <div class="bento-card">
+        <span class="b-icon">🏆</span>
+        <h3>Proyecto Final</h3>
+        <p>Un sistema completo, de principio a fin.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="herramientas">
+    <div class="section__head">
+      <p class="eyebrow">// caja de herramientas</p>
+      <h2>Lenguajes y Herramientas</h2>
+    </div>
+
+    <div class="marquee">
+      <div class="marquee-track" id="toolsTrack"></div>
+    </div>
+  </section>
+
+  <section class="section" id="formularios">
+    <div class="section__head">
+      <p class="eyebrow">// proyectos reales de estudiantes</p>
+      <h2>Formularios que Vas a Construir</h2>
+      <p>Ejemplos reales de interfaces hechas en Java Swing / NetBeans dentro de la materia.</p>
+    </div>
+
+    <div class="form-carousel">
+      <div class="form-carousel-track" id="formsTrack"></div>
+    </div>
+  </section>
+
+  <section class="section" id="practica">
+    <div class="section__head">
+      <p class="eyebrow">// pruébalo tú mismo</p>
+      <h2>Practica un Formulario de Login</h2>
+      <p>Así se ve un formulario de inicio de sesión llevado del escritorio (como el de NetBeans de arriba) a la web. Escribe cualquier usuario y contraseña para probarlo:</p>
+    </div>
+
+    <div class="login-demo">
+      <div class="login-demo__form">
+        <div class="login-demo__scanline" aria-hidden="true"></div>
+        <h3>Iniciar Sesión</h3>
+        <form id="loginForm">
+          <div class="face-auth" id="faceAuth">
+            <div class="face-auth__camera">
+              <video id="faceVideo" autoplay muted playsinline></video>
+              <div class="face-auth__frame" aria-hidden="true">
+                <span></span><span></span><span></span><span></span>
+              </div>
+              <div class="face-auth__scan-line" aria-hidden="true"></div>
+              <div class="face-auth__icon" aria-hidden="true">◎</div>
+            </div>
+            <div class="face-auth__copy">
+              <strong id="faceStatus">Verificación facial requerida</strong>
+              <span id="faceHint">Activa la cámara y escanea tu rostro para desbloquear el formulario.</span>
+            </div>
+            <button type="button" class="face-auth__btn" id="faceScanBtn">◎ Escanear mi rostro</button>
+          </div>
+          <div class="login-field">
+            <label for="loginUser">Usuario</label>
+            <input type="text" id="loginUser" placeholder="tu.usuario" disabled>
+          </div>
+          <div class="login-field">
+            <label for="loginPass">Contraseña</label>
+            <input type="password" id="loginPass" placeholder="••••••••" disabled>
+          </div>
+          <button type="submit" class="login-demo__btn" disabled>Iniciar Sesión</button>
+          <p class="login-demo__msg" id="loginMsg">&nbsp;</p>
+        </form>
+        <p class="login-demo__signup">¿No tienes cuenta? <a href="#practica">Regístrate</a></p>
+      </div>
+      <div class="login-demo__side">
+        <div class="login-demo__orb login-demo__orb--one" aria-hidden="true"></div>
+        <div class="login-demo__orb login-demo__orb--two" aria-hidden="true"></div>
+        <div class="login-demo__side-inner">
+          <h3>¡Bienvenido de nuevo!</h3>
+          <p>Este es el mismo tipo de formulario que vas a programar en la materia, conectado a una base de datos real.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <p>Instituto Oficial Franklin Delano Roosevelt — Programación</p>
+  <p class="footer__muted">// Lógica, Código y Software Real</p>
+</footer>
+
+<script src="programacion.js"></script>
+</body>
+</html>

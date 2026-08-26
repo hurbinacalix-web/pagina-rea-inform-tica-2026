@@ -1,0 +1,3151 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Diseño Web</title>
+
+  <style>
+    :root {
+      --paper-card: rgba(18, 24, 38, 0.85);
+      --cyan: #00F0FF;
+      --blue: #3A64FF;
+      --blue-glow: rgba(58, 100, 255, 0.4);
+      --purple: #7000FF;
+      --purple2: #A020F0;
+      --green: #2EE686;
+      --muted: #8A98B0;
+      --line: rgba(255, 255, 255, 0.1);
+      --radius: 16px;
+      --mono: 'Courier New', Courier, monospace;
+      --body: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      scroll-behavior: smooth;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      background:
+        radial-gradient(circle at 20% 10%, rgba(0, 240, 255, 0.05), transparent 30%),
+        radial-gradient(circle at 80% 30%, rgba(112, 0, 255, 0.06), transparent 35%),
+        #070A10;
+      color: #fff;
+      font-family: var(--body);
+      overflow-x: hidden;
+      min-height: 100vh;
+    }
+
+    #bg-canvas {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: -10;
+      pointer-events: none;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.2rem 2rem;
+      background: rgba(11, 14, 20, 0.65);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--line);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+
+    .logo {
+      font-weight: 800;
+      letter-spacing: 1.5px;
+      font-size: 1.3rem;
+      background: linear-gradient(135deg, var(--cyan), var(--blue), var(--purple));
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .cyber-badge {
+      background: rgba(0, 240, 255, 0.1);
+      border: 1px solid var(--cyan);
+      color: var(--cyan);
+      padding: 0.2rem 0.6rem;
+      border-radius: 20px;
+      font-size: 0.7rem;
+      font-family: var(--mono);
+      -webkit-text-fill-color: var(--cyan);
+    }
+
+    .btn-audio {
+      background: transparent;
+      border: 1px solid var(--cyan);
+      color: var(--cyan);
+      padding: 0.5rem 1rem;
+      border-radius: 30px;
+      cursor: pointer;
+      font-family: var(--mono);
+      font-size: 0.8rem;
+      transition: all 0.3s ease;
+    }
+
+    .btn-audio:hover {
+      background: var(--cyan);
+      color: #000;
+      box-shadow: 0 0 15px var(--cyan);
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      align-items: center;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 5rem 2rem 3rem;
+      gap: 3rem;
+      width: 100%;
+    }
+
+    .hero-content {
+      z-index: 10;
+    }
+
+    .hero-content h1 {
+      font-size: clamp(2.4rem, 5vw, 4.2rem);
+      line-height: 1.08;
+      margin-bottom: 1.5rem;
+      font-weight: 800;
+      background: linear-gradient(180deg, #fff, #A5B4FC, #8A98B0);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero-content p {
+      color: var(--muted);
+      font-size: 1.1rem;
+      line-height: 1.7;
+      max-width: 560px;
+      margin-bottom: 2rem;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.45rem 0.8rem;
+      margin-bottom: 1.3rem;
+      border-radius: 30px;
+      border: 1px solid rgba(0, 240, 255, 0.3);
+      background: rgba(0, 240, 255, 0.06);
+      color: var(--cyan);
+      font-family: var(--mono);
+      font-size: 0.75rem;
+    }
+
+    .btn {
+      display: inline-block;
+      padding: 0.85rem 2rem;
+      background: linear-gradient(135deg, var(--cyan), var(--purple));
+      color: #fff;
+      font-weight: 700;
+      border-radius: 30px;
+      text-decoration: none;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      cursor: pointer;
+      border: none;
+    }
+
+    .btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 25px rgba(0, 240, 255, 0.3);
+    }
+
+    .canvas-container {
+      width: 100%;
+      height: 480px;
+      position: relative;
+      background: rgba(18, 24, 38, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 24px;
+      overflow: hidden;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(8px);
+    }
+
+    #interactiveCanvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+      cursor: crosshair;
+    }
+
+    .canvas-hint {
+      position: absolute;
+      bottom: 15px;
+      left: 20px;
+      font-size: 0.85rem;
+      color: rgba(255, 255, 255, 0.45);
+      pointer-events: none;
+    }
+
+    .canvas-label {
+      position: absolute;
+      top: 15px;
+      left: 20px;
+      font-family: var(--mono);
+      color: var(--cyan);
+      font-size: 0.75rem;
+      padding: 0.4rem 0.7rem;
+      border: 1px solid rgba(0, 240, 255, 0.3);
+      background: rgba(0, 0, 0, 0.35);
+      border-radius: 20px;
+      z-index: 10;
+    }
+
+    .reset-btn {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #fff;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      cursor: pointer;
+      backdrop-filter: blur(8px);
+      transition: all 0.2s ease;
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .reset-btn:hover {
+      background: rgba(255, 255, 255, 0.2);
+      border-color: rgba(0, 240, 255, 0.5);
+      box-shadow: 0 0 12px rgba(0, 240, 255, 0.3);
+      transform: scale(1.03);
+    }
+
+    .section-title {
+      text-align: center;
+      max-width: 800px;
+      margin: 2rem auto 0;
+      padding: 2rem 1.5rem;
+    }
+
+    .section-title h2 {
+      font-size: clamp(2rem, 4vw, 3rem);
+      margin-bottom: 0.8rem;
+      background: linear-gradient(90deg, #fff, var(--cyan));
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .section-title p {
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem 5rem;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+      gap: 2rem;
+      align-items: start;
+    }
+
+    .demo-card {
+      background: var(--paper-card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(10px);
+      transition: border-color 0.3s ease, transform 0.1s ease;
+      transform-style: preserve-3d;
+      perspective: 1000px;
+    }
+
+    .demo-card:hover {
+      border-color: var(--cyan);
+    }
+
+    .demo-card__preview {
+      position: relative;
+      width: 100%;
+      height: 380px;
+      background:
+        radial-gradient(circle at center, rgba(0, 240, 255, 0.05), transparent 45%),
+        #050811;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    #webcam {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transform: scaleX(-1);
+      opacity: 0.25;
+      display: block;
+    }
+
+    #particle-canvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 2;
+    }
+
+    .cam-btn {
+      position: absolute;
+      z-index: 10;
+      background: var(--blue);
+      color: #fff;
+      border: none;
+      padding: 0.9rem 1.6rem;
+      border-radius: var(--radius);
+      font-family: var(--body);
+      font-weight: 700;
+      font-size: 1rem;
+      cursor: pointer;
+      box-shadow: 0 0 25px var(--blue-glow);
+      transition: transform 0.2s ease, background-color 0.2s ease;
+    }
+
+    .cam-btn:hover {
+      transform: scale(1.08);
+      background: #2b55ff;
+    }
+
+    .cam-error {
+      position: absolute;
+      z-index: 20;
+      bottom: 60px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 90%;
+      text-align: center;
+      color: #ff6b6b;
+      font-size: 0.8rem;
+      display: none;
+    }
+
+    .shape-selector {
+      position: absolute;
+      bottom: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 10;
+      display: flex;
+      gap: 0.4rem;
+      background: rgba(11, 14, 20, 0.85);
+      padding: 0.4rem;
+      border-radius: 30px;
+      border: 1px solid var(--line);
+      backdrop-filter: blur(8px);
+    }
+
+    .shape-btn {
+      background: transparent;
+      border: none;
+      color: var(--muted);
+      padding: 0.3rem 0.7rem;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-family: var(--mono);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .shape-btn.active,
+    .shape-btn:hover {
+      background: var(--cyan);
+      color: #000;
+      font-weight: bold;
+    }
+
+    .demo-card__tag {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      z-index: 5;
+      background: rgba(11, 14, 20, 0.85);
+      color: var(--cyan);
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      padding: 0.3rem 0.7rem;
+      border-radius: 20px;
+      border: 1px solid rgba(0, 240, 255, 0.3);
+      backdrop-filter: blur(5px);
+    }
+
+    .demo-card__content {
+      padding: 1.5rem;
+    }
+
+    .demo-card__header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 0.8rem;
+    }
+
+    .demo-card__header h3 {
+      margin: 0;
+      font-size: 1.3rem;
+    }
+
+    .demo-card__status {
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      color: var(--green);
+      white-space: nowrap;
+    }
+
+    .demo-card__desc {
+      font-size: 0.92rem;
+      color: var(--muted);
+      margin: 0 0 1.2rem;
+      line-height: 1.5;
+    }
+
+    .demo-card__techs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .demo-card__techs span {
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--cyan);
+      padding: 0.25rem 0.6rem;
+      border-radius: 6px;
+      border: 1px solid var(--line);
+    }
+
+    .modules-card {
+      background: var(--paper-card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 1.8rem;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.35);
+    }
+
+    .modules-card h3 {
+      margin: 0 0 1.3rem;
+      font-size: 1.4rem;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .module-item {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1rem;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      margin-bottom: 0.8rem;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+
+    .module-item:hover {
+      background: rgba(0, 240, 255, 0.05);
+      border-color: var(--cyan);
+      transform: translateX(5px);
+    }
+
+    .module-icon {
+      font-size: 1.5rem;
+      background: rgba(58, 100, 255, 0.2);
+      width: 45px;
+      height: 45px;
+      min-width: 45px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 10px;
+    }
+
+    .module-info h4 {
+      margin: 0 0 0.2rem;
+      font-size: 1rem;
+    }
+
+    .module-info p {
+      margin: 0;
+      font-size: 0.82rem;
+      color: var(--muted);
+      line-height: 1.4;
+    }
+
+    footer {
+      text-align: center;
+      padding: 2rem;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-family: var(--mono);
+      font-size: 0.85rem;
+      background: rgba(7, 10, 16, 0.7);
+    }
+
+    @media (max-width: 900px) {
+      header {
+        padding: 1rem;
+      }
+
+      .hero {
+        grid-template-columns: 1fr;
+        text-align: center;
+        padding-top: 3rem;
+      }
+
+      .hero-content p {
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      .hero-badge {
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      .canvas-container {
+        height: 360px;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .logo {
+        font-size: 1rem;
+      }
+
+      .cyber-badge {
+        display: none;
+      }
+
+      .btn-audio {
+        font-size: 0.7rem;
+        padding: 0.45rem 0.7rem;
+      }
+
+      .hero {
+        padding: 3rem 1rem 2rem;
+      }
+
+      .hero-content h1 {
+        font-size: 2.4rem;
+      }
+
+      .canvas-container {
+        height: 320px;
+      }
+
+      .container {
+        grid-template-columns: 1fr;
+        padding-left: 1rem;
+        padding-right: 1rem;
+      }
+
+      .demo-card__preview {
+        height: 330px;
+      }
+
+      .shape-selector {
+        max-width: 95%;
+        overflow-x: auto;
+      }
+
+      .shape-btn {
+        white-space: nowrap;
+      }
+
+      .demo-card__header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+  
+/* =========================================================
+   CALCULADORA MÓVIL
+   ========================================================= */
+.calculator-section {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1rem 1.5rem 5rem;
+}
+
+.calculator-title {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.calculator-title h2 {
+  font-size: clamp(2rem, 4vw, 3rem);
+  margin-bottom: 0.8rem;
+  background: linear-gradient(90deg, #fff, var(--cyan));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.calculator-title p {
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.calculator-wrapper {
+  display: flex;
+  justify-content: center;
+}
+
+.phone-case {
+  width: 340px;
+  height: 680px;
+  background: #1c1c1e;
+  border-radius: 50px;
+  padding: 20px 16px 24px;
+  box-shadow: 0 25px 50px -12px rgba(0,0,0,.7),
+              0 0 0 12px #2c2c2e,
+              0 0 0 14px #1c1c1e;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+}
+
+.phone-case .notch {
+  width: 120px;
+  height: 25px;
+  background: #000;
+  border-bottom-left-radius: 16px;
+  border-bottom-right-radius: 16px;
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+}
+
+.phone-case .screen {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: flex-end;
+  padding: 20px 12px;
+  margin-top: 20px;
+  word-break: break-all;
+  word-wrap: break-word;
+}
+
+.phone-case .previous-operand {
+  color: rgba(255,255,255,.5);
+  font-size: 1.2rem;
+  min-height: 1.5rem;
+  margin-bottom: 4px;
+}
+
+.phone-case .current-operand {
+  color: #fff;
+  font-size: 3.8rem;
+  font-weight: 300;
+  line-height: 1;
+  transition: font-size .1s ease;
+}
+
+.phone-case .keypad {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+
+.phone-case .btn {
+  height: 68px;
+  width: 68px;
+  border-radius: 50%;
+  border: none;
+  outline: none;
+  font-size: 1.6rem;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: filter .15s ease, transform .05s ease;
+}
+
+.phone-case .btn:active {
+  filter: brightness(1.4);
+  transform: scale(.95);
+}
+
+.phone-case .btn-function {
+  background-color: #a5a5a5;
+  color: #000;
+}
+
+.phone-case .btn-operator {
+  background-color: #ff9f0a;
+  color: #fff;
+  font-size: 2rem;
+}
+
+.phone-case .btn-operator.active {
+  background-color: #fff;
+  color: #ff9f0a;
+}
+
+.phone-case .btn-number {
+  background-color: #333;
+  color: #fff;
+}
+
+.phone-case .btn-zero {
+  grid-column: span 2;
+  width: 100%;
+  border-radius: 35px;
+  justify-content: flex-start;
+  padding-left: 26px;
+}
+
+.phone-case .home-bar {
+  width: 130px;
+  height: 4px;
+  background-color: #fff;
+  border-radius: 2px;
+  margin: 12px auto 0;
+  opacity: .8;
+}
+
+@media (max-width: 600px) {
+  .calculator-section {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .phone-case {
+    transform: scale(.9);
+    transform-origin: top center;
+    margin-bottom: -60px;
+  }
+}
+
+
+/* =========================================================
+   FINANCIA — TECLADO 3D INTERACTIVO
+   ========================================================= */
+.financia-section {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1rem 1.5rem 5rem;
+}
+
+.financia-hero {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  gap: 2rem;
+  width: 100%;
+}
+
+.financia-eyebrow {
+  display: inline-block;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: #10a37f;
+  margin-bottom: 1rem;
+  transition: opacity 0.15s;
+}
+
+.financia-hero-content h1 {
+  font-size: 3.2rem;
+  line-height: 1.1;
+  margin-bottom: 1.5rem;
+  font-weight: 700;
+  transition: opacity 0.15s;
+  min-height: 3.5em;
+  color: #fff;
+}
+
+.financia-hero-content p {
+  color: #8a98b0;
+  font-size: 1.1rem;
+  line-height: 1.6;
+  margin-bottom: 2rem;
+  max-width: 480px;
+  transition: opacity 0.15s;
+  min-height: 3em;
+}
+
+.financia-fade-swap {
+  opacity: 0;
+}
+
+.financia-btn-primary {
+  display: inline-block;
+  background: #00f0ff;
+  color: #000;
+  padding: 0.9rem 2rem;
+  border-radius: 8px;
+  font-weight: 700;
+  text-decoration: none;
+  box-shadow: 0 0 20px rgba(0, 240, 255, 0.2);
+}
+
+.financia-hint {
+  margin-top: 1.5rem;
+  font-size: 0.85rem;
+  color: #52607a;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.financia-hint kbd {
+  background: #161c29;
+  border: 1px solid rgba(255,255,255,0.12);
+  border-bottom-width: 2px;
+  border-radius: 6px;
+  padding: 0.15rem 0.5rem;
+  font-family: inherit;
+  font-size: 0.8rem;
+  color: #d7dee8;
+}
+
+.financia-canvas-container {
+  width: 100%;
+  height: 480px;
+  position: relative;
+  background: rgba(18, 24, 38, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+#financia-canvas3d {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.financia-undo-badge {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: rgba(16, 163, 127, 0.15);
+  border: 1px solid rgba(16, 163, 127, 0.4);
+  color: #3fe0b0;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  padding: 0.35rem 0.7rem;
+  border-radius: 20px;
+  opacity: 0;
+  transform: translateY(-6px);
+  transition: opacity 0.25s ease, transform 0.25s ease;
+  pointer-events: none;
+}
+
+.financia-undo-badge.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@media (max-width: 900px) {
+  .financia-hero {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+  .financia-hero-content p {
+    margin: 0 auto 2rem auto;
+  }
+  .financia-hint {
+    justify-content: center;
+  }
+  .financia-canvas-container {
+    height: 360px;
+  }
+}
+
+
+    /* ==========================================
+       Botón flotante "regresar" (orilla izquierda)
+       ========================================== */
+    .back-tab {
+      position: fixed;
+      left: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(11, 14, 20, 0.92);
+      border: 1px solid var(--cyan);
+      border-left: none;
+      color: var(--cyan);
+      text-decoration: none;
+      padding: 14px 12px 14px 14px;
+      border-radius: 0 12px 12px 0;
+      backdrop-filter: blur(6px);
+      box-shadow: 0 0 18px rgba(0, 240, 255, 0.25);
+      z-index: 900;
+      transition: padding 0.35s cubic-bezier(.4,.2,.2,1), box-shadow 0.35s ease, background 0.35s ease, color 0.35s ease;
+      max-width: 46px;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+
+    .back-tab svg {
+      flex-shrink: 0;
+      width: 20px;
+      height: 20px;
+    }
+
+    .back-tab span {
+      font-size: 0.85rem;
+      font-weight: 600;
+      opacity: 0;
+      transition: opacity 0.25s ease 0.1s;
+    }
+
+    .back-tab:hover {
+      max-width: 220px;
+      padding-right: 20px;
+      background-color: var(--cyan);
+      color: #070A10;
+      box-shadow: 0 0 22px rgba(0, 240, 255, 0.55);
+    }
+
+    .back-tab:hover span { opacity: 1; }
+    .back-tab:hover svg path,
+    .back-tab:hover svg line { stroke: #070A10; }
+  </style>
+</head>
+
+<body>
+
+  <canvas id="bg-canvas"></canvas>
+
+  <a href="index (2).html" class="back-tab" title="Volver">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+      <line x1="19" y1="12" x2="5" y2="12"></line>
+      <polyline points="12 19 5 12 12 5"></polyline>
+    </svg>
+    <span>Volver a Informática</span>
+  </a>
+
+  <header>
+    <div class="logo">
+       DISEÑO WEB
+      <span class="cyber-badge">PRO</span>
+    </div>
+
+    <button id="audio-toggle" class="btn-audio">
+       Sonido FX: OFF
+    </button>
+  </header>
+
+  <main>
+
+    <section class="hero">
+
+      <div class="hero-content">
+
+        <div class="hero-badge">
+          ● SISTEMA INTERACTIVO ONLINE
+        </div>
+
+        <h1>
+          Crea Experiencias Web de Próxima Generación
+        </h1>
+
+        <p>
+          Aprende a dominar HTML, CSS y JavaScript construyendo
+          proyectos, Visión Artificial,
+          partículas interactivas y gráficos 3D en tiempo real.
+        </p>
+
+        <a href="#laboratorio" class="btn">
+          Explorar laboratorio →
+        </a>
+
+      </div>
+
+      <div class="canvas-container" id="canvasWrapper">
+
+        <div class="canvas-label">
+          STUDIO // CREATIVO
+        </div>
+
+        <button class="reset-btn" id="resetBtn">
+           Reiniciar
+        </button>
+
+        <canvas id="interactiveCanvas"></canvas>
+
+        <div class="canvas-hint">
+           Mueve el ratón o haz clic dentro del cuadro
+        </div>
+
+      </div>
+
+    </section>
+
+    <section class="section-title" id="laboratorio">
+
+      <h2>
+        Laboratorio Interactivo
+      </h2>
+
+      <p>
+        Experimenta con partículas 3D, reconocimiento de manos,
+        formas geométricas, audio y efectos visuales.
+      </p>
+
+    </section>
+
+    <div class="container">
+
+      <article class="demo-card" id="tilt-card">
+
+        <div
+          class="demo-card__preview"
+          id="interactive-container"
+        >
+
+          <video
+            id="webcam"
+            autoplay
+            playsinline
+          ></video>
+
+          <canvas id="particle-canvas"></canvas>
+
+          <button
+            id="start-cam-btn"
+            class="cam-btn"
+          >
+             Activar Control por Gestos
+          </button>
+
+          <div
+            id="cam-error"
+            class="cam-error"
+          ></div>
+
+          <div class="shape-selector">
+
+            <button
+              class="shape-btn active"
+              data-shape="sphere"
+            >
+              Esfera
+            </button>
+
+            <button
+              class="shape-btn"
+              data-shape="cube"
+            >
+              Cubo
+            </button>
+
+            <button
+              class="shape-btn"
+              data-shape="torus"
+            >
+              Dona
+            </button>
+
+            <button
+              class="shape-btn"
+              data-shape="spiral"
+            >
+              Espiral
+            </button>
+
+          </div>
+
+
+        </div>
+
+        <div class="demo-card__content">
+
+          <div class="demo-card__header">
+
+            <h3>
+              Partículas 3D & Reconocimiento de Manos
+            </h3>
+
+            <span class="demo-card__status">
+              ● Interactivo
+            </span>
+
+          </div>
+
+          <p class="demo-card__desc">
+            Mueve una mano frente a la cámara para reubicar
+            la figura. Utiliza ambas manos para ampliar o reducir
+            su estructura 3D en tiempo real.
+          </p>
+
+        </div>
+
+      </article>
+
+      <div class="modules-card">
+
+        <h3>
+          🚀 Módulos del Curso
+        </h3>
+
+        <div
+          class="module-item"
+          onclick="playSynthNote(440)"
+        >
+
+          <div class="module-icon">
+            🎨
+          </div>
+
+          <div class="module-info">
+
+            <h4>
+              1. Arquitectura & Estilos Neón
+            </h4>
+
+            <p>
+              Estructuras avanzadas con HTML,
+              CSS Grid y Flexbox.
+            </p>
+
+          </div>
+
+        </div>
+
+        <div
+          class="module-item"
+          onclick="playSynthNote(554)"
+        >
+
+          <div class="module-icon">
+            ⚡
+          </div>
+
+          <div class="module-info">
+
+            <h4>
+              2. Lógica y Eventos Dinámicos
+            </h4>
+
+            <p>
+              Control del DOM, eventos de ratón
+              y respuestas táctiles con JS.
+            </p>
+
+          </div>
+
+        </div>
+
+        <div
+          class="module-item"
+          onclick="playSynthNote(659)"
+        >
+
+          <div class="module-icon">
+            🎮
+          </div>
+
+          <div class="module-info">
+
+            <h4>
+              3. Gráficos 3D & WebGL
+            </h4>
+
+            <p>
+              Creación de mundos interactivos
+              con Three.js.
+            </p>
+
+          </div>
+
+        </div>
+
+        <div
+          class="module-item"
+          onclick="playSynthNote(880)"
+        >
+
+          <div class="module-icon">
+            🤖
+          </div>
+
+          <div class="module-info">
+
+            <h4>
+              4. Visión por Computadora
+            </h4>
+
+            <p>
+              Integración de modelos de Machine Learning
+              en la web.
+            </p>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </main>
+
+
+<section class="calculator-section" id="calculadora">
+  <div class="calculator-title">
+    <h2>Calculadora Móvil Interactiva</h2>
+    <p>Realiza operaciones matemáticas con una interfaz inspirada en un teléfono móvil.</p>
+  </div>
+
+  <div class="calculator-wrapper">
+    <div class="phone-case">
+      <div class="notch"></div>
+
+      <div class="screen">
+        <div class="previous-operand" id="previousOperand"></div>
+        <div class="current-operand" id="currentOperand">0</div>
+      </div>
+
+      <div class="keypad">
+        <button class="btn btn-function" id="clearBtn" onclick="clearAll()">AC</button>
+        <button class="btn btn-function" onclick="changeSign()">+/-</button>
+        <button class="btn btn-function" onclick="percentage()">%</button>
+        <button class="btn btn-operator" onclick="setOperation('÷')">÷</button>
+
+        <button class="btn btn-number" onclick="appendNumber('7')">7</button>
+        <button class="btn btn-number" onclick="appendNumber('8')">8</button>
+        <button class="btn btn-number" onclick="appendNumber('9')">9</button>
+        <button class="btn btn-operator" onclick="setOperation('×')">×</button>
+
+        <button class="btn btn-number" onclick="appendNumber('4')">4</button>
+        <button class="btn btn-number" onclick="appendNumber('5')">5</button>
+        <button class="btn btn-number" onclick="appendNumber('6')">6</button>
+        <button class="btn btn-operator" onclick="setOperation('-')">-</button>
+
+        <button class="btn btn-number" onclick="appendNumber('1')">1</button>
+        <button class="btn btn-number" onclick="appendNumber('2')">2</button>
+        <button class="btn btn-number" onclick="appendNumber('3')">3</button>
+        <button class="btn btn-operator" onclick="setOperation('+')">+</button>
+
+        <button class="btn btn-number btn-zero" onclick="appendNumber('0')">0</button>
+        <button class="btn btn-number" onclick="appendDot()">,</button>
+        <button class="btn btn-operator" onclick="calculate()">=</button>
+      </div>
+
+      <div class="home-bar"></div>
+    </div>
+  </div>
+</section>
+
+<section class="financia-section" id="financia">
+  <div class="section-title">
+    <h2>Teclado 3D Interactivo</h2>
+    <p>Presiona Ctrl + Z (o haz clic en la tecla Z) y observa cómo cambia la información.</p>
+  </div>
+
+  <div class="financia-hero">
+    <div class="financia-hero-content">
+      <span class="financia-eyebrow" id="financiaEyebrow">Movimiento 1 de 5</span>
+      <h1 id="financiaHeroTitle">Ten una idea de lo que se trata Diseño web</h1>
+      <p id="financiaHeroText">Aprende desde lo mas basico...</p>
+      <a href="#" class="financia-btn-primary">Get Started</a>
+      <div class="financia-hint">
+        <span>Presiona</span> <kbd>Ctrl</kbd> + <kbd>Z</kbd> <span>para deshacer el último movimiento</span>
+      </div>
+    </div>
+
+    <div class="financia-canvas-container" id="financiaContainer">
+      <div class="financia-undo-badge" id="financiaUndoBadge">DESHECHO</div>
+      <canvas id="financia-canvas3d"></canvas>
+    </div>
+  </div>
+</section>
+
+
+  <footer>
+
+    <p>
+      
+    </p>
+
+  </footer>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+  <script
+    src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"
+    crossorigin="anonymous"
+  ></script>
+
+  <script
+    src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js"
+    crossorigin="anonymous"
+  ></script>
+
+  <script>
+
+    const bgCanvas = document.getElementById('bg-canvas');
+    const bgCtx = bgCanvas.getContext('2d');
+
+    let bgParticles = [];
+
+    const bgMouse = {
+      x: null,
+      y: null,
+      radius: 120
+    };
+
+    function resizeBgCanvas() {
+
+      bgCanvas.width = window.innerWidth;
+      bgCanvas.height = window.innerHeight;
+
+    }
+
+    window.addEventListener(
+      'resize',
+      resizeBgCanvas
+    );
+
+    resizeBgCanvas();
+
+    window.addEventListener(
+      'mousemove',
+      (e) => {
+
+        bgMouse.x = e.clientX;
+        bgMouse.y = e.clientY;
+
+      }
+    );
+
+    class BgParticle {
+
+      constructor() {
+
+        this.x =
+          Math.random() * bgCanvas.width;
+
+        this.y =
+          Math.random() * bgCanvas.height;
+
+        this.size =
+          Math.random() * 2 + 1;
+
+        this.vx =
+          (Math.random() - 0.5) * 0.8;
+
+        this.vy =
+          (Math.random() - 0.5) * 0.8;
+
+      }
+
+      update() {
+
+        this.x += this.vx;
+        this.y += this.vy;
+
+        if (
+          this.x < 0 ||
+          this.x > bgCanvas.width
+        ) {
+          this.vx *= -1;
+        }
+
+        if (
+          this.y < 0 ||
+          this.y > bgCanvas.height
+        ) {
+          this.vy *= -1;
+        }
+
+        if (
+          bgMouse.x !== null &&
+          bgMouse.y !== null
+        ) {
+
+          const dx =
+            bgMouse.x - this.x;
+
+          const dy =
+            bgMouse.y - this.y;
+
+          const distance =
+            Math.sqrt(dx * dx + dy * dy);
+
+          if (distance < bgMouse.radius) {
+
+            this.x -= dx * 0.03;
+            this.y -= dy * 0.03;
+
+          }
+
+        }
+
+      }
+
+      draw() {
+
+        bgCtx.fillStyle =
+          'rgba(0, 240, 255, 0.5)';
+
+        bgCtx.beginPath();
+
+        bgCtx.arc(
+          this.x,
+          this.y,
+          this.size,
+          0,
+          Math.PI * 2
+        );
+
+        bgCtx.fill();
+
+      }
+
+    }
+
+    for (let i = 0; i < 70; i++) {
+
+      bgParticles.push(
+        new BgParticle()
+      );
+
+    }
+
+    function renderBg() {
+
+      bgCtx.clearRect(
+        0,
+        0,
+        bgCanvas.width,
+        bgCanvas.height
+      );
+
+      for (
+        let i = 0;
+        i < bgParticles.length;
+        i++
+      ) {
+
+        bgParticles[i].update();
+        bgParticles[i].draw();
+
+        for (
+          let j = i + 1;
+          j < bgParticles.length;
+          j++
+        ) {
+
+          const dx =
+            bgParticles[i].x -
+            bgParticles[j].x;
+
+          const dy =
+            bgParticles[i].y -
+            bgParticles[j].y;
+
+          const distance =
+            Math.sqrt(dx * dx + dy * dy);
+
+          if (distance < 100) {
+
+            bgCtx.strokeStyle =
+              `rgba(58, 100, 255, ${1 - distance / 100})`;
+
+            bgCtx.lineWidth = 0.5;
+
+            bgCtx.beginPath();
+
+            bgCtx.moveTo(
+              bgParticles[i].x,
+              bgParticles[i].y
+            );
+
+            bgCtx.lineTo(
+              bgParticles[j].x,
+              bgParticles[j].y
+            );
+
+            bgCtx.stroke();
+
+          }
+
+        }
+
+      }
+
+      requestAnimationFrame(renderBg);
+
+    }
+
+    renderBg();
+
+    const wrapper =
+      document.getElementById(
+        'canvasWrapper'
+      );
+
+    const creativeCanvas =
+      document.getElementById(
+        'interactiveCanvas'
+      );
+
+    const resetBtn =
+      document.getElementById(
+        'resetBtn'
+      );
+
+    const creativeCtx =
+      creativeCanvas.getContext('2d');
+
+    let creativeWidth;
+    let creativeHeight;
+
+    let creativeParticles = [];
+
+    const creativeMouse = {
+      x: null,
+      y: null,
+      radius: 120
+    };
+
+    function resizeCreativeCanvas() {
+
+      const rect =
+        wrapper.getBoundingClientRect();
+
+      const dpr =
+        Math.min(
+          window.devicePixelRatio || 1,
+          2
+        );
+
+      creativeWidth =
+        rect.width;
+
+      creativeHeight =
+        rect.height;
+
+      creativeCanvas.width =
+        creativeWidth * dpr;
+
+      creativeCanvas.height =
+        creativeHeight * dpr;
+
+      creativeCanvas.style.width =
+        creativeWidth + 'px';
+
+      creativeCanvas.style.height =
+        creativeHeight + 'px';
+
+      creativeCtx.setTransform(
+        dpr,
+        0,
+        0,
+        dpr,
+        0,
+        0
+      );
+
+      initCreativeParticles();
+
+    }
+
+    window.addEventListener(
+      'resize',
+      resizeCreativeCanvas
+    );
+
+    wrapper.addEventListener(
+      'mousemove',
+      (e) => {
+
+        const rect =
+          wrapper.getBoundingClientRect();
+
+        creativeMouse.x =
+          e.clientX - rect.left;
+
+        creativeMouse.y =
+          e.clientY - rect.top;
+
+      }
+    );
+
+    wrapper.addEventListener(
+      'mouseleave',
+      () => {
+
+        creativeMouse.x = null;
+        creativeMouse.y = null;
+
+      }
+    );
+
+    wrapper.addEventListener(
+      'click',
+      (e) => {
+
+        if (e.target === resetBtn) {
+          return;
+        }
+
+        const rect =
+          wrapper.getBoundingClientRect();
+
+        const clickX =
+          e.clientX - rect.left;
+
+        const clickY =
+          e.clientY - rect.top;
+
+        for (let i = 0; i < 8; i++) {
+
+          creativeParticles.push(
+            new CreativeParticle(
+              clickX,
+              clickY,
+              true
+            )
+          );
+
+        }
+
+      }
+    );
+
+    resetBtn.addEventListener(
+      'click',
+      (e) => {
+
+        e.stopPropagation();
+
+        initCreativeParticles();
+
+        playSynthNote(330);
+
+      }
+    );
+
+    class CreativeParticle {
+
+      constructor(
+        x,
+        y,
+        isBurst = false
+      ) {
+
+        this.x =
+          x !== undefined
+            ? x
+            : Math.random() * creativeWidth;
+
+        this.y =
+          y !== undefined
+            ? y
+            : Math.random() * creativeHeight;
+
+        const speed =
+          isBurst
+            ? 2.5
+            : 0.8;
+
+        this.vx =
+          (Math.random() - 0.5) * speed;
+
+        this.vy =
+          (Math.random() - 0.5) * speed;
+
+        this.radius =
+          Math.random() * 2 + 1.5;
+
+        this.baseColor =
+          Math.random() > 0.5
+            ? '#00f0ff'
+            : '#7000ff';
+
+      }
+
+      update() {
+
+        this.x += this.vx;
+        this.y += this.vy;
+
+        if (
+          this.x < 0 ||
+          this.x > creativeWidth
+        ) {
+          this.vx *= -1;
+        }
+
+        if (
+          this.y < 0 ||
+          this.y > creativeHeight
+        ) {
+          this.vy *= -1;
+        }
+
+        if (
+          creativeMouse.x !== null &&
+          creativeMouse.y !== null
+        ) {
+
+          const dx =
+            creativeMouse.x - this.x;
+
+          const dy =
+            creativeMouse.y - this.y;
+
+          const distance =
+            Math.sqrt(
+              dx * dx + dy * dy
+            );
+
+          if (
+            distance <
+            creativeMouse.radius
+          ) {
+
+            const force =
+              (
+                creativeMouse.radius -
+                distance
+              ) /
+              creativeMouse.radius;
+
+            const angle =
+              Math.atan2(dy, dx);
+
+            this.x -=
+              Math.cos(angle) *
+              force *
+              3;
+
+            this.y -=
+              Math.sin(angle) *
+              force *
+              3;
+
+          }
+
+        }
+
+      }
+
+      draw() {
+
+        creativeCtx.beginPath();
+
+        creativeCtx.arc(
+          this.x,
+          this.y,
+          this.radius,
+          0,
+          Math.PI * 2
+        );
+
+        creativeCtx.fillStyle =
+          this.baseColor;
+
+        creativeCtx.shadowBlur = 8;
+
+        creativeCtx.shadowColor =
+          this.baseColor;
+
+        creativeCtx.fill();
+
+        creativeCtx.shadowBlur = 0;
+
+      }
+
+    }
+
+    function initCreativeParticles() {
+
+      creativeParticles = [];
+
+      const particleCount =
+        Math.max(
+          40,
+          Math.floor(
+            (
+              creativeWidth *
+              creativeHeight
+            ) / 9000
+          )
+        );
+
+      for (
+        let i = 0;
+        i < particleCount;
+        i++
+      ) {
+
+        creativeParticles.push(
+          new CreativeParticle()
+        );
+
+      }
+
+    }
+
+    function connectCreativeParticles() {
+
+      for (
+        let a = 0;
+        a < creativeParticles.length;
+        a++
+      ) {
+
+        for (
+          let b = a + 1;
+          b < creativeParticles.length;
+          b++
+        ) {
+
+          const dx =
+            creativeParticles[a].x -
+            creativeParticles[b].x;
+
+          const dy =
+            creativeParticles[a].y -
+            creativeParticles[b].y;
+
+          const distance =
+            Math.sqrt(dx * dx + dy * dy);
+
+          if (distance < 100) {
+
+            const opacity =
+              1 - distance / 100;
+
+            creativeCtx.strokeStyle =
+              `rgba(0, 240, 255, ${opacity * 0.25})`;
+
+            creativeCtx.lineWidth = 1;
+
+            creativeCtx.beginPath();
+
+            creativeCtx.moveTo(
+              creativeParticles[a].x,
+              creativeParticles[a].y
+            );
+
+            creativeCtx.lineTo(
+              creativeParticles[b].x,
+              creativeParticles[b].y
+            );
+
+            creativeCtx.stroke();
+
+          }
+
+        }
+
+      }
+
+    }
+
+    function animateCreativeCanvas() {
+
+      requestAnimationFrame(
+        animateCreativeCanvas
+      );
+
+      creativeCtx.clearRect(
+        0,
+        0,
+        creativeWidth,
+        creativeHeight
+      );
+
+      creativeParticles.forEach(
+        particle => {
+
+          particle.update();
+          particle.draw();
+
+        }
+      );
+
+      connectCreativeParticles();
+
+    }
+
+    resizeCreativeCanvas();
+    animateCreativeCanvas();
+
+    const videoElement =
+      document.getElementById(
+        'webcam'
+      );
+
+    const particleCanvas =
+      document.getElementById(
+        'particle-canvas'
+      );
+
+    const threeContainer =
+      document.getElementById(
+        'interactive-container'
+      );
+
+    const startBtn =
+      document.getElementById(
+        'start-cam-btn'
+      );
+
+    const camError =
+      document.getElementById(
+        'cam-error'
+      );
+
+    let targetX = 0;
+    let targetY = 0;
+    let targetScale = 1;
+
+    const scene =
+      new THREE.Scene();
+
+    const camera =
+      new THREE.PerspectiveCamera(
+        75,
+        threeContainer.clientWidth /
+          threeContainer.clientHeight,
+        0.1,
+        1000
+      );
+
+    camera.position.z = 5;
+
+    const renderer =
+      new THREE.WebGLRenderer({
+        canvas: particleCanvas,
+        alpha: true,
+        antialias: true
+      });
+
+    renderer.setSize(
+      threeContainer.clientWidth,
+      threeContainer.clientHeight
+    );
+
+    renderer.setPixelRatio(
+      Math.min(
+        window.devicePixelRatio || 1,
+        2
+      )
+    );
+
+    const particleCount = 2000;
+
+    const geometry =
+      new THREE.BufferGeometry();
+
+    const currentPositions =
+      new Float32Array(
+        particleCount * 3
+      );
+
+    const targetPositions =
+      new Float32Array(
+        particleCount * 3
+      );
+
+    function generateShape(type) {
+
+      for (
+        let i = 0;
+        i < particleCount;
+        i++
+      ) {
+
+        let x = 0;
+        let y = 0;
+        let z = 0;
+
+        const idx =
+          i * 3;
+
+        if (type === 'sphere') {
+
+          const u =
+            Math.random();
+
+          const v =
+            Math.random();
+
+          const theta =
+            u * 2 * Math.PI;
+
+          const phi =
+            Math.acos(
+              2 * v - 1
+            );
+
+          const r =
+            1.8 +
+            Math.random() * 0.2;
+
+          x =
+            r *
+            Math.sin(phi) *
+            Math.cos(theta);
+
+          y =
+            r *
+            Math.sin(phi) *
+            Math.sin(theta);
+
+          z =
+            r *
+            Math.cos(phi);
+
+        }
+
+        else if (type === 'cube') {
+
+          x =
+            (Math.random() - 0.5) * 3;
+
+          y =
+            (Math.random() - 0.5) * 3;
+
+          z =
+            (Math.random() - 0.5) * 3;
+
+        }
+
+        else if (type === 'torus') {
+
+          const u =
+            Math.random() *
+            Math.PI *
+            2;
+
+          const v =
+            Math.random() *
+            Math.PI *
+            2;
+
+          const R = 1.5;
+          const r = 0.5;
+
+          x =
+            (R + r * Math.cos(v)) *
+            Math.cos(u);
+
+          y =
+            (R + r * Math.cos(v)) *
+            Math.sin(u);
+
+          z =
+            r * Math.sin(v);
+
+        }
+
+        else if (type === 'spiral') {
+
+          const a =
+            i * 0.02;
+
+          x =
+            Math.cos(a) *
+            (i * 0.0015);
+
+          y =
+            (i * 0.002) - 2;
+
+          z =
+            Math.sin(a) *
+            (i * 0.0015);
+
+        }
+
+        targetPositions[idx] =
+          x;
+
+        targetPositions[idx + 1] =
+          y;
+
+        targetPositions[idx + 2] =
+          z;
+
+      }
+
+    }
+
+    generateShape('sphere');
+
+    for (
+      let i = 0;
+      i < particleCount * 3;
+      i++
+    ) {
+
+      currentPositions[i] =
+        targetPositions[i];
+
+    }
+
+    geometry.setAttribute(
+      'position',
+      new THREE.BufferAttribute(
+        currentPositions,
+        3
+      )
+    );
+
+    const material =
+      new THREE.PointsMaterial({
+        color: 0x00f0ff,
+        size: 0.045,
+        transparent: true,
+        opacity: 0.9
+      });
+
+    const particles =
+      new THREE.Points(
+        geometry,
+        material
+      );
+
+    scene.add(particles);
+
+    const shapeButtons =
+      document.querySelectorAll(
+        '.shape-btn'
+      );
+
+    shapeButtons.forEach(
+      button => {
+
+        button.addEventListener(
+          'click',
+          () => {
+
+            const shape =
+              button.dataset.shape;
+
+            changeShape(shape);
+
+            shapeButtons.forEach(
+              btn =>
+                btn.classList.remove(
+                  'active'
+                )
+            );
+
+            button.classList.add(
+              'active'
+            );
+
+          }
+        );
+
+      }
+    );
+
+    function changeShape(type) {
+
+      playSynthNote(700);
+
+      generateShape(type);
+
+    }
+
+    function resizeThree() {
+
+      const width =
+        threeContainer.clientWidth;
+
+      const height =
+        threeContainer.clientHeight;
+
+      camera.aspect =
+        width / height;
+
+      camera.updateProjectionMatrix();
+
+      renderer.setSize(
+        width,
+        height
+      );
+
+      renderer.setPixelRatio(
+        Math.min(
+          window.devicePixelRatio || 1,
+          2
+        )
+      );
+
+    }
+
+    window.addEventListener(
+      'resize',
+      resizeThree
+    );
+
+    resizeThree();
+
+    function animateThree() {
+
+      requestAnimationFrame(
+        animateThree
+      );
+
+      const posAttr =
+        geometry.attributes.position;
+
+      for (
+        let i = 0;
+        i < particleCount * 3;
+        i++
+      ) {
+
+        posAttr.array[i] +=
+          (
+            targetPositions[i] -
+            posAttr.array[i]
+          ) * 0.08;
+
+      }
+
+      posAttr.needsUpdate = true;
+
+      particles.rotation.y += 0.005;
+
+      particles.position.x +=
+        (
+          targetX -
+          particles.position.x
+        ) * 0.1;
+
+      particles.position.y +=
+        (
+          targetY -
+          particles.position.y
+        ) * 0.1;
+
+      const currentScale =
+        particles.scale.x;
+
+      particles.scale.setScalar(
+        currentScale +
+        (
+          targetScale -
+          currentScale
+        ) * 0.1
+      );
+
+      renderer.render(
+        scene,
+        camera
+      );
+
+    }
+
+    animateThree();
+
+    let hands = null;
+    let cameraUtils = null;
+    let cameraRunning = false;
+
+    startBtn.addEventListener(
+      'click',
+      async () => {
+
+        if (cameraRunning) {
+          return;
+        }
+
+        startBtn.innerText =
+          'Cargando cámara...';
+
+        startBtn.disabled = true;
+
+        camError.style.display =
+          'none';
+
+        playSynthNote(523.25);
+
+        try {
+
+          if (
+            !navigator.mediaDevices ||
+            !navigator.mediaDevices.getUserMedia
+          ) {
+
+            throw new Error(
+              'Tu navegador no permite acceder a la cámara.'
+            );
+
+          }
+
+          hands =
+            new Hands({
+              locateFile:
+                (file) =>
+                  `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`
+            });
+
+          hands.setOptions({
+
+            maxNumHands: 2,
+
+            modelComplexity: 1,
+
+            minDetectionConfidence:
+              0.5,
+
+            minTrackingConfidence:
+              0.5
+
+          });
+
+          hands.onResults(
+            (results) => {
+
+              if (
+                results.multiHandLandmarks &&
+                results.multiHandLandmarks.length >
+                  0
+              ) {
+
+                if (
+                  results.multiHandLandmarks.length ===
+                  2
+                ) {
+
+                  const hand1 =
+                    results
+                      .multiHandLandmarks[0][9];
+
+                  const hand2 =
+                    results
+                      .multiHandLandmarks[1][9];
+
+                  targetX =
+                    (
+                      (
+                        hand1.x +
+                        hand2.x
+                      ) / 2 -
+                      0.5
+                    ) * -4;
+
+                  targetY =
+                    (
+                      0.5 -
+                      (
+                        (
+                          hand1.y +
+                          hand2.y
+                        ) / 2
+                      )
+                    ) * 4;
+
+                  const distance =
+                    Math.hypot(
+                      hand1.x -
+                        hand2.x,
+                      hand1.y -
+                        hand2.y
+                    );
+
+                  targetScale =
+                    Math.max(
+                      0.5,
+                      Math.min(
+                        distance * 3.5,
+                        3
+                      )
+                    );
+
+                }
+
+                else {
+
+                  const hand =
+                    results
+                      .multiHandLandmarks[0];
+
+                  targetX =
+                    (
+                      hand[9].x -
+                      0.5
+                    ) * -4;
+
+                  targetY =
+                    (
+                      0.5 -
+                      hand[9].y
+                    ) * 4;
+
+                  const handOpenness =
+                    Math.hypot(
+                      hand[12].x -
+                        hand[0].x,
+                      hand[12].y -
+                        hand[0].y
+                    );
+
+                  targetScale =
+                    Math.max(
+                      0.5,
+                      Math.min(
+                        handOpenness * 2.8,
+                        2.5
+                      )
+                    );
+
+                }
+
+              }
+
+            }
+          );
+
+          cameraUtils =
+            new Camera(
+              videoElement,
+              {
+
+                onFrame:
+                  async () => {
+
+                    await hands.send({
+                      image:
+                        videoElement
+                    });
+
+                  },
+
+                width: 640,
+                height: 480
+
+              }
+            );
+
+          await cameraUtils.start();
+
+          cameraRunning = true;
+
+          startBtn.style.display =
+            'none';
+
+        }
+
+        catch (error) {
+
+          console.error(
+            'Error de cámara:',
+            error
+          );
+
+          startBtn.disabled =
+            false;
+
+          startBtn.innerText =
+            '🎥 Intentar de nuevo';
+
+          camError.innerText =
+            'No se pudo acceder a la cámara. Verifica los permisos del navegador y usa HTTPS o localhost.';
+
+          camError.style.display =
+            'block';
+
+        }
+
+      }
+    );
+
+    let audioCtx = null;
+
+    let audioEnabled = false;
+
+    const audioBtn =
+      document.getElementById(
+        'audio-toggle'
+      );
+
+    audioBtn.addEventListener(
+      'click',
+      async () => {
+
+        audioEnabled =
+          !audioEnabled;
+
+        if (audioEnabled) {
+
+          audioCtx =
+            new (
+              window.AudioContext ||
+              window.webkitAudioContext
+            )();
+
+          if (
+            audioCtx.state ===
+            'suspended'
+          ) {
+
+            await audioCtx.resume();
+
+          }
+
+          audioBtn.innerText =
+            '🎵 Sonido FX: ON';
+
+          audioBtn.style.background =
+            'var(--cyan)';
+
+          audioBtn.style.color =
+            '#000';
+
+          playSynthNote(600);
+
+        }
+
+        else {
+
+          audioBtn.innerText =
+            '🎵 Sonido FX: OFF';
+
+          audioBtn.style.background =
+            'transparent';
+
+          audioBtn.style.color =
+            'var(--cyan)';
+
+        }
+
+      }
+    );
+
+    function playSynthNote(freq) {
+
+      if (
+        !audioEnabled ||
+        !audioCtx
+      ) {
+
+        return;
+
+      }
+
+      if (
+        audioCtx.state ===
+        'suspended'
+      ) {
+
+        audioCtx.resume();
+
+      }
+
+      const osc =
+        audioCtx.createOscillator();
+
+      const gain =
+        audioCtx.createGain();
+
+      osc.type =
+        'sine';
+
+      osc.frequency.setValueAtTime(
+        freq,
+        audioCtx.currentTime
+      );
+
+      gain.gain.setValueAtTime(
+        0.1,
+        audioCtx.currentTime
+      );
+
+      gain.gain.exponentialRampToValueAtTime(
+        0.001,
+        audioCtx.currentTime + 0.3
+      );
+
+      osc.connect(gain);
+
+      gain.connect(
+        audioCtx.destination
+      );
+
+      osc.start();
+
+      osc.stop(
+        audioCtx.currentTime + 0.3
+      );
+
+    }
+
+    const card =
+      document.getElementById(
+        'tilt-card'
+      );
+
+    card.addEventListener(
+      'mousemove',
+      (e) => {
+
+        const rect =
+          card.getBoundingClientRect();
+
+        const x =
+          e.clientX -
+          rect.left;
+
+        const y =
+          e.clientY -
+          rect.top;
+
+        const centerX =
+          rect.width / 2;
+
+        const centerY =
+          rect.height / 2;
+
+        const rotateX =
+          (
+            (y - centerY) /
+            centerY
+          ) * -8;
+
+        const rotateY =
+          (
+            (x - centerX) /
+            centerX
+          ) * 8;
+
+        card.style.transform =
+          `perspective(1000px)
+           rotateX(${rotateX}deg)
+           rotateY(${rotateY}deg)`;
+
+      }
+    );
+
+    card.addEventListener(
+      'mouseleave',
+      () => {
+
+        card.style.transform =
+          'perspective(1000px) rotateX(0deg) rotateY(0deg)';
+
+      }
+    );
+
+  </script>
+
+
+<script>
+let currentInput = '0';
+let previousInput = '';
+let operation = null;
+let shouldResetScreen = false;
+
+const currentOperandEl = document.getElementById('currentOperand');
+const previousOperandEl = document.getElementById('previousOperand');
+const clearBtn = document.getElementById('clearBtn');
+
+function updateDisplay() {
+  if (currentInput.length > 7) {
+    currentOperandEl.style.fontSize = '2.5rem';
+  } else if (currentInput.length > 5) {
+    currentOperandEl.style.fontSize = '3.2rem';
+  } else {
+    currentOperandEl.style.fontSize = '3.8rem';
+  }
+
+  currentOperandEl.textContent = currentInput;
+
+  previousOperandEl.textContent =
+    operation !== null ? `${previousInput} ${operation}` : '';
+
+  clearBtn.textContent = currentInput !== '0' ? 'C' : 'AC';
+}
+
+function appendNumber(number) {
+  if (currentInput === 'Error' || currentInput === '0' || shouldResetScreen) {
+    currentInput = number;
+    shouldResetScreen = false;
+  } else if (currentInput.length < 9) {
+    currentInput += number;
+  }
+  updateDisplay();
+}
+
+function appendDot() {
+  if (currentInput === 'Error' || shouldResetScreen) {
+    currentInput = '0,';
+    shouldResetScreen = false;
+  } else if (!currentInput.includes(',')) {
+    currentInput += ',';
+  }
+  updateDisplay();
+}
+
+function clearAll() {
+  currentInput = '0';
+  previousInput = '';
+  operation = null;
+  shouldResetScreen = false;
+  updateDisplay();
+}
+
+function changeSign() {
+  if (currentInput === '0' || currentInput === 'Error') return;
+  currentInput = (
+    parseFloat(currentInput.replace(',', '.')) * -1
+  ).toString().replace('.', ',');
+  updateDisplay();
+}
+
+function percentage() {
+  if (currentInput === '0' || currentInput === 'Error') return;
+  currentInput = (
+    parseFloat(currentInput.replace(',', '.')) / 100
+  ).toString().replace('.', ',');
+  updateDisplay();
+}
+
+function setOperation(op) {
+  if (currentInput === 'Error') {
+    clearAll();
+    return;
+  }
+
+  if (operation !== null && !shouldResetScreen) {
+    calculate();
+  }
+
+  previousInput = currentInput;
+  operation = op;
+  shouldResetScreen = true;
+  updateDisplay();
+}
+
+function calculate() {
+  if (operation === null || shouldResetScreen || currentInput === 'Error') return;
+
+  const prev = parseFloat(previousInput.replace(',', '.'));
+  const current = parseFloat(currentInput.replace(',', '.'));
+  let result;
+
+  switch (operation) {
+    case '+': result = prev + current; break;
+    case '-': result = prev - current; break;
+    case '×': result = prev * current; break;
+    case '÷':
+      if (current === 0) {
+        currentInput = 'Error';
+        operation = null;
+        previousInput = '';
+        shouldResetScreen = true;
+        updateDisplay();
+        return;
+      }
+      result = prev / current;
+      break;
+    default:
+      return;
+  }
+
+  result = Math.round(result * 100000000) / 100000000;
+  currentInput = result.toString().replace('.', ',');
+  operation = null;
+  previousInput = '';
+  shouldResetScreen = true;
+  updateDisplay();
+}
+
+window.addEventListener('keydown', (e) => {
+  if (e.key >= '0' && e.key <= '9') appendNumber(e.key);
+  else if (e.key === '.' || e.key === ',') appendDot();
+  else if (e.key === '=' || e.key === 'Enter') calculate();
+  else if (e.key === 'Backspace' || e.key === 'Escape') clearAll();
+  else if (e.key === '+') setOperation('+');
+  else if (e.key === '-') setOperation('-');
+  else if (e.key === '*') setOperation('×');
+  else if (e.key === '/') setOperation('÷');
+});
+
+updateDisplay();
+</script>
+
+<script>
+(function () {
+  // --- CONTENIDO QUE CAMBIA CON CTRL+Z ---
+  // Cada entrada simula un "estado" anterior de una transacción/cuenta,
+  // como si Ctrl+Z fuera deshaciendo movimientos financieros uno por uno.
+  const states = [
+    {
+      title: "Visual Studio Code",
+      text: "Visual Studio Code (conocido popularmente como VS Code) es un editor de código fuente gratuito, ligero y muy potente creado por Microsoft. Está disponible para Windows, macOS y Linux, y se ha convertido en una de las herramientas favoritas de los programadores, estudiantes y desarrolladores en todo el mundo."
+    },
+    {
+      title: "HTML",
+      text: "HTML sirve para definir la estructura básica y el contenido de un sitio web. Imagina que estás construyendo una casa: HTML sería el esqueleto, las paredes y los cimientos."
+    },
+    {
+      title: "CSS",
+      text: "CSS sirve para dar estilo, color y diseño a las páginas web. Siguiendo con la analogía de la casa: si HTML es la estructura o los cimientos, CSS es la pintura, los muebles, la decoración y el estilo arquitectónico."
+    },
+    {
+      title: "JAVASCRIPT",
+      text: "JavaScript (frecuentemente abreviado como JS) es un lenguaje de programación interpretado, ligero y de alto nivel.JavaScript sirve para dar interactividad y dinamismo a un sitio web. Siguiendo con la analogía de la casa: si HTML es la estructura y CSS es la decoración, JavaScript es la electricidad, el sistema de tuberías, las puertas automáticas y los aparatos inteligentes que hacen que todo cobre vida y funcione."
+    },
+    {
+      title: "El diseño no es solo lo que parece y se siente. El diseño es cómo funciona.",
+      
+    }
+  ];
+
+  let stateIndex = 0; // 0 = estado actual/más reciente
+  const financiaHeroTitle = document.getElementById('financiaHeroTitle');
+  const financiaHeroText = document.getElementById('financiaHeroText');
+  const financiaEyebrow = document.getElementById('financiaEyebrow');
+  const financiaUndoBadge = document.getElementById('financiaUndoBadge');
+  let badgeTimeout = null;
+
+  function renderState(showBadge) {
+    const s = states[stateIndex];
+
+    financiaHeroTitle.classList.add('financia-fade-swap');
+    financiaHeroText.classList.add('financia-fade-swap');
+    financiaEyebrow.classList.add('financia-fade-swap');
+
+    setTimeout(() => {
+      financiaHeroTitle.textContent = s.title;
+      financiaHeroText.textContent = s.text;
+      financiaEyebrow.textContent = stateIndex === 0
+        ? 'Estado actual'
+        : `Deshecho ${stateIndex} de ${states.length - 1}`;
+
+      financiaHeroTitle.classList.remove('financia-fade-swap');
+      financiaHeroText.classList.remove('financia-fade-swap');
+      financiaEyebrow.classList.remove('financia-fade-swap');
+    }, 150);
+
+    if (showBadge) {
+      financiaUndoBadge.classList.add('show');
+      clearTimeout(badgeTimeout);
+      badgeTimeout = setTimeout(() => financiaUndoBadge.classList.remove('show'), 900);
+    }
+  }
+
+  function undoStep() {
+    // Avanza al estado anterior; al llegar al más antiguo, vuelve a girar al inicio.
+    stateIndex = (stateIndex + 1) % states.length;
+    renderState(true);
+  }
+
+  // --- ESCENA, CÁMARA Y RENDERIZADOR ---
+  const financiaContainer = document.getElementById('financiaContainer');
+  const financiaCanvas = document.getElementById('financia-canvas3d');
+
+  const financiaScene = new THREE.Scene();
+  financiaScene.fog = new THREE.FogExp2(0x080c14, 0.03);
+
+  const financiaCamera = new THREE.PerspectiveCamera(45, financiaContainer.clientWidth / financiaContainer.clientHeight, 0.1, 1000);
+  financiaCamera.position.set(3, 4, 6);
+  financiaCamera.lookAt(0, 0, 0);
+
+  const financiaRenderer = new THREE.WebGLRenderer({ canvas: financiaCanvas, antialias: true, alpha: true });
+  financiaRenderer.setSize(financiaContainer.clientWidth, financiaContainer.clientHeight);
+  financiaRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  financiaRenderer.shadowMap.enabled = true;
+
+  // --- ILUMINACIÓN ---
+  const financiaAmbientLight = new THREE.AmbientLight(0xffffff, 0.6);
+  financiaScene.add(financiaAmbientLight);
+
+  const financiaDirLight = new THREE.DirectionalLight(0xffffff, 1.2);
+  financiaDirLight.position.set(5, 10, 7);
+  financiaDirLight.castShadow = true;
+  financiaScene.add(financiaDirLight);
+
+  const financiaGreenPointLight = new THREE.PointLight(0x10a37f, 3, 5);
+  financiaGreenPointLight.position.set(0.6, 0.8, 0.6);
+  financiaScene.add(financiaGreenPointLight);
+
+  // --- GRUPO DEL TECLADO ---
+  const financiaKeyboardGroup = new THREE.Group();
+  financiaScene.add(financiaKeyboardGroup);
+
+  const financiaBaseGeo = new THREE.BoxGeometry(2.6, 0.3, 2.6);
+  const financiaBaseMat = new THREE.MeshStandardMaterial({ color: 0x1e232d, roughness: 0.4, metalness: 0.8 });
+  const financiaBaseMesh = new THREE.Mesh(financiaBaseGeo, financiaBaseMat);
+  financiaBaseMesh.position.y = -0.15;
+  financiaBaseMesh.receiveShadow = true;
+  financiaKeyboardGroup.add(financiaBaseMesh);
+
+  function createTextTexture(text, isLogoKey = false) {
+    const canvasText = document.createElement('canvas');
+    canvasText.width = 256;
+    canvasText.height = 256;
+    const ctx = canvasText.getContext('2d');
+    ctx.fillStyle = isLogoKey ? '#10a37f' : '#1e232d';
+    ctx.fillRect(0, 0, 256, 256);
+
+    ctx.fillStyle = '#ffffff';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+
+    if (isLogoKey) {
+      ctx.font = 'Bold 110px sans-serif';
+      ctx.fillText('Z', 128, 128);
+    } else {
+      ctx.font = 'Bold 80px sans-serif';
+      ctx.fillText(text, 128, 128);
+    }
+
+    return new THREE.CanvasTexture(canvasText);
+  }
+
+  const financiaInteractiveKeys = [];
+  const financiaKeysByName = {};
+
+  function createKeycap(x, z, width, text, color, isLogoKey = false) {
+    const keyGeo = new THREE.BoxGeometry(width, 0.5, 1);
+    const topTexture = createTextTexture(text, isLogoKey);
+
+    const materials = [
+      new THREE.MeshStandardMaterial({ color: color, roughness: 0.3 }),
+      new THREE.MeshStandardMaterial({ color: color, roughness: 0.3 }),
+      new THREE.MeshStandardMaterial({ map: topTexture, roughness: 0.2 }),
+      new THREE.MeshStandardMaterial({ color: color, roughness: 0.3 }),
+      new THREE.MeshStandardMaterial({ color: color, roughness: 0.3 }),
+      new THREE.MeshStandardMaterial({ color: color, roughness: 0.3 })
+    ];
+
+    const keyMesh = new THREE.Mesh(keyGeo, materials);
+    keyMesh.position.set(x, 0.25, z);
+    keyMesh.castShadow = true;
+    keyMesh.receiveShadow = true;
+
+    keyMesh.userData = { originalY: 0.25, isPressed: false, name: text };
+
+    financiaKeyboardGroup.add(keyMesh);
+    financiaInteractiveKeys.push(keyMesh);
+    financiaKeysByName[text] = keyMesh;
+
+    return keyMesh;
+  }
+
+  createKeycap(-0.5, -0.5, 1.0, 'Ctrl', 0x2b313d);
+  createKeycap(0.6, -0.5, 1.0, 'C', 0x2b313d);
+  createKeycap(-0.5, 0.6, 1.0, 'V', 0x2b313d);
+  createKeycap(0.6, 0.6, 1.0, 'Z', 0x10a37f, true);
+
+  // --- SISTEMA DE PARTÍCULAS ---
+  const financiaParticleCount = 120;
+  const financiaParticleGeo = new THREE.BufferGeometry();
+  const financiaPositions = new Float32Array(financiaParticleCount * 3);
+  const financiaVelocities = [];
+
+  for (let i = 0; i < financiaParticleCount; i++) {
+    financiaPositions[i * 3] = 0;
+    financiaPositions[i * 3 + 1] = 0.5;
+    financiaPositions[i * 3 + 2] = 0;
+
+    financiaVelocities.push({
+      x: (Math.random() - 0.5) * 0.08,
+      y: Math.random() * 0.1 + 0.02,
+      z: (Math.random() - 0.5) * 0.08,
+      life: 0
+    });
+  }
+
+  financiaParticleGeo.setAttribute('position', new THREE.BufferAttribute(financiaPositions, 3));
+  const financiaParticleMat = new THREE.PointsMaterial({
+    color: 0x00ffcc,
+    size: 0.08,
+    transparent: true,
+    opacity: 0,
+    blending: THREE.AdditiveBlending
+  });
+
+  const financiaParticleSystem = new THREE.Points(financiaParticleGeo, financiaParticleMat);
+  financiaKeyboardGroup.add(financiaParticleSystem);
+
+  let financiaIsEmitting = false;
+
+  function triggerParticles(originX, originZ) {
+    financiaIsEmitting = true;
+    financiaParticleMat.opacity = 1;
+    const posArray = financiaParticleGeo.attributes.position.array;
+
+    for (let i = 0; i < financiaParticleCount; i++) {
+      posArray[i * 3] = originX;
+      posArray[i * 3 + 1] = 0.5;
+      posArray[i * 3 + 2] = originZ;
+
+      financiaVelocities[i].x = (Math.random() - 0.5) * 0.06;
+      financiaVelocities[i].y = Math.random() * 0.08 + 0.03;
+      financiaVelocities[i].z = (Math.random() - 0.5) * 0.06;
+      financiaVelocities[i].life = 1.0;
+    }
+    financiaParticleGeo.attributes.position.needsUpdate = true;
+  }
+
+  function updateParticles() {
+    if (!financiaIsEmitting) return;
+
+    const posArray = financiaParticleGeo.attributes.position.array;
+    let activeParticles = 0;
+
+    for (let i = 0; i < financiaParticleCount; i++) {
+      if (financiaVelocities[i].life > 0) {
+        posArray[i * 3] += financiaVelocities[i].x;
+        posArray[i * 3 + 1] += financiaVelocities[i].y;
+        posArray[i * 3 + 2] += financiaVelocities[i].z;
+
+        financiaVelocities[i].life -= 0.02;
+        activeParticles++;
+      }
+    }
+
+    financiaParticleGeo.attributes.position.needsUpdate = true;
+    financiaParticleMat.opacity = Math.max(0, financiaParticleMat.opacity - 0.015);
+
+    if (activeParticles === 0) {
+      financiaIsEmitting = false;
+    }
+  }
+
+  // Anima visualmente la tecla como si hubiera sido presionada
+  function pressKeyVisual(keyMesh) {
+    if (!keyMesh) return;
+    keyMesh.position.y = 0.1;
+    setTimeout(() => {
+      keyMesh.position.y = keyMesh.userData.originalY;
+    }, 120);
+    triggerParticles(keyMesh.position.x, keyMesh.position.z);
+  }
+
+  // --- INTERACTIVIDAD Y DETECCIÓN DE CLICS (clic directo sobre la tecla Z) ---
+  const financiaRaycaster = new THREE.Raycaster();
+  const financiaMouse = new THREE.Vector2();
+
+  financiaCanvas.addEventListener('pointerdown', (event) => {
+    const rect = financiaRenderer.domElement.getBoundingClientRect();
+    financiaMouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+    financiaMouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+
+    financiaRaycaster.setFromCamera(financiaMouse, financiaCamera);
+    const intersects = financiaRaycaster.intersectObjects(financiaInteractiveKeys);
+
+    if (intersects.length > 0) {
+      const pressedKey = intersects[0].object;
+      pressKeyVisual(pressedKey);
+
+      // Si el clic fue sobre la tecla Z, también cuenta como "deshacer"
+      if (pressedKey.userData.name === 'Z') {
+        undoStep();
+      }
+    }
+  });
+
+  // --- ATAJO REAL DEL TECLADO: Ctrl+Z (o Cmd+Z en Mac) ---
+  window.addEventListener('keydown', (event) => {
+    const key = event.key.toLowerCase();
+    const isUndoCombo = (event.ctrlKey || event.metaKey) && key === 'z';
+
+    if (isUndoCombo) {
+      event.preventDefault(); // evita el "deshacer" nativo del navegador
+
+      // Anima las teclas Ctrl y Z como si se hubieran presionado a la vez
+      pressKeyVisual(financiaKeysByName['Ctrl']);
+      pressKeyVisual(financiaKeysByName['Z']);
+
+      // Cambia la información mostrada en el hero
+      undoStep();
+    }
+  });
+
+  // Movimiento de la cámara según la posición del puntero, solo dentro del contenedor
+  let financiaTargetRotationY = 0;
+  let financiaTargetRotationX = 0;
+
+  financiaContainer.addEventListener('pointermove', (e) => {
+    const rect = financiaContainer.getBoundingClientRect();
+    financiaTargetRotationY = ((e.clientX - rect.left) / rect.width - 0.5) * 0.8;
+    financiaTargetRotationX = ((e.clientY - rect.top) / rect.height - 0.5) * 0.5;
+  });
+
+  // BUCLE DE ANIMACIÓN
+  function animateFinancia() {
+    requestAnimationFrame(animateFinancia);
+
+    financiaKeyboardGroup.rotation.y += (financiaTargetRotationY - financiaKeyboardGroup.rotation.y) * 0.05;
+    financiaKeyboardGroup.rotation.x += (financiaTargetRotationX - financiaKeyboardGroup.rotation.x) * 0.05;
+
+    updateParticles();
+    financiaRenderer.render(financiaScene, financiaCamera);
+  }
+
+  animateFinancia();
+
+  // REDIMENSIONADO RESPONSIVO
+  window.addEventListener('resize', () => {
+    financiaCamera.aspect = financiaContainer.clientWidth / financiaContainer.clientHeight;
+    financiaCamera.updateProjectionMatrix();
+    financiaRenderer.setSize(financiaContainer.clientWidth, financiaContainer.clientHeight);
+  });
+})();
+</script>
+
+</body>
+</html>
